@@ -18,6 +18,7 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.conf import settings
 from django.views import defaults as default_views
+from users import views as users_view
 
 urlpatterns = [
     # Django Admin, use {% url 'admin:index' %}
@@ -29,7 +30,24 @@ urlpatterns = [
     # User management
     url(r'^user/', include('users.urls', namespace="users")),
 
-
+    # register
+    url(
+        regex=r'^register$',
+        view=users_view.RegisterView.as_view(),
+        name='register'
+    ),
+    # logout
+    url(
+        regex=r'^logout$',
+        view=users_view.LogoutView.as_view(),
+        name='logout'
+    ),
+    # login
+    url(
+        regex=r'^login$',
+        view=users_view.LoginView.as_view(),
+        name='login'
+    )
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 # allow to serve static media files during development

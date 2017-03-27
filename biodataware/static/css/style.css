@@ -1,0 +1,367 @@
+body {
+    padding-top: 50px;
+    padding-bottom: 20px;
+    font-family: Rubik-Regular, Helvetica Neue, Helvetica,Arial,sans-serif;
+}
+
+h3{
+    font-family: Lalezar-Regular, Helvetica Neue, Helvetica,Arial,sans-serif;
+}
+
+/* Set padding to keep content from hitting the edges */
+.body-content {
+    padding-left: 15px;
+    padding-right: 15px;
+}
+html, body, .body-content {
+       height: 100%;
+       min-height: 100%;
+    }
+
+@media(min-width:768px){
+   html, body, #home-header {
+       height: 100%;
+       min-height: 100%;
+    }
+}
+
+#home-header {
+    margin:0px;
+    position: relative;
+    width: 100%;
+    min-height: 100%;
+    /*background-color:#999999;*/
+    /*background-image: url("he-b2.jpg");*/
+    background-position: center;
+    background-size: cover;
+    -o-background-size: cover;
+}
+.jumbotron{
+    margin-top: -50px !important;
+    margin-left: -15px !important;
+    margin-right: -15px !important;
+}
+
+.vertical-center {
+  min-height: 100%;  /* Fallback for browsers do NOT support vh unit */
+  min-height: 100vh; /* These two lines are counted as one :-)       */
+
+  display: flex;
+  align-items: center;
+}
+
+
+.lg-padding{
+    padding-top: 100px;
+    padding-bottom: 100px;
+}
+.md-padding{
+    padding-top: 100px;
+    padding-bottom: 50px;
+}
+
+.navbar-toggle{
+    padding: 5px 6px !important;
+    margin-top: 4px !important;
+    margin-bottom:4px !important;
+}
+
+/* Override the default bootstrap behavior where horizontal description lists
+   will truncate terms that are too long to fit in the left column
+*/
+.dl-horizontal dt {
+    white-space: normal;
+}
+
+/* Set width on the form input elements since they're 100% wide by default */
+input,
+select,
+textarea {
+    max-width: 280px;
+}
+.wideForm > input,
+.wideForm > select,
+.wideForm > textarea
+{
+    max-width: 100% !important;
+}
+
+/*navbar width and color*/
+.navbar-nav > li > a, .navbar-brand {
+    padding-top: 4px !important;
+    padding-bottom: 0 !important;
+    height: 28px;
+}
+
+.navbar {
+    min-height: 28px !important;
+}
+
+
+.navbar-inverse {
+    background-color: #454545;
+    border-color: #454545;
+}
+
+.navbar-inverse .navbar-nav > li > a {
+    color: white;
+}
+
+.navbar-inverse .navbar-nav > li > a:hover,
+.navbar-inverse .navbar-nav > li > a:focus {
+    color: mediumaquamarine;
+}
+
+.navbar {
+    margin-bottom: 0 !important;
+}
+
+.navbar-brand {
+    font-size: 14px;
+}
+
+/*remove brand padding*/
+.navbar .container-fluid, .navbar-collapse {
+    padding-left: 0;
+}
+
+.navbar-collapse.in {
+    padding-left: 30px;
+}
+
+/*footer div*/
+.footer {
+    background: #537489;
+    color: white;
+    font-size: 80%;
+}
+
+
+/*add * for forms*/
+.form-group.required .control-label:after {
+    content: "*";
+    color: red;
+    font-family: Helvetica Neue, Helvetica,Arial,sans-serif;
+}
+
+.required:after {
+    content: "*";
+    color: red;
+    font-family: Helvetica Neue, Helvetica,Arial,sans-serif;
+}
+
+.noEvent
+{
+    pointer-events: none;
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* Internet Explorer */
+   -khtml-user-select: none; /* KHTML browsers (e.g. Konqueror) */
+   -webkit-user-select: none; /* Chrome, Safari, and Opera */
+   -webkit-touch-callout: none; /* Disable Android and iOS callouts*/
+}
+
+/*change navbar colapse*/
+@media (max-width: 991px) {
+    .navbar-header {
+        float: none;
+    }
+    .navbar-toggle {
+        display: block;
+    }
+    .navbar-collapse {
+        border-top: 1px solid transparent;
+        box-shadow: inset 0 1px 0 rgba(255,255,255,0.1);
+    }
+    .navbar-collapse.collapse {
+        display: none!important;
+    }
+    .navbar-nav {
+        float: none!important;
+        margin: 7.5px -15px;
+    }
+    .navbar-nav>li {
+        float: none;
+    }
+    .navbar-nav>li>a {
+        padding-top: 10px;
+        padding-bottom: 10px;
+    }
+    .navbar-text {
+        float: none;
+        margin: 15px 0;
+    }
+    /* since 3.1.0 */
+    .navbar-collapse.collapse.in {
+        display: block!important;
+    }
+    .collapsing {
+        overflow: hidden!important;
+    }
+}
+
+    .suborgan{
+        height: 100px !important;
+    }
+
+    /*datTable icons*/
+    table.dataTable thead th {
+    position: relative;
+    background-image: none !important;
+}
+
+table.dataTable thead th.sorting:after,
+table.dataTable thead th.sorting_asc:after,
+table.dataTable thead th.sorting_desc:after {
+    position: absolute;
+    top: 12px;
+    right: 8px;
+    display: block;
+    font-family: FontAwesome;
+}
+
+table.dataTable thead th.sorting:after {
+    content: "\f0dc";
+    color: #ddd;
+    font-size: 0.8em;
+    padding-top: 0.12em;
+}
+table.dataTable thead th.sorting_asc:after {
+    content: "\f0de";
+}
+table.dataTable thead th.sorting_desc:after {
+    content: "\f0dd";
+}
+
+.clickable {
+    cursor: pointer;
+}
+
+/*upload files*/
+.btn-file {
+    position: relative;
+    overflow: hidden;
+}
+.btn-file input[type=file] {
+    position: absolute;
+    top: 0;
+    right: 0;
+    min-width: 100%;
+    min-height: 100%;
+    font-size: 100px;
+    text-align: right;
+    filter: alpha(opacity=0);
+    opacity: 0;
+    outline: none;
+    background: white;
+    cursor: inherit;
+    display: block;
+}
+
+.table tbody>tr>td.vert-align{
+    vertical-align: middle;
+}
+
+.noTopPadding{
+    margin-top: 0 !important;
+}
+.bg-custom{
+    color: #fff;
+    background-color: #8a7c46;
+}
+
+
+
+.table tbody tr > th.success {
+  background-color: #dff0d8 !important;
+}
+
+.table tbody tr > th.error {
+  background-color: #f2dede !important;
+}
+
+.table tbody tr > th.warning {
+  background-color: #fcf8e3 !important;
+}
+
+.table tbody tr > th.info {
+  background-color: #d9edf7 !important;
+}
+
+.table-hover tbody tr:hover > th.success {
+  background-color: #d0e9c6 !important;
+}
+
+.table-hover tbody tr:hover > th.error {
+  background-color: #ebcccc !important;
+}
+
+.table-hover tbody tr:hover > th.warning {
+  background-color: #faf2cc !important;
+}
+
+.table-hover tbody tr:hover > th.info {
+  background-color: #c4e3f3 !important;
+}
+
+
+.list-circle{
+    list-style-type: circle;
+}
+
+.text-debug{
+    color: #ec2daf;
+}
+.text-error{
+    color: #a94442;
+}
+
+.alert-debug{
+    color: #ec2daf;
+    background-color: #d9edf7;
+    border-color: #bce8f1;
+}
+.alert-error{
+    color: #a94442;
+    background-color: #f2dede;
+    border-color: #ebccd1;
+}
+.alert{
+    padding-top: 5px;
+    padding-bottom: 5px;
+    padding-left: 15px;
+    padding-right: 15px;
+    margin-bottom: 20px;
+    border: 1px solid transparent;
+    border-radius: 4px;
+}
+
+.alert-dismissable .close, .alert-dismissible .close{
+    position: relative;
+    top: -2px;
+    right: 0px;
+    color: inherit;
+}
+
+.navbar-brand{
+font-family: Pacifico-Regular, Helvetica Neue, Helvetica,Arial,sans-serif;
+}
+
+
+@font-face{
+    font-family: Lalezar-Regular;
+    src: url('../fonts/Lalezar-Regular.ttf') format('truetype')
+}
+
+@font-face{
+    font-family: Pacifico-Regular;
+    src: url('../fonts/Pacifico-Regular.ttf') format('truetype')
+}
+
+@font-face{
+    font-family: Rubik-Regular;
+    src: url('../fonts/Rubik-Regular.ttf') format('truetype')
+}
+
+.text-yellow{
+    color: #f3b449 !important;
+}

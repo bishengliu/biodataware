@@ -1,0 +1,118 @@
+{% extends "base.html"%}
+
+{% load staticfiles %} # must be added each time if need static file in the template
+{% block content %}
+
+<div class="row">
+    <h3 class="text-center text-info">
+        <i class="fa fa-user-circle-o"></i>
+        <span>Personal Details</span>
+    </h3>
+</div>
+<div class="row">
+    <form class="form-horizontal" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="clearfix"></div>
+        <div class="form-group required">
+            <label class="control-label col-xs-offset-1 col-sm-offset-0 col-sm-4 col-md-5 col-lg-5" for="{{ uf.email.id_for_label}}">Email</label>
+            <div class="col-xs-offset-1 col-xs-10 col-sm-offset-0 col-sm-4 col-md-3 col-lg-2 wideForm">
+                <input class="form-control" type="email" id="{{ uf.email.id_for_label}}" name="{{uf.email.html_name}}" value="{{uf.email.value}}" required>
+                <span class="help-inline text-danger">
+                    {% for error in uf.email.errors %}{{ error }}{% endfor %}
+                </span>
+                <span class="help-inline">
+                    {% if uf.email.help_text %}
+                            <small>{{ uf.email.help_text }}</small>
+                        {% endif %}
+                </span>
+            </div>
+        </div>
+        <div class="form-group required">
+            <label class="control-label col-xs-offset-1 col-sm-offset-0 col-sm-4 col-md-5 col-lg-5" for="{{ uf.first_name.id_for_label}}">First Name</label>
+            <div class="col-xs-offset-1 col-xs-10 col-sm-offset-0 col-sm-4 col-md-3 col-lg-2 wideForm">
+                <input class="form-control" type="text" id="{{ uf.first_name.id_for_label}}" name="{{uf.first_name.html_name}}" value="{{uf.first_name.value|default_if_none:''}}">
+                <span class="help-inline text-danger">
+                    {% for error in uf.first_name.errors %}{{ error }}{% endfor %}
+                </span>
+                <span class="help-inline">
+                    {% if uf.first_name.help_text %}
+                            <small>{{ uf.first_name.help_text }}</small>
+                        {% endif %}
+                </span>
+            </div>
+        </div>
+        <div class="form-group required">
+            <label class="control-label col-xs-offset-1 col-sm-offset-0 col-sm-4 col-md-5 col-lg-5" for="{{ uf.last_name.id_for_label}}">Last Name</label>
+            <div class="col-xs-offset-1 col-xs-10 col-sm-offset-0 col-sm-4 col-md-3 col-lg-2 wideForm">
+                <input class="form-control" type="text" id="{{ uf.last_name.id_for_label}}" name="{{uf.last_name.html_name}}" value="{{uf.last_name.value|default_if_none:''}}">
+                <span class="help-inline text-danger">
+                    {% for error in uf.last_name.errors %}{{ error }}{% endfor %}
+                </span>
+                <span class="help-inline">
+                    {% if uf.last_name.help_text %}
+                            <small>{{ uf.last_name.help_text }}</small>
+                        {% endif %}
+                </span>
+            </div>
+        </div>
+        <div class="form-group required">
+            <label class="control-label col-xs-offset-1 col-sm-offset-0 col-sm-4 col-md-5 col-lg-5" for="{{ upf.birth_date.id_for_label}}">Birth Date</label>
+            <div class="col-xs-offset-1 col-xs-10 col-sm-offset-0 col-sm-4 col-md-3 col-lg-2 wideForm">
+                <input class="form-control datepicker" type="text" id="{{ upf.birth_date.id_for_label}}" name="{{upf.birth_date.html_name}}" value="{{upf.birth_date.value| date:'Y-m-d'|default_if_none:''}}">
+                <span class="help-inline text-danger">
+                    {% for error in upf.birth_date.errors %}{{ error }}{% endfor %}
+                </span>
+                <span class="help-inline">
+                    {% if upf.birth_date.help_text %}
+                            <small>{{ upf.birth_date.help_text }}</small>
+                        {% endif %}
+                </span>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-xs-offset-1 col-sm-offset-0 col-sm-4 col-md-5 col-lg-5" for="{{ upf.photo.id_for_label}}">Photo</label>
+            <div class="col-xs-offset-1 col-xs-10 col-sm-offset-0 col-sm-4 col-md-3 col-lg-2 wideForm">
+                {% if photo %}
+                        <div>
+                            <a href="{{photo}}" target="_blank"><img src="{{photo}}" class="img-responsive img-circle" width="100" height="100"></a>
+                        </div>
+                        <div class="clearfix"></div>
+                        <br/>
+                {% endif %}
+                <div class="input-group wideForm">
+                    <input type="text" class="form-control" id="{{upf.photo.html_name}}_name" readonly>
+                    <span class="input-group-btn">
+                        <label class="btn btn-primary btn-file">Browse <input type="file" name="{{upf.photo.html_name}}" id="{{upf.photo.html_name}}_fn" class="hidden"></label>
+                    </span>
+                 </div>
+                <small><p id="{{upf.photo.html_name}}_msg" class="text-danger "></p></small>
+                <span class="help-inline text-danger">
+                    {% for error in upf.photo.errors %}{{ error }}{% endfor %}
+                </span>
+                <span class="help-inline">
+                    {% if upf.photo.help_text %}
+                            <small>{{ upf.photo.help_text }}</small>
+                        {% endif %}
+                </span>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-xs-offset-1 col-xs-10 col-sm-4 col-sm-offset-4 col-md-3 col-md-offset-5 col-lg-2 wideForm">
+                <button type="submit" class="btn btn-default btn-block">
+                    <i class="fa fa-user"></i>
+                    <span>Update</span>
+                </button>
+            </div>
+
+        </div>
+    </form>
+</div>
+
+{% endblock content %}
+{% block appJs %}
+    <script src="{% static 'js/users/users.js' %}"></script>
+    <script src="{% static 'js/upload_image.js' %}"></script>
+    <script src="{% static 'js/users/upload_photo.js' %}"></script>
+{% endblock appJs%}
+
+

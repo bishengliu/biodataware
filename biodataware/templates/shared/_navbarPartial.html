@@ -12,19 +12,18 @@
                                   <span class="icon-bar"></span>
                                   <span class="icon-bar"></span>
                              </button>
-                            <a class = "navbar-brand" href = "">{% app_name %}</a>
-                            <!--{% url 'home:index'%}-->
+                            <a class = "navbar-brand" href = "{% url 'home:index'%}">{% app_name %}</a>
                         </div>
                         <div class="navbar-collapse collapse">
                             {% block navbar%}
                                 <ul class="nav navbar-nav">
                                     <li>
-                                         <a class="" href="" data-toggle="tooltip" title="APPLICATION HOME">
+                                         <a class="" href="{% url 'home:index'%}" data-toggle="tooltip" title="APPLICATION HOME">
                                              <i class="fa fa-home"></i>
                                              <span class="">HOME</span>
                                          </a>
                                      </li>
-                                    <!-- include navbar based on the global template tag 'app_navbar', which render navbar as string  -->
+                                    <!-- include navbar based on the custom template tag 'app_navbar', which render navbar as string  -->
                                     {% app_navbar %}
                                 </ul>
                             {% endblock navbar%}

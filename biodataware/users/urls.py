@@ -1,6 +1,7 @@
 from django.conf.urls import url
 from . import views
-'''
+
+
 urlpatterns =[
     url(
         regex=r'^$',
@@ -12,8 +13,4 @@ urlpatterns =[
         view=views.PasswordView.as_view(),
         name='password'
     )
-]
-'''
-urlpatterns =[
-
 ]

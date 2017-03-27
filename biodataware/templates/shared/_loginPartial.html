@@ -13,26 +13,26 @@
                     </a>
                     <ul class="dropdown-menu" role="menu">
                         <li>
-                            <a class="" href="{% url '' %}" data-toggle="tooltip" title="Update your account details">
+                            <a class="" href="{% url 'users:update' %}" data-toggle="tooltip" title="Update your account details">
                                 <i class="fa fa-pencil-square-o "></i><span class="">Account Details</span>
                             </a>
                         </li>
                         <li>
-                            <a class="" href="{% url '' %}" data-toggle="tooltip" title="Change Password">
+                            <a class="" href="{% url 'users:password' %}" data-toggle="tooltip" title="Change Password">
                                 <i class="fa fa-key"></i><span class="">Change Password</span>
                             </a>
                         </li>
                     </ul>
                 </li>
                 <li>
-                    <a href="{% url '' %}"><span class="fa fa-sign-out"></span> Logout</a>
+                    <a href="{% url 'logout' %}"><span class="fa fa-sign-out"></span> Logout</a>
                 </li>
             {% else %}
                 <li>
-                    <a href="{% url '' %}"><span class="fa fa-user-plus"></span>&nbsp;Register</a>
+                    <a href="{% url 'register' %}"><span class="fa fa-user-plus"></span>&nbsp;Register</a>
                 </li>
                 <li>
-                    <a href="{% url '' %}"><span class="fa fa-sign-in"></span> Login</a>
+                    <a href="{% url 'login' %}"><span class="fa fa-sign-in"></span> Login</a>
                 </li>
             {% endif %}
         {% endblock _user%}
