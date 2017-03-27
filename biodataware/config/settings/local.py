@@ -7,8 +7,8 @@ Local settings
 from .common import *
 
 # some variables, must be all capitals
-APPNAME = 'BioDataWare'
-APPVERSION = '0.0.1'
+APP_NAME = 'BioDataWare'
+APP_VERSION = '0.0.1'
 
 # define app mode
 APP_MODE = 'local'
