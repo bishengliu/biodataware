@@ -1,0 +1,9 @@
+{# load custom tags in the helpers app #}
+{% load custom_tags %}
+<div class="footer navbar-fixed-bottom">
+    <footer>
+        {% block footer %}
+            <p class="text-center" style="margin: 0px 0px 0px 0px;">&copy; {% now "Y" %} - {% app_name %} ({% app_version%}{%if debug %}, <span class="text-danger"><em> &nbsp;{% app_setting_mode %}</em></span> {%endif%}). All Rights Reserved</p>
+        {% endblock footer %}
+    </footer>
+</div>

@@ -30,8 +30,8 @@ def app_version():
 @register.simple_tag
 def app_navbar():
     if settings.APP_MODE == "local":
-        return render_to_string("navbar_local.html")
+        return render_to_string("shared/_navbar_local.html")
     elif settings.APP_MODE == "test":
-        return render_to_string("navbar_test.html")
+        return render_to_string("shared/_navbar_test.html")
     else:
-        return render_to_string("navbar_prod.html")
+        return render_to_string("shared/_navbar_prod.html")
