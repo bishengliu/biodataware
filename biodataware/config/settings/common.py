@@ -47,6 +47,7 @@ THIRD_PARTY_APPS = [
 
 LOCAL_APPS = [
     'helpers.apps.HelpersConfig',
+    'home.apps.HomeConfig',
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -69,7 +70,9 @@ ROOT_URLCONF = 'config.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [
+            APPS_DIR + '/templates/'
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
