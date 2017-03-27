@@ -15,7 +15,7 @@ class Profile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     birth_date = models.DateField(null=True, blank=True)
     photo = models.ImageField(upload_to='users/', max_length=100, null=True, blank=True)
-    telephone = models.CharField(validators=[validate_phone], null=True, blank=True)
+    telephone = models.CharField(validators=[validate_phone], null=True, blank=True, max_length=20)
 
     # display photo in the admin
     def photo_tag(self):
