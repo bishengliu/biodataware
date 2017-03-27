@@ -169,4 +169,3 @@ DATE_INPUT_FORMATS = [
 ]
 
 LOGIN_URL = '/login'
-
