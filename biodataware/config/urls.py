@@ -27,7 +27,7 @@ urlpatterns = [
     url(r'^', include('home.urls', namespace="home")),
 
     # User management
-    #url(r'^user/', include('users.urls', namespace="users")),
+    url(r'^user/', include('users.urls', namespace="users")),
 
 
 
