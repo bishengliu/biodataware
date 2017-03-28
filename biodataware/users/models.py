@@ -3,6 +3,7 @@ from django.conf import settings
 from django.contrib.auth.models import AbstractUser
 from django.utils.safestring import mark_safe
 from helpers.validators import validate_phone
+from roles.models import Role
 
 
 class User(AbstractUser):
@@ -27,3 +28,11 @@ class Profile(models.Model):
     def __str__(self):
         return self.user.username
 
+
+# match users to roles
+class UserRole(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    role = models.ForeignKey(Role, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.user.username + ' :' + self.role.role

@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-from .models import User, Profile
+from .models import User, Profile, UserRole
 from django.contrib.auth.models import Group
 
 
@@ -9,9 +9,13 @@ class UserInline(admin.StackedInline):
     model = Profile
 
 
+class UserRoleInline(admin.StackedInline):
+    model = UserRole
+
+
 class UserAdmin(BaseUserAdmin):
-    list_display = ('username', 'email', 'first_name', 'last_name', 'photo', 'birth', 'is_active', 'is_staff')
-    inlines = (UserInline,)
+    list_display = ('username', 'email', 'first_name', 'last_name', 'photo', 'birth', 'is_active', 'role')
+    inlines = (UserInline, UserRoleInline)
 
     def photo(self, obj):
         try:
@@ -29,6 +33,12 @@ class UserAdmin(BaseUserAdmin):
             return None
 
     birth.short_description = 'Birth Date'
+
+    def role(self, obj):
+        try:
+            return obj.userRole.role
+        except:
+            return None
 
 admin.site.register(User, UserAdmin)
 
