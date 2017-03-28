@@ -1,6 +1,7 @@
 from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator
 from groups.models import Group, GroupResearcher
+from django.utils.safestring import mark_safe
 
 
 # containers
