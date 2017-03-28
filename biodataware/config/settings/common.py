@@ -49,6 +49,7 @@ LOCAL_APPS = [
     'helpers.apps.HelpersConfig',
     'home.apps.HomeConfig',
     'users.apps.UsersConfig',
+    'roles.apps.RolesConfig',
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS

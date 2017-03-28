@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from .models import User, Profile
+from django.contrib.auth.models import Group
 
 
 # Register your models here.
@@ -33,3 +34,7 @@ admin.site.register(User, UserAdmin)
 
 fields = ('image_tag',)
 readonly_fields = ('image_tag',)
+
+
+# unregister groups from admin dashboard
+admin.site.unregister(Group)
