@@ -30,7 +30,7 @@ class Sample(models.Model):
     vposition = models.CharField(max_length=10)  # v position
     date_in = models.DateField(auto_now_add=True)  # timestamp
     name = models.CharField(max_length=150)  # sample
-    freezing_date = models.DateField(auto_now_add=True)  # sample freezing date
+    freezing_date = models.DateField()  # sample freezing date
     registration_code = models.CharField(max_length=50, null=True, blank=True)  # sample registration code, such as promas barcode
     pathology_code = models.CharField(max_length=50, null=True, blank=True)  # sample pathology code
     freezing_code = models.CharField(max_length=50, null=True, blank=True)  # sample freezing code
@@ -40,7 +40,7 @@ class Sample(models.Model):
     qrcode = models.CharField(max_length=50, null=True, blank=True)  # sample
 
     def __str__(self):
-        return self.name + ' (Box: ' + self.box + ', Position: ' + self.hposition + self.vposition + ')'
+        return self.name + ' (Box: ' + str(self.box.tower) + '-' + str(self.box.shelf) + '-' + str(self.box.box) + ', Position: ' + self.vposition + self.hposition + ')'
 
 
 # sample attachment
