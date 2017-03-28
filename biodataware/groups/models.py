@@ -39,4 +39,4 @@ class GroupResearcher(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.group.pi + " (" + self.user.email + ")"
+        return self.user.username + " (" + self.group.pi + ")"

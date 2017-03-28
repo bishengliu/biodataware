@@ -1,6 +1,6 @@
 from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator
-from groups.models import Group
+from groups.models import Group, GroupResearcher
 
 
 # containers
@@ -37,7 +37,7 @@ class GroupContainer(models.Model):
 
 
 # boxes in containers
-class BoxConatiner(models.Model):
+class BoxContainer(models.Model):
     container = models.ForeignKey(Container, on_delete=models.CASCADE)
     code39 = models.CharField(max_length=50, null=True, blank=True)
     qrcode = models.CharField(max_length=50, null=True, blank=True)
@@ -49,3 +49,12 @@ class BoxConatiner(models.Model):
 
     def __str__(self):
         return self.container.name + ' (' + str(self.tower) + '-' + str(self.shelf) + '-' + str(self.box) + ')'
+
+
+# boxes assigned to the group
+class BoxResearcher(models.Model):
+    box = models.ForeignKey(BoxContainer, on_delete=models.CASCADE)
+    researcher = models.ForeignKey(GroupResearcher, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.box.container.name + ' (' + str(self.box.tower) + '-' + str(self.box.shelf) + '-' + str(self.box.box) + ') of researcher: ' + self.researcher.user.username
