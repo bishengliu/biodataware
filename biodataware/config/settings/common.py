@@ -51,6 +51,8 @@ LOCAL_APPS = [
     'users.apps.UsersConfig',
     'roles.apps.RolesConfig',
     'groups.apps.GroupsConfig',
+    'containers.apps.ContainersConfig',
+    'boxes.apps.BoxesConfig',
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS

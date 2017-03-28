@@ -18,8 +18,8 @@ class ContainerAdmin(admin.ModelAdmin):
 admin.site.register(Container, ContainerAdmin)
 
 
-# register BoxConatiner
-class BoxConatinerAdmin(admin.ModelAdmin):
+# register ConatinerBox
+class ConatinerBoxAdmin(admin.ModelAdmin):
     list_display = ['container', 'temperature', 'position', 'room', 'code39', 'qrcode']
 
     def container(self, obj):
@@ -71,7 +71,7 @@ class BoxConatinerAdmin(admin.ModelAdmin):
     qrcode.short_description = 'QRCode'
 
 
-admin.site.register(BoxConatiner, BoxConatinerAdmin)
+admin.site.register(BoxConatiner, ConatinerBoxAdmin)
 
 
 # register group container
