@@ -8,7 +8,7 @@ class GroupAdmin(admin.ModelAdmin):
 
     def photo(self, obj):
         try:
-            return obj.profile.photo_tag()
+            return obj.group.photo_tag()
         except:
             return None
 
