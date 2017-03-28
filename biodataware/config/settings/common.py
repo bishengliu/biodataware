@@ -173,4 +173,10 @@ DATE_INPUT_FORMATS = [
     '%m/%d/%y',      # '10/25/06'
 ]
 
-# LOGIN_URL = '/login'
+LOGIN_URL = '/login'
+
+BIO_ADMIN = [
+    'b.liu@nki.nl',
+    'bishengliu36@gmail.com'
+]
+
