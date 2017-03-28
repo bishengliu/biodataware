@@ -4,7 +4,7 @@ from .models import Container, GroupContainer, BoxConatiner
 
 # Register Container
 class ContainerAdmin(admin.ModelAdmin):
-    list_display = ['photo', 'name', 'room', 'code39', 'qrcode', 'temperature', 'tower', 'shelf', 'box', 'box_vertical', 'box_horizontal', 'description']
+    list_display = ['photo', 'name', 'room', 'code39', 'qrcode', 'temperature', 'tower', 'shelf', 'box', 'description']
 
     def photo(self, obj):
         try:
@@ -20,7 +20,7 @@ admin.site.register(Container, ContainerAdmin)
 
 # register ConatinerBox
 class ConatinerBoxAdmin(admin.ModelAdmin):
-    list_display = ['container', 'temperature', 'position', 'room', 'code39', 'qrcode']
+    list_display = ['container', 'temperature', 'room', 'position', 'dimension', 'code39', 'qrcode']
 
     def container(self, obj):
         try:
@@ -40,11 +40,19 @@ class ConatinerBoxAdmin(admin.ModelAdmin):
 
     def position(self, obj):
         try:
-            return str(obj.container.tower) + '-' + str(obj.container.shelf) + '-' + str(obj.container.box)
+            return obj.container.name + ' (' + str(obj.tower) + '-' + str(obj.shelf) + '-' + str(obj.box) + ')'
         except:
             return None
 
-    position.short_description = 'Position'
+    position.short_description = 'Box'
+
+    def dimension(self, obj):
+        try:
+            return str(obj.box_vertical) + 'x' + str(obj.box_horizontal)
+        except:
+            return None
+
+    dimension.short_description = 'Dimension'
 
     def room(self, obj):
         try:
@@ -52,7 +60,7 @@ class ConatinerBoxAdmin(admin.ModelAdmin):
         except:
             return None
 
-    temperature.short_description = 'Room'
+    room.short_description = 'Room'
 
     def code39(self, obj):
         try:
@@ -116,7 +124,7 @@ class GroupConatinerAdmin(admin.ModelAdmin):
         except:
             return None
 
-    temperature.short_description = 'Room'
+    room.short_description = 'Room'
 
     def code39(self, obj):
         try:
