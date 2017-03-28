@@ -4,18 +4,14 @@ from .models import User, Profile, UserRole
 from django.contrib.auth.models import Group
 
 
-# Register your models here.
+# user profile
 class UserInline(admin.StackedInline):
     model = Profile
 
 
-class UserRoleInline(admin.StackedInline):
-    model = UserRole
-
-
 class UserAdmin(BaseUserAdmin):
-    list_display = ('username', 'email', 'first_name', 'last_name', 'photo', 'birth', 'is_active', 'role')
-    inlines = (UserInline, UserRoleInline)
+    list_display = ('username', 'email', 'first_name', 'last_name', 'photo', 'birth', 'is_active')
+    inlines = [UserInline, ]
 
     def photo(self, obj):
         try:
@@ -34,17 +30,37 @@ class UserAdmin(BaseUserAdmin):
 
     birth.short_description = 'Birth Date'
 
-    def role(self, obj):
-        try:
-            return obj.userRole.role
-        except:
-            return None
-
+# register user and profile
 admin.site.register(User, UserAdmin)
 
 fields = ('image_tag',)
 readonly_fields = ('image_tag',)
 
 
-# unregister groups from admin dashboard
+# user roles
+class UserRoleAdmin(admin.ModelAdmin):
+    list_display = ['user', 'email', 'role', 'description']
+
+    def email(self, obj):
+        try:
+            return obj.user.email
+        except:
+            return None
+
+    email.short_description = 'Email'
+
+    def description(self, obj):
+        try:
+            return obj.role.description
+        except:
+            return None
+
+    description.short_description = 'Description'
+
+
+# register user role
+admin.site.register(UserRole, UserRoleAdmin)
+
+
+# un-register groups from admin dashboard
 admin.site.unregister(Group)
