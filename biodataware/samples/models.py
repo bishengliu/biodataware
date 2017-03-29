@@ -28,9 +28,9 @@ class Sample(models.Model):
     box = models.ForeignKey(BoxContainer, on_delete=models.CASCADE)
     hposition = models.CharField(max_length=10)  # h position
     vposition = models.CharField(max_length=10)  # v position
-    occupied = forms.BooleanField(initial=True, null=True, blank=True)  # default to be true, change to false when taking out
+    occupied = models.BooleanField(default=True)  # default to be true, change to false when taking out
     date_in = models.DateField(auto_now_add=True)  # timestamp
-    date_out = models.DateField(widget=forms.HiddenInput(), null=True, blank=True)  # timestamp for taking the sample out
+    date_out = models.DateField(null=True, blank=True)  # timestamp for taking the sample out
     # sample info
     name = models.CharField(max_length=150)  # sample
     freezing_date = models.DateField()  # sample freezing date
