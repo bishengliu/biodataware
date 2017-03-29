@@ -19,8 +19,8 @@ admin.site.register(Tissue, TissueAdmin)
 
 # register Sample
 class SampleAdmin(admin.ModelAdmin):
-    list_display = ['sample', 'container', 'container_box', 'position',
-                    'freezing_date', 'quantity', 'system', 'tissue', 'type', 'attachment', 'researcher',
+    list_display = ['sample', 'container', 'container_box', 'position', 'occupied', 'date_out',
+                    'freezing_date', 'quantity', 'tissue', 'type', 'attachment', 'researcher',
                     'registration_code', 'pathology_code', 'freezing_code', 'code39', 'qrcode', 'description']
 
     def sample(self, obj):
@@ -54,17 +54,13 @@ class SampleAdmin(admin.ModelAdmin):
 
     position.short_description = 'Position'
 
-    def system(self, obj):
-        try:
-            return obj.sampletissue_set
-        except:
-            return None
-
-    system.short_description = 'System'
-
     def tissue(self, obj):
         try:
-            return obj.sampletissue_set
+            tissues = obj.sampletissue_set.all()
+            output = ''
+            for t in tissues:
+                output += t.tissue.tissue + ' (' + t.system.system + ')' + '<br/>'
+            return mark_safe(output)
         except:
             return None
 
@@ -72,10 +68,10 @@ class SampleAdmin(admin.ModelAdmin):
 
     def attachment(self, obj):
         try:
-            attachments = obj.sampleresearcher_set.all()
+            attachments = obj.sampleattachment_set.all()
             output = ''
             for a in attachments:
-                output = output + a.label + '<br/>'
+                output += '<a href="' + a.attachment.url + '" class="" alt="' + a.label + '"><i></i><span>' + a.label + '</span></a>' + '<br/>'
             return mark_safe(output)
         except:
             return None
@@ -87,7 +83,7 @@ class SampleAdmin(admin.ModelAdmin):
             researchers = obj.sampleresearcher_set.all()
             output = ''
             for r in researchers:
-                output = ""
+                output += r.researcher.username + ' (' + r.researcher.email + ')' + '<br/>'
             return mark_safe(output)
         except:
             return None
