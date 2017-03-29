@@ -29,7 +29,7 @@ class Sample(models.Model):
     hposition = models.CharField(max_length=10)  # h position
     vposition = models.CharField(max_length=10)  # v position
     occupied = models.BooleanField(default=True)  # default to be true, change to false when taking out
-    date_in = models.DateField(auto_now_add=True)  # timestamp
+    date_in = models.DateField()  # timestamp, auto_now_add=True
     date_out = models.DateField(null=True, blank=True)  # timestamp for taking the sample out
     # sample info
     name = models.CharField(max_length=150)  # sample
@@ -38,6 +38,7 @@ class Sample(models.Model):
     pathology_code = models.CharField(max_length=50, null=True, blank=True)  # sample pathology code
     freezing_code = models.CharField(max_length=50, null=True, blank=True)  # sample freezing code
     quantity = models.IntegerField(validators=[MinValueValidator(1)], default=1)  # sample quantity
+    type = models.CharField(max_length=200, null=True, blank=True)  # sample type, such as tumor
     description = models.TextField(null=True, blank=True)
     code39 = models.CharField(max_length=50, null=True, blank=True)  # sample
     qrcode = models.CharField(max_length=50, null=True, blank=True)  # sample

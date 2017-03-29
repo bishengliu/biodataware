@@ -19,9 +19,16 @@ admin.site.register(Tissue, TissueAdmin)
 
 # register Sample
 class SampleAdmin(admin.ModelAdmin):
-    list_display = ['container', 'container_box', 'position',
-                    'name', 'freezing_date', 'quantity', 'system', 'tissue', 'type', 'attachment', 'researcher',
+    list_display = ['sample', 'container', 'container_box', 'position',
+                    'freezing_date', 'quantity', 'system', 'tissue', 'type', 'attachment', 'researcher',
                     'registration_code', 'pathology_code', 'freezing_code', 'code39', 'qrcode', 'description']
+
+    def sample(self, obj):
+        try:
+            return obj.name
+        except:
+            return None
+    sample.short_description = 'Sample'
 
     def container(self, obj):
         try:
@@ -62,14 +69,6 @@ class SampleAdmin(admin.ModelAdmin):
             return None
 
     tissue.short_description = 'tissue'
-
-    def type(self, obj):
-        try:
-            return obj.type
-        except:
-            return None
-
-    type.short_description = 'type'
 
     def attachment(self, obj):
         try:
