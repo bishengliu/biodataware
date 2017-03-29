@@ -183,3 +183,5 @@ BIO_ADMIN = [
     'bishengliu36@gmail.com'
 ]
 
+PHOTO_HTML = '<img src="/media/%s" width="50" height="50" />'
+

@@ -4,16 +4,7 @@ from .models import Group, Assistant, GroupResearcher
 
 # Register researcher group.
 class GroupAdmin(admin.ModelAdmin):
-    list_display = ['photo', 'group_name', 'pi', 'pi_fullname', 'email', 'telephone', 'department']
-
-    def photo(self, obj):
-        try:
-            return obj.group.photo_tag()
-        except:
-            return None
-
-    photo.short_description = 'Group Photo'
-    photo.allow_tags = True
+    list_display = ['group_name', 'photo_tag', 'pi', 'pi_fullname', 'email', 'telephone', 'department']
 
 admin.site.register(Group, GroupAdmin)
 

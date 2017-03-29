@@ -2,6 +2,7 @@ from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator
 from groups.models import Group, GroupResearcher
 from django.utils.safestring import mark_safe
+from django.conf import settings
 
 
 # containers
@@ -20,9 +21,12 @@ class Container(models.Model):
     # display photo in the admin
     def photo_tag(self):
         if self.photo:
-            return mark_safe('<img src="/media/%s" width="50" height="50" />' % self.photo)
+            return mark_safe(settings.PHOTO_HTML % self.photo)
         else:
             return ''
+
+    photo_tag.short_description = 'Image'
+    photo_tag.allow_tags = True
 
     def __str__(self):
         return self.name
@@ -45,8 +49,8 @@ class BoxContainer(models.Model):
     tower = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(100)], default=1)
     shelf = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(100)], default=1)
     box = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(100)], default=1)
-    box_vertical = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(10)], default=1)   # A-H
-    box_horizontal = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(10)], default=1)  # 1-8
+    box_vertical = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(12)], default=8)   # A-H
+    box_horizontal = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(12)], default=8)  # 1-8
 
     def __str__(self):
         return self.container.name + ' (' + str(self.tower) + '-' + str(self.shelf) + '-' + str(self.box) + ')'

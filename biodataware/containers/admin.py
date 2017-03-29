@@ -4,16 +4,7 @@ from .models import Container, GroupContainer, BoxContainer, BoxResearcher
 
 # Register Container
 class ContainerAdmin(admin.ModelAdmin):
-    list_display = ['photo', 'name', 'room', 'code39', 'qrcode', 'temperature', 'tower', 'shelf', 'box', 'description']
-
-    def photo(self, obj):
-        try:
-            return obj.container.photo_tag()
-        except:
-            return None
-
-    photo.short_description = 'Container Photo'
-    photo.allow_tags = True
+    list_display = ['name', 'photo_tag', 'room', 'code39', 'qrcode', 'temperature', 'tower', 'shelf', 'box', 'description']
 
 admin.site.register(Container, ContainerAdmin)
 
@@ -77,7 +68,6 @@ class ContainerBoxAdmin(admin.ModelAdmin):
             return None
 
     qrcode.short_description = 'QRCode'
-
 
 admin.site.register(BoxContainer, ContainerBoxAdmin)
 
@@ -143,6 +133,7 @@ class GroupContainerAdmin(admin.ModelAdmin):
     qrcode.short_description = 'QRCode'
 
 admin.site.register(GroupContainer, GroupContainerAdmin)
+
 
 # register boxes for register
 class BoxResearcherAdmin(admin.ModelAdmin):

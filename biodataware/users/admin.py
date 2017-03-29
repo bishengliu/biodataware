@@ -10,7 +10,7 @@ class UserInline(admin.StackedInline):
 
 
 class UserAdmin(BaseUserAdmin):
-    list_display = ('username', 'email', 'first_name', 'last_name', 'photo', 'birth', 'is_active')
+    list_display = ('username', 'photo', 'email', 'first_name', 'last_name', 'birth', 'is_active')
     inlines = [UserInline, ]
 
     def photo(self, obj):
@@ -19,7 +19,7 @@ class UserAdmin(BaseUserAdmin):
         except:
             return None
 
-    photo.short_description = 'User Photo'
+    photo.short_description = 'Photo'
     photo.allow_tags = True
 
     def birth(self, obj):
