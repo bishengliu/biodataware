@@ -49,7 +49,7 @@ class SampleAdmin(admin.ModelAdmin):
 
     def system(self, obj):
         try:
-            return obj.sampleTissue.objects
+            return obj.sampletissue_set
         except:
             return None
 
@@ -57,7 +57,7 @@ class SampleAdmin(admin.ModelAdmin):
 
     def tissue(self, obj):
         try:
-            return obj.sampleTissue.objects
+            return obj.sampletissue_set
         except:
             return None
 
@@ -65,7 +65,7 @@ class SampleAdmin(admin.ModelAdmin):
 
     def type(self, obj):
         try:
-            return obj.sampleType.objects
+            return obj.type
         except:
             return None
 
@@ -73,7 +73,7 @@ class SampleAdmin(admin.ModelAdmin):
 
     def attachment(self, obj):
         try:
-            return obj.sampleAttachment.objects
+            return obj.sampleattachment_set
         except:
             return None
 
@@ -81,7 +81,7 @@ class SampleAdmin(admin.ModelAdmin):
 
     def researcher(self, obj):
         try:
-            return obj.sampleResearcher.objects
+            return obj.sampleresearcher_set
         except:
             return None
 
