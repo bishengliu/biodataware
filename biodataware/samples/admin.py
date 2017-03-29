@@ -72,7 +72,11 @@ class SampleAdmin(admin.ModelAdmin):
 
     def attachment(self, obj):
         try:
-            return obj.sampleattachment_set
+            attachments = obj.sampleresearcher_set.all()
+            output = ''
+            for a in attachments:
+                output = output + a.label + '<br/>'
+            return mark_safe(output)
         except:
             return None
 
@@ -80,7 +84,11 @@ class SampleAdmin(admin.ModelAdmin):
 
     def researcher(self, obj):
         try:
-            return obj.sampleresearcher_set
+            researchers = obj.sampleresearcher_set.all()
+            output = ''
+            for r in researchers:
+                output = ""
+            return mark_safe(output)
         except:
             return None
 
