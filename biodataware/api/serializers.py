@@ -9,7 +9,7 @@ from samples.models import Biosystem, Tissue, Sample, SampleAttachment, SampleTi
 class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Profile
-        fields = ('photo', 'birth_date', 'telephone')
+        fields = ('photo', 'photo_tag', 'birth_date', 'telephone')
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -17,4 +17,4 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('username', 'first_name', 'last_name', 'email', 'profile')
+        fields = ('pk', 'username', 'first_name', 'last_name', 'email', 'profile')
