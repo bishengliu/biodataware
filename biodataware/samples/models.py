@@ -29,6 +29,7 @@ class Sample(models.Model):
     hposition = models.CharField(max_length=10)  # h position
     vposition = models.CharField(max_length=10)  # v position
     occupied = models.BooleanField(default=True)  # default to be true, change to false when taking out
+    color = models.CharField(max_length=20, null=True, blank=True)  # color of the position
     date_in = models.DateField()  # timestamp, auto_now_add=True
     date_out = models.DateField(null=True, blank=True)  # timestamp for taking the sample out
     # sample info
