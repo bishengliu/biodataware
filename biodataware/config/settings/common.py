@@ -39,6 +39,7 @@ DJANGO_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
 ]
 
 THIRD_PARTY_APPS = [
@@ -52,7 +53,8 @@ LOCAL_APPS = [
     'roles.apps.RolesConfig',
     'groups.apps.GroupsConfig',
     'containers.apps.ContainersConfig',
-    'samples.apps.SamplesConfig'
+    'samples.apps.SamplesConfig',
+    'api.apps.ApiConfig',
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -185,3 +187,11 @@ BIO_ADMIN = [
 
 PHOTO_HTML = '<img src="/media/%s" width="50" height="50" />'
 
+# restful
+REST_FRAMEWORK = {
+    # Use Django's standard `django.contrib.auth` permissions,
+    # or allow read-only access for unauthenticated users.
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
+    ]
+}

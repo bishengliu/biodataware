@@ -47,7 +47,10 @@ urlpatterns = [
         regex=r'^login$',
         view=users_view.LoginView.as_view(),
         name='login'
-    )
+    ),
+
+    # REST
+    url(r'^api/', include('api.urls', namespace='api'))
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 # allow to serve static media files during development
