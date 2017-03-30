@@ -21,3 +21,16 @@ ALLOWED_HOSTS = ['*']
 MESSAGE_LEVEL = 10  # DEBUG
 
 
+# restful
+REST_FRAMEWORK = {
+    # Use Django's standard `django.contrib.auth` permissions,
+    # or allow read-only access for unauthenticated users.
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.TokenAuthentication', # token
+        'rest_framework.authentication.BasicAuthentication', # login plain password
+        'rest_framework.authentication.SessionAuthentication', # session on the same server
+    )
+}

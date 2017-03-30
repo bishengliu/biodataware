@@ -7,6 +7,7 @@ from django.utils.translation import ugettext_lazy as _
 from .forms import RegistrationForm, LoginForm, UserForm, ProfileForm, PasswordForm
 from .models import User, Profile
 from django.contrib.auth.mixins import LoginRequiredMixin
+from rest_framework.authtoken.models import Token
 
 
 # register user
@@ -31,6 +32,7 @@ class RegisterView(View):
             user = User(username=username, email=email, first_name=first_name, last_name=last_name)
             user.set_password(form.cleaned_data.get('password1'))
             user.save()
+            Token.objects.create(user=user)  # create token
 
             Profile.objects.create(
                 user=user,
