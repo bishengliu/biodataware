@@ -1,5 +1,4 @@
 from rest_framework import serializers
-from django.conf import settings
 from users.models import User, UserRole, Profile
 from roles.models import Role
 from groups.models import Group, Assistant, GroupResearcher
@@ -10,11 +9,12 @@ from samples.models import Biosystem, Tissue, Sample, SampleAttachment, SampleTi
 class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Profile
+        fields = ('photo', 'birth_date', 'telephone')
 
 
-class UserListSerializer(serializers.ModelSerializer):
-    profile = ProfileSerializer(many=True, required=True)
+class UserSerializer(serializers.ModelSerializer):
+    profile = ProfileSerializer(required=True)
 
     class Meta:
-        model = settings.AUTH_USER_MODEL
-        fields = ('username', 'first_name', 'last_name', 'email', 'birth_date')
+        model = User
+        fields = ('username', 'first_name', 'last_name', 'email', 'profile')

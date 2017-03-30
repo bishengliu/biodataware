@@ -1,9 +1,10 @@
-from django.shortcuts import render
-from rest_framework import serializers, viewsets
+from rest_framework import viewsets
+from rest_framework.permissions import IsAuthenticated
 from .serializers import *
 
 
 # Create your views here.
-class UserListView(viewsets.ModelViewSet):
+class UserViewSet(viewsets.ModelViewSet):
+    permission_classes = (IsAuthenticated,)
     queryset = User.objects.all()
-    serializer_class = UserListSerializer
+    serializer_class = UserSerializer
