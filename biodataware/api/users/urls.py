@@ -1,5 +1,5 @@
 from django.conf.urls import url
-from .views import UserList, UserDetail, GetMyToken, ObtainToken, UserPassword
+from .views import UserList, UserDetail, GetMyToken, ObtainToken, UserPassword, UserRoleDetail
 
 
 urlpatterns = [
@@ -9,6 +9,9 @@ urlpatterns = [
 
     # get or post user info
     url(r'^(?P<pk>[0-9]+)/$', UserDetail.as_view(), name='user_detail'),
+
+    # get or post user role
+    url(r'^(?P<pk>[0-9]+)/role/$', UserRoleDetail.as_view(), name='user_role'),
 
     # post to change password
     url(r'^password/$', UserPassword.as_view(), name='user_password'),

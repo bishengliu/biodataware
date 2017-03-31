@@ -6,9 +6,47 @@ from django.contrib.auth import authenticate
 import re
 from helpers.validators import validate_phone
 from users.models import User, UserRole, Profile
+from roles.models import Role
+
+# user role
+class UserRoleSerializer(serializers.ModelSerializer):
+    role = serializers.StringRelatedField()
+    user = serializers.StringRelatedField()
+
+    class Meta:
+        model = UserRole
+        fields = ('pk', 'role', 'user')
+
+
+class UserRoleCreateSerializer(serializers.Serializer):
+
+    role_id = serializers.IntegerField(required=True, allow_null=False)
+    user_id = serializers.IntegerField(required=True, allow_null=False)
+
+    def validate_role_id(self, value):
+        try:
+            Role.objects.get(pk=value)
+            return value
+        except:
+            raise serializers.ValidationError(_("Invalid Role!"))
+
+    def validate_user_id(self, value):
+        try:
+            User.objects.get(pk=value)
+            return value
+        except:
+            raise serializers.ValidationError(_("User doesn't exist!"))
+
+    def validate(self, data):
+        try:
+            UserRole.objects.all().filter(user_id=data['user_id']).filter(role_id=data['role_id'])
+            return data
+        except:
+            raise serializers.ValidationError(_("Role already exist for the target user!"))
 
 
 class ProfileSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = Profile
         fields = ('photo', 'photo_tag', 'birth_date', 'telephone')
@@ -16,10 +54,11 @@ class ProfileSerializer(serializers.ModelSerializer):
 
 class UserSerializer(serializers.ModelSerializer):
     profile = ProfileSerializer()
+    roles = serializers.StringRelatedField(many=True, source='userrole_set') # reverse with set
 
     class Meta:
         model = User
-        fields = ('pk', 'username', 'first_name', 'last_name', 'email', 'profile')
+        fields = ('pk', 'username', 'first_name', 'last_name', 'email', 'profile', 'roles')
 
 
 class UserDetailSerializer(serializers.Serializer):

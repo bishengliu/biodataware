@@ -3,10 +3,11 @@ from rest_framework.authtoken.models import Token
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from .serializers import *
-from api.permissions import IsReadOnlyOwner, IsOwner
 from datetime import datetime, timedelta
 import pytz
+from users.models import UserRole
+from .serializers import *
+from api.permissions import IsReadOnlyOwner, IsOwner, IsOwnOrReadOnly
 
 
 # user list
@@ -82,6 +83,39 @@ class UserPassword(APIView):
         token.delete()
         Token.objects.create(user=user)
         return Response({'detail': _('Your password was successfully changed!')})
+
+
+# user role
+class UserRoleDetail(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get(self, request, pk, format=None):
+        user = get_object_or_404(User, pk=pk)
+        self.check_object_permissions(request, user)  # check the permission
+        roles = UserRole.objects.all().filter(user_id=pk)
+        serializer = UserRoleSerializer(roles, many=True).data
+        return Response(serializer)
+
+    def post(self, request, pk, format=None):
+        user = get_object_or_404(User, pk=pk)
+        self.check_object_permissions(request, user)  # check the permission
+
+        serializer = UserRoleCreateSerializer(data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+
+        # save new password
+        data = serializer.data
+        userRole = UserRole(user_id=data['user_id'], role_id=data['role_id'])
+        userRole.save()
+        return Response({'detail': 'role added!'})
+
+    # there is a problem here
+    def delete(self, request, pk, format=None):
+        try:
+            userRole = UserRole.objects.get(pk=pk)
+            userRole.delete()
+        except:
+            return Response({'detail': 'role not deleted!'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 # POST request to get token, used for client side login/authentication

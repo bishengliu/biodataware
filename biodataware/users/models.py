@@ -35,4 +35,4 @@ class UserRole(models.Model):
     role = models.ForeignKey(Role, on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.user.username + ' :' + self.role.role
+        return self.role.role
