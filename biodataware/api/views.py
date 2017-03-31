@@ -3,6 +3,7 @@ from rest_framework import authentication, permissions
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from .serializers import *
+from .permissions import IsOwnOrReadOnly
 
 
 # user list
@@ -17,10 +18,12 @@ class UserList(APIView):
 
 
 class UserDetail(APIView):
+    permission_classes = (IsOwnOrReadOnly,)
 
     def get(self, request, pk, format=None):
         user = get_object_or_404(User, pk=pk)
         serializer = UserSerializer(user).data
+        self.check_object_permissions(request, user) # check the permission
         return Response(serializer)
 
     # only allow to update self info
