@@ -3,7 +3,6 @@ from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from .models import User, Profile, UserRole
 from django.contrib.auth.models import Group
 
-
 # user profile
 class UserInline(admin.StackedInline):
     model = Profile

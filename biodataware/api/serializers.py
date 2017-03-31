@@ -2,6 +2,8 @@ from rest_framework import serializers
 from django.conf import settings
 from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext_lazy as _
+from django.contrib.auth import authenticate
+import re
 from helpers.validators import validate_phone
 from users.models import User, UserRole, Profile
 from roles.models import Role
@@ -25,7 +27,6 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class UserDetailSerializer(serializers.Serializer):
-    #id = serializers.IntegerField(read_only=True)
     email = serializers.EmailField(required=True, allow_blank=False)
     first_name = serializers.RegexField(regex=r'^\w+$', required=False, allow_blank=True, max_length=30)
     last_name = serializers.RegexField(regex=r'^\w+$', required=False, allow_blank=True, max_length=30)
@@ -39,4 +40,28 @@ class UserDetailSerializer(serializers.Serializer):
         if users.count() <= 1:
             return data
         raise serializers.ValidationError(_("The email already taken"))
+
+
+class PasswordSerializer(serializers.Serializer):
+    username = serializers.CharField(read_only=True)
+    old_password = serializers.CharField(required=True, allow_blank=False)
+    new_password = serializers.CharField(required=True, allow_blank=False)
+
+    def validate_new_password(self, value):
+        password_pattern = re.compile("^(?=.*[A-Z])(?=.*[a-z].*[a-z])(?=.*[0-9].*[0-9]).{8,}$")
+        msg = _("Password contains at least: " \
+              "1 uppercase letter, 2 lowercase letters, 2 digits and must be longer than 8 characters.")
+        if not password_pattern.search(value):
+            raise serializers.ValidationError(msg)
+
+    def validate(self, data):
+        try:
+            if not authenticate(username=data['username'], password=data['old_password']):
+                raise serializers.ValidationError(_("Username or password incorrect!"))
+            return data
+        except:
+            raise serializers.ValidationError(_("Username or password incorrect!"))
+
+
+
 

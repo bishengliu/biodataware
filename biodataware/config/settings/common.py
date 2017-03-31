@@ -187,3 +187,7 @@ BIO_ADMIN = [
 ]
 
 PHOTO_HTML = '<img src="/media/%s" width="50" height="50" />'
+
+# token rest expiration time
+
+REST_FRAMEWORK_TOKEN_EXPIRE_HOURS = 24

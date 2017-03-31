@@ -160,6 +160,10 @@ class PasswordView(LoginRequiredMixin, View):
             user = request.user
             user.set_password(form.cleaned_data.get('password1'))
             user.save()
+            #new token
+            token, created = Token.objects.get_or_create(user=user)
+            token.delete()
+            Token.objects.create(user=user)  # create token
             messages.success(request, _('Your password was successfully changed!'))
             return redirect('home:index')
         else:
