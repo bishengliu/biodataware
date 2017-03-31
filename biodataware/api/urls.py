@@ -1,10 +1,7 @@
-from django.conf.urls import url
+from django.conf.urls import url, include
 from rest_framework_swagger.views import get_swagger_view
-from .views import UserList, UserDetail, GetMyToken, ObtainToken, UserPassword
 
-
-urlpatterns = [
-
+'''
     # users list
     url(r'^users/$', UserList.as_view(), name='users'),
 
@@ -18,6 +15,12 @@ urlpatterns = [
 
     # get token by posting { 'username': 'admin', 'password': 'admin' }
     url(r'^users/token/$', ObtainToken.as_view(), name='token'),
+
+'''
+urlpatterns = [
+
+    # users
+    url(r'^users/', include('api.users.urls', namespace='api_users')),
 
     # docs ui
     url(r'^docs/', get_swagger_view(title='API Docs')),
