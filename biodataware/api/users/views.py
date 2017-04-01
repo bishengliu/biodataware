@@ -7,7 +7,7 @@ from datetime import datetime, timedelta
 import pytz
 from users.models import UserRole
 from .serializers import *
-from api.permissions import IsReadOnlyOwner, IsOwner, IsOwnOrReadOnly
+from api.permissions import IsReadOnlyOwner, IsOwner, IsOwnOrReadOnly, IsPIofUser
 
 
 # user list
@@ -68,7 +68,7 @@ class UserDetail(APIView):
 # only the pi or assistant can
 # get ot post user role
 class UserRoleDetail(APIView):
-    permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = (permissions.IsAuthenticated, IsPIofUser,)
 
     def get(self, request, pk, format=None):
         user = get_object_or_404(User, pk=pk)
@@ -96,7 +96,7 @@ class UserRoleDetail(APIView):
 # only the pi or assistant can
 # delete user role
 class UserRoleDelete(APIView):
-    permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = (permissions.IsAuthenticated, IsPIofUser,)
 
     def get(self, request, pk, ur_pk, format=None):
         user = get_object_or_404(User, pk=pk)
