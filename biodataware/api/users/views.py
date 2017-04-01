@@ -95,9 +95,9 @@ class UserRoleDetail(APIView):
                     return Response({'detail': 'cannot add role ' + role.role + '!'},
                                     status=status.HTTP_400_BAD_REQUEST)
             # admin, pi or assistant
-            user_role = UserRole(user_id=data['user_id'], role_id=data['role_id'])
+            user_role = UserRole(**data)
             user_role.save()
-            return Response({'detail': 'user role added!'})
+            return Response(serializer.data)
         except:
             return Response({'detail': 'user role not added!'}, status=status.HTTP_400_BAD_REQUEST)
 

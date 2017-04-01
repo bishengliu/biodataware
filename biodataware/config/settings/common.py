@@ -189,5 +189,8 @@ BIO_ADMIN = [
 PHOTO_HTML = '<img src="/media/%s" width="50" height="50" />'
 
 # token rest expiration time
-
 REST_FRAMEWORK_TOKEN_EXPIRE_HOURS = 24
+
+# ALLOW PI TO MANAGE CONTAINER
+ALLOW_PI_TO_MANAGE_CONTAINER = True
+

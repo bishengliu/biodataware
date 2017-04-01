@@ -21,14 +21,13 @@ class RoleList(APIView):
         serializer = RoleSerializer(roles, many=True)
         return Response(serializer.data)
 
-
     # add role
     def post(self, request, format=None):
         try:
             serializer = RoleSerializer(data=request.data, partial=True)
             serializer.is_valid(raise_exception=True)
             data = serializer.data
-            role = Role(role=data['role'], description=data['description'])
+            role = Role(**data)
             role.save()
             return Response({'detail': 'role added!'})
         except:
@@ -86,9 +85,9 @@ class PIManagerList(APIView):
 
             if data['role_id'] not in ids:
                 return Response({'detail': 'user can only be manger or PI!'}, status=status.HTTP_400_BAD_REQUEST)
-            userrole = UserRole(role_id=data['role_id'], user_id=data['user_id'])
+            userrole = UserRole(**data)
             userrole.save()
-            return Response({'detail': 'user added to the role!'})
+            return Response(serializer.data)
         except:
             return Response({'detail': 'user not added to the role!'}, status=status.HTTP_400_BAD_REQUEST)
 

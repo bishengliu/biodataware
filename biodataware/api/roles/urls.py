@@ -2,6 +2,7 @@ from django.conf.urls import url
 from .views import RoleList, RoleDetail, PIManagerList, PIManagerDetail
 
 
+# only for admin
 urlpatterns = [
     # all role list, post
     url(r'^$', RoleList.as_view(), name='roles'),

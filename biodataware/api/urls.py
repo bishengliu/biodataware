@@ -19,11 +19,12 @@ from rest_framework_swagger.views import get_swagger_view
 '''
 urlpatterns = [
 
-    # roles only accesible to admin
+    # roles only by admin
     url(r'^roles/', include('api.roles.urls', namespace='api_roles')),
     # users
     url(r'^users/', include('api.users.urls', namespace='api_users')),
-
+    # groups
+    url(r'^groups/', include('api.groups.urls', namespace='api_groups')),
     # docs ui
     url(r'^docs/', get_swagger_view(title='API Docs')),
 ]
