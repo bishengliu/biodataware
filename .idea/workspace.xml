@@ -2,7 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="e07c48b7-1c00-4eca-bd6a-d182d44a745f" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/biodataware/config/db.sqlite3" afterPath="$PROJECT_DIR$/biodataware/config/db.sqlite3" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/biodataware/api/users/views.py" afterPath="$PROJECT_DIR$/biodataware/api/users/views.py" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -18,18 +17,18 @@
       <file leaf-file-name="views.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/biodataware/api/users/views.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="435">
-              <caret line="102" column="30" lean-forward="false" selection-start-line="102" selection-start-column="30" selection-end-line="102" selection-end-column="30" />
+            <state relative-caret-position="450">
+              <caret line="106" column="23" lean-forward="false" selection-start-line="106" selection-start-column="23" selection-end-line="106" selection-end-column="23" />
               <folding>
                 <element signature="e#0#62#0" expanded="true" />
                 <element signature="e#557#877#0" expanded="false" />
                 <element signature="e#956#2395#0" expanded="false" />
-                <element signature="e#2485#3910#0" expanded="false" />
-                <element signature="e#3995#5259#0" expanded="false" />
-                <element signature="e#5415#6278#0" expanded="false" />
-                <element signature="e#6278#6290#0" expanded="false" />
-                <element signature="e#6352#7119#0" expanded="false" />
-                <element signature="e#7186#7880#0" expanded="false" />
+                <element signature="e#2522#4105#0" expanded="false" />
+                <element signature="e#4231#5657#0" expanded="false" />
+                <element signature="e#5813#6676#0" expanded="false" />
+                <element signature="e#6676#6688#0" expanded="false" />
+                <element signature="e#6750#7517#0" expanded="false" />
+                <element signature="e#7584#8278#0" expanded="false" />
               </folding>
             </state>
           </provider>
@@ -38,13 +37,12 @@
       <file leaf-file-name="permissions.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/biodataware/api/permissions.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="420">
+            <state relative-caret-position="465">
               <caret line="97" column="25" lean-forward="false" selection-start-line="97" selection-start-column="6" selection-end-line="97" selection-end-column="25" />
               <folding>
                 <element signature="e#0#38#0" expanded="true" />
                 <element signature="e#246#572#0" expanded="false" />
                 <element signature="e#665#910#0" expanded="false" />
-                <element signature="e#1023#1115#0" expanded="false" />
                 <element signature="e#1242#1728#0" expanded="false" />
                 <element signature="e#1816#3522#0" expanded="false" />
                 <element signature="e#3655#4605#0" expanded="false" />
@@ -135,8 +133,8 @@
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="104" />
-    <option name="y" value="24" />
+    <option name="x" value="111" />
+    <option name="y" value="22" />
     <option name="width" value="2449" />
     <option name="height" value="1366" />
   </component>
@@ -367,7 +365,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="104" y="24" width="2449" height="1366" extended-state="0" />
+    <frame x="111" y="22" width="2449" height="1366" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.13460739" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
@@ -422,7 +420,7 @@
           </properties>
         </breakpoint>
       </default-breakpoints>
-      <option name="time" value="146" />
+      <option name="time" value="147" />
     </breakpoint-manager>
     <watches-manager>
       <configuration name="PythonConfigurationType">
@@ -703,13 +701,12 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/biodataware/api/permissions.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="420">
+        <state relative-caret-position="465">
           <caret line="97" column="25" lean-forward="false" selection-start-line="97" selection-start-column="6" selection-end-line="97" selection-end-column="25" />
           <folding>
             <element signature="e#0#38#0" expanded="true" />
             <element signature="e#246#572#0" expanded="false" />
             <element signature="e#665#910#0" expanded="false" />
-            <element signature="e#1023#1115#0" expanded="false" />
             <element signature="e#1242#1728#0" expanded="false" />
             <element signature="e#1816#3522#0" expanded="false" />
             <element signature="e#3655#4605#0" expanded="false" />
@@ -719,18 +716,18 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/biodataware/api/users/views.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="435">
-          <caret line="102" column="30" lean-forward="false" selection-start-line="102" selection-start-column="30" selection-end-line="102" selection-end-column="30" />
+        <state relative-caret-position="450">
+          <caret line="106" column="23" lean-forward="false" selection-start-line="106" selection-start-column="23" selection-end-line="106" selection-end-column="23" />
           <folding>
             <element signature="e#0#62#0" expanded="true" />
             <element signature="e#557#877#0" expanded="false" />
             <element signature="e#956#2395#0" expanded="false" />
-            <element signature="e#2485#3910#0" expanded="false" />
-            <element signature="e#3995#5259#0" expanded="false" />
-            <element signature="e#5415#6278#0" expanded="false" />
-            <element signature="e#6278#6290#0" expanded="false" />
-            <element signature="e#6352#7119#0" expanded="false" />
-            <element signature="e#7186#7880#0" expanded="false" />
+            <element signature="e#2522#4105#0" expanded="false" />
+            <element signature="e#4231#5657#0" expanded="false" />
+            <element signature="e#5813#6676#0" expanded="false" />
+            <element signature="e#6676#6688#0" expanded="false" />
+            <element signature="e#6750#7517#0" expanded="false" />
+            <element signature="e#7584#8278#0" expanded="false" />
           </folding>
         </state>
       </provider>

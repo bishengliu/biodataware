@@ -65,10 +65,11 @@ class UserDetail(APIView):
         return Response(serializer.data)
 
 
-# only the pi or assistant can
+# only admin pi or assistant can
 # get ot post user role
+# only admin can add pi or manager
 class UserRoleDetail(APIView):
-    permission_classes = (permissions.IsAuthenticated, IsPIofUser, IsPIAssistantofUser)
+    permission_classes = (permissions.IsAuthenticated, IsPIofUser, IsPIAssistantofUser, permissions.IsAdminUser,)
 
     def get(self, request, pk, format=None):
         user = get_object_or_404(User, pk=pk)
@@ -86,11 +87,14 @@ class UserRoleDetail(APIView):
         try:
             # save new password
             data = serializer.data
-            #check whether the role is Manger or PI
-            role = get_object_or_404(Role, pk=data['role_id'])
-            if (role.role.lower() == "manager") or (role.role.lower() == "pi"):
-                return Response({'detail': 'cannot add role ' + role.role + '!'},
-                                status=status.HTTP_400_BAD_REQUEST)
+            # is admin
+            if request.user.is_superuser is False:
+                # check whether the role is Manger or PI
+                role = get_object_or_404(Role, pk=data['role_id'])
+                if (role.role.lower() == "manager") or (role.role.lower() == "pi"):
+                    return Response({'detail': 'cannot add role ' + role.role + '!'},
+                                    status=status.HTTP_400_BAD_REQUEST)
+            # admin, pi or assistant
             user_role = UserRole(user_id=data['user_id'], role_id=data['role_id'])
             user_role.save()
             return Response({'detail': 'user role added!'})
@@ -98,10 +102,11 @@ class UserRoleDetail(APIView):
             return Response({'detail': 'user role not added!'}, status=status.HTTP_400_BAD_REQUEST)
 
 
-# only the pi or assistant can
+# only admin, pi or assistant can
 # delete user role
+# only admin can delete pi or manager
 class UserRoleDelete(APIView):
-    permission_classes = (permissions.IsAuthenticated, IsPIofUser, IsPIAssistantofUser)
+    permission_classes = (permissions.IsAuthenticated, IsPIofUser, IsPIAssistantofUser, permissions.IsAdminUser,)
 
     def get(self, request, pk, ur_pk, format=None):
         user = get_object_or_404(User, pk=pk)
@@ -118,9 +123,12 @@ class UserRoleDelete(APIView):
         self.check_object_permissions(request, user)  # check the permission
         try:
             user_role = UserRole.objects.get(pk=ur_pk)
-            # check whether the role is Manger or PI
-            if (user_role.role.lower() == "manager") or (user_role.role.lower() == "pi"):
-                return Response({'detail': 'cannot remove role: ' + user_role.role + '!'}, status=status.HTTP_400_BAD_REQUEST)
+            if request.user.is_superuser is False:
+                # check whether the role is Manger or PI
+                if (user_role.role.lower() == "manager") or (user_role.role.lower() == "pi"):
+                    return Response({'detail': 'cannot remove role: ' + user_role.role + '!'},
+                                    status=status.HTTP_400_BAD_REQUEST)
+            # admin, pi or assistant
             user_role.delete()
             return Response({'detail': 'user role deleted!'})
         except:
