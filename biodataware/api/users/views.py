@@ -7,7 +7,7 @@ from datetime import datetime, timedelta
 import pytz
 from users.models import UserRole
 from .serializers import *
-from api.permissions import IsReadOnlyOwner, IsOwner, IsOwnOrReadOnly, IsPIofUser
+from api.permissions import IsReadOnlyOwner, IsOwner, IsOwnOrReadOnly, IsPIofUser, IsPIAssistantofUser
 
 
 # user list
@@ -68,7 +68,7 @@ class UserDetail(APIView):
 # only the pi or assistant can
 # get ot post user role
 class UserRoleDetail(APIView):
-    permission_classes = (permissions.IsAuthenticated, IsPIofUser,)
+    permission_classes = (permissions.IsAuthenticated, IsPIofUser, IsPIAssistantofUser)
 
     def get(self, request, pk, format=None):
         user = get_object_or_404(User, pk=pk)
@@ -86,6 +86,11 @@ class UserRoleDetail(APIView):
         try:
             # save new password
             data = serializer.data
+            #check whether the role is Manger or PI
+            role = get_object_or_404(Role, pk=data['role_id'])
+            if (role.role.lower() == "manager") or (role.role.lower() == "pi"):
+                return Response({'detail': 'cannot add role ' + role.role + '!'},
+                                status=status.HTTP_400_BAD_REQUEST)
             user_role = UserRole(user_id=data['user_id'], role_id=data['role_id'])
             user_role.save()
             return Response({'detail': 'user role added!'})
@@ -96,7 +101,7 @@ class UserRoleDetail(APIView):
 # only the pi or assistant can
 # delete user role
 class UserRoleDelete(APIView):
-    permission_classes = (permissions.IsAuthenticated, IsPIofUser,)
+    permission_classes = (permissions.IsAuthenticated, IsPIofUser, IsPIAssistantofUser)
 
     def get(self, request, pk, ur_pk, format=None):
         user = get_object_or_404(User, pk=pk)
@@ -113,6 +118,9 @@ class UserRoleDelete(APIView):
         self.check_object_permissions(request, user)  # check the permission
         try:
             user_role = UserRole.objects.get(pk=ur_pk)
+            # check whether the role is Manger or PI
+            if (user_role.role.lower() == "manager") or (user_role.role.lower() == "pi"):
+                return Response({'detail': 'cannot remove role: ' + user_role.role + '!'}, status=status.HTTP_400_BAD_REQUEST)
             user_role.delete()
             return Response({'detail': 'user role deleted!'})
         except:
