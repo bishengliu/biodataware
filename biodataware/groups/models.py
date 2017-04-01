@@ -40,7 +40,7 @@ class Assistant(models.Model):
 # researchers in the group
 class GroupResearcher(models.Model):
     group = models.ForeignKey(Group, on_delete=models.CASCADE)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.user.username + " (" + self.group.pi + ")"
+        return self.group.group_name + " (" + self.group.pi + ")"

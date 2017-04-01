@@ -7,6 +7,17 @@ import re
 from helpers.validators import validate_phone
 from users.models import User, UserRole, Profile
 from roles.models import Role
+from groups.models import GroupResearcher
+
+
+# get the groups that the researcher belongs to
+class GroupResearcherSerializer(serializers.ModelSerializer):
+    group = serializers.StringRelatedField()
+
+    class Meta:
+        model = GroupResearcher
+        fields = ('group_id', 'group')
+
 
 # user role
 class UserRoleSerializer(serializers.ModelSerializer):
@@ -15,7 +26,7 @@ class UserRoleSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = UserRole
-        fields = ('pk', 'role', 'user')
+        fields = ('pk', 'role_id', 'role',  'user_id', 'user')
 
 
 class UserRoleCreateSerializer(serializers.Serializer):
@@ -55,10 +66,14 @@ class ProfileSerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
     profile = ProfileSerializer()
     roles = serializers.StringRelatedField(many=True, source='userrole_set') # reverse with set
+    #userrole_set = UserRoleSerializer(many=True, read_only=True)
+    #groups = serializers.StringRelatedField(many=True, source='groupresearcher_set') # reverse with set
+    groups = GroupResearcherSerializer(many=True, read_only=True, source='groupresearcher_set')
 
     class Meta:
         model = User
-        fields = ('pk', 'username', 'first_name', 'last_name', 'email', 'profile', 'roles')
+        fields = ('pk', 'username', 'first_name', 'last_name', 'email', 'profile', 'roles', 'groups')
+        #fields = ('pk', 'username', 'first_name', 'last_name', 'email', 'profile', 'roles', 'userrole_set', 'groups', 'groupresearcher_set')
 
 
 class UserDetailSerializer(serializers.Serializer):
@@ -96,3 +111,6 @@ class PasswordSerializer(serializers.Serializer):
             return data
         except:
             raise serializers.ValidationError(_("Username or password incorrect!"))
+
+
+
