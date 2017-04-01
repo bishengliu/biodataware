@@ -5,8 +5,7 @@ from roles.models import Role
 from users.models import UserRole
 
 
-# get, post, delete
-# only for PI and Manager
+# get
 class UserRoleSerializer(serializers.ModelSerializer):
     role = serializers.StringRelatedField()
     user = serializers.StringRelatedField()
@@ -16,7 +15,6 @@ class UserRoleSerializer(serializers.ModelSerializer):
         fields = ('role_id', 'role',  'user_id', 'user')
 
 
-# get all the PIs and Manager
 # get, post
 class RoleSerializer(serializers.ModelSerializer):
     researchers = UserRoleSerializer(many=True, read_only=True, source='userrole_set')
@@ -24,3 +22,13 @@ class RoleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Role
         fields = ('pk', 'role', 'description', 'researchers')
+
+
+# get, post, delete user roles: PI and Manger
+class PIManagerSerializer(serializers.ModelSerializer):
+    role = serializers.StringRelatedField()
+    user = serializers.StringRelatedField()
+
+    class Meta:
+        model = UserRole
+        fields = ('pk', 'role', 'user')
