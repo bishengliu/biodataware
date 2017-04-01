@@ -19,6 +19,8 @@ from rest_framework_swagger.views import get_swagger_view
 '''
 urlpatterns = [
 
+    # roles only accesible to admin
+    url(r'^roles/', include('api.roles.urls', namespace='api_roles')),
     # users
     url(r'^users/', include('api.users.urls', namespace='api_users')),
 
