@@ -11,6 +11,7 @@ from api.permissions import IsReadOnlyOwner, IsOwner, IsOwnOrReadOnly
 
 
 # user list
+# only admin can acccess all the users
 class UserList(APIView):
     # authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (permissions.IsAuthenticated, permissions.IsAdminUser,)
@@ -21,9 +22,10 @@ class UserList(APIView):
         return Response(serializer.data)
 
 
+# every logged in user
 # get and post user info
 class UserDetail(APIView):
-    permission_classes = (permissions.IsAuthenticated, IsReadOnlyOwner,)
+    permission_classes = (permissions.IsAuthenticated,)
 
     def get(self, request, pk, format=None):
         user = get_object_or_404(User, pk=pk)
@@ -63,7 +65,106 @@ class UserDetail(APIView):
         return Response(serializer.data)
 
 
-# update password
+# only the pi or assistant can
+# get ot post user role
+class UserRoleDetail(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get(self, request, pk, format=None):
+        user = get_object_or_404(User, pk=pk)
+        self.check_object_permissions(request, user)  # check the permission
+        roles = UserRole.objects.all().filter(user_id=pk)
+        serializer = UserRoleSerializer(roles, many=True).data
+        return Response(serializer)
+
+    def post(self, request, pk, format=None):
+        user = get_object_or_404(User, pk=pk)
+        self.check_object_permissions(request, user)  # check the permission
+
+        serializer = UserRoleCreateSerializer(data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        try:
+            # save new password
+            data = serializer.data
+            user_role = UserRole(user_id=data['user_id'], role_id=data['role_id'])
+            user_role.save()
+            return Response({'detail': 'user role added!'})
+        except:
+            return Response({'detail': 'user role not added!'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+# only the pi or assistant can
+# delete user role
+class UserRoleDelete(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get(self, request, pk, ur_pk, format=None):
+        user = get_object_or_404(User, pk=pk)
+        self.check_object_permissions(request, user)  # check the permission
+        try:
+            role = UserRole.objects.get(pk=ur_pk)
+            serializer = UserRoleSerializer(role).data
+            return Response(serializer)
+        except:
+            return Response({'detail': 'user role not found!'}, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk, ur_pk, format=None):
+        user = get_object_or_404(User, pk=pk)
+        self.check_object_permissions(request, user)  # check the permission
+        try:
+            user_role = UserRole.objects.get(pk=ur_pk)
+            user_role.delete()
+            return Response({'detail': 'user role deleted!'})
+        except:
+            return Response({'detail': 'user role not deleted!'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+# owner only
+# POST request to get token, used for client side login/authentication
+# create new token when expired
+class ObtainToken(ObtainAuthToken):
+    EXPIRE_HOURS = getattr(settings, 'REST_FRAMEWORK_TOKEN_EXPIRE_HOURS', 24)
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.serializer_class(data=request.DATA)
+
+        if serializer.is_valid(raise_exception=True):
+            user = serializer.object['user']
+            token, created = Token.objects.get_or_create(user=user)
+            utc_now = datetime.utcnow()
+            utc_now = utc_now.replace(tzinfo=pytz.UTC)
+            if not created and token.created < utc_now - timedelta(hours=self.EXPIRE_HOURS):
+                token.delete()
+                token = Token.objects.create(user=user)
+                token.created = datetime.utcnow()
+                token.save()
+                return Response({'token': token.key, 'user': user.username})
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+# owner only
+# GET request to obtain token
+class GetMyToken(APIView):
+    permission_classes = (permissions.IsAuthenticated, IsReadOnlyOwner,)
+    EXPIRE_HOURS = getattr(settings, 'REST_FRAMEWORK_TOKEN_EXPIRE_HOURS', 24)
+
+    def get(self, request, format=None):
+        user = request.user
+        self.check_object_permissions(request, user)
+        # get token
+        token, created = Token.objects.get_or_create(user=user)  # create token
+        utc_now = datetime.utcnow()
+        utc_now = utc_now.replace(tzinfo=pytz.UTC)
+        if not created and token.created < utc_now - timedelta(hours=self.EXPIRE_HOURS):
+            token.delete()
+            token = Token.objects.create(user=user)
+            token.created = datetime.utcnow()
+            token.save()
+        return Response({'token': token.key, 'user': user.username})
+
+
+# owner only
+# update my password
 class UserPassword(APIView):
     permission_classes = (permissions.IsAuthenticated, IsOwner,)
 
@@ -83,78 +184,3 @@ class UserPassword(APIView):
         token.delete()
         Token.objects.create(user=user)
         return Response({'detail': _('Your password was successfully changed!')})
-
-
-# user role
-class UserRoleDetail(APIView):
-    permission_classes = (permissions.IsAuthenticated,)
-
-    def get(self, request, pk, format=None):
-        user = get_object_or_404(User, pk=pk)
-        self.check_object_permissions(request, user)  # check the permission
-        roles = UserRole.objects.all().filter(user_id=pk)
-        serializer = UserRoleSerializer(roles, many=True).data
-        return Response(serializer)
-
-    def post(self, request, pk, format=None):
-        user = get_object_or_404(User, pk=pk)
-        self.check_object_permissions(request, user)  # check the permission
-
-        serializer = UserRoleCreateSerializer(data=request.data, partial=True)
-        serializer.is_valid(raise_exception=True)
-
-        # save new password
-        data = serializer.data
-        userRole = UserRole(user_id=data['user_id'], role_id=data['role_id'])
-        userRole.save()
-        return Response({'detail': 'role added!'})
-
-    # there is a problem here
-    def delete(self, request, pk, format=None):
-        try:
-            userRole = UserRole.objects.get(pk=pk)
-            userRole.delete()
-        except:
-            return Response({'detail': 'role not deleted!'}, status=status.HTTP_400_BAD_REQUEST)
-
-
-# POST request to get token, used for client side login/authentication
-# create new token when expired
-class ObtainToken(ObtainAuthToken):
-    EXPIRE_HOURS = getattr(settings, 'REST_FRAMEWORK_TOKEN_EXPIRE_HOURS', 24)
-
-    def post(self, request, *args, **kwargs):
-        serializer = self.serializer_class(data=request.DATA)
-
-        if serializer.is_valid(raise_exception=True):
-            user = serializer.object['user']
-            token, created = Token.objects.get_or_create(user=user)
-            utc_now = datetime.utcnow()
-            utc_now = utc_now.replace(tzinfo=pytz.UTC)
-            if not created and token.created < utc_now - timedelta(hours=self.EXPIRE_HOURS):
-                token.delete()
-                token = Token.objects.create(user=user)
-                token.created = datetime.utcnow()
-                token.save()
-                return Response({'token': token.key})
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-# GET request to obtain token
-class GetMyToken(APIView):
-    permission_classes = (permissions.IsAuthenticated, IsReadOnlyOwner,)
-    EXPIRE_HOURS = getattr(settings, 'REST_FRAMEWORK_TOKEN_EXPIRE_HOURS', 24)
-
-    def get(self, request, format=None):
-        user = request.user
-        self.check_object_permissions(request, user)
-        # get token
-        token, created = Token.objects.get_or_create(user=user)  # create token
-        utc_now = datetime.utcnow()
-        utc_now = utc_now.replace(tzinfo=pytz.UTC)
-        if not created and token.created < utc_now - timedelta(hours=self.EXPIRE_HOURS):
-            token.delete()
-            token = Token.objects.create(user=user)
-            token.created = datetime.utcnow()
-            token.save()
-        return Response({'token': token.key})
