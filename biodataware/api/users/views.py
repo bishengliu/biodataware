@@ -22,7 +22,6 @@ class UserList(APIView):
         return Response(serializer.data)
 
 
-# every logged in user
 # get and post user info
 class UserDetail(APIView):
     permission_classes = (permissions.IsAuthenticated,)
@@ -33,36 +32,46 @@ class UserDetail(APIView):
         self.check_object_permissions(request, user)  # check the permission
         return Response(serializer.data)
 
-    def post(self, request, pk, format=None):
+    def put(self, request, pk, format=None):
         user = get_object_or_404(User, pk=pk)
         self.check_object_permissions(request, user)  # check the permission
-        serializer = UserDetailSerializer(data=request.data, partial=True)
+        serializer = UserDetailUpdateSerializer(data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
         # save data
         data = serializer.data
-        # update user
-        user.first_name = data['first_name']
-        user.last_name = data['last_name']
-        user.email = data['email']
-        user.save()
-        # update profile
         try:
-            profile = user.profile
-        except Profile.DoesNotExist:
-            # create profile if not exist
-            profile = Profile.objects.create(
-                user=user,
-                photo=None,  # auto upload file
-                telephone=None
-            )
-        profile.birth_date = data['birth_date']
-        profile.telephone = data['telephone']
-        if request.FILES:
-            if profile.photo:
-                profile.photo.delete()
-            profile.photo = request.FILES['photo']
-        profile.save()
-        return Response(serializer.data)
+            # update user
+            if 'first_name' in data:
+                user.first_name = data['first_name']
+            if 'last_name' in data:
+                user.last_name = data['last_name']
+            if 'email' in data:
+                user.email = data['email']
+            if ('first_name' in data) or ('last_name' in data) or ('email' in data):
+                user.save()
+            # update profile
+            try:
+                profile = user.profile
+            except Profile.DoesNotExist:
+                # create profile if not exist
+                profile = Profile.objects.create(
+                    user=user,
+                    photo=None,  # auto upload file
+                    telephone=None
+                )
+            if 'birth_date' in data:
+                profile.birth_date = data['birth_date']
+            if 'telephone' in data:
+                profile.telephone = data['telephone']
+            if request.FILES:
+                if profile.photo:
+                    profile.photo.delete()
+                profile.photo = request.FILES['photo']
+            if ('birth_date' in data) or ('telephone' in data) or request.FILES:
+                profile.save()
+            return Response(serializer.data)
+        except:
+            return Response({'detail': _('something went wrong, user info is not updated!')}, status=status.HTTP_400_BAD_REQUEST)
 
 
 # only admin pi or assistant can
@@ -143,18 +152,22 @@ class ObtainToken(ObtainAuthToken):
 
     def post(self, request, *args, **kwargs):
         serializer = self.serializer_class(data=request.DATA)
-
         if serializer.is_valid(raise_exception=True):
             user = serializer.object['user']
-            token, created = Token.objects.get_or_create(user=user)
-            utc_now = datetime.utcnow()
-            utc_now = utc_now.replace(tzinfo=pytz.UTC)
-            if not created and token.created < utc_now - timedelta(hours=self.EXPIRE_HOURS):
-                token.delete()
-                token = Token.objects.create(user=user)
-                token.created = datetime.utcnow()
-                token.save()
-                return Response({'token': token.key, 'user': user.username})
+            if user.is_active is False:
+                return Response({'detail': 'user is deactivated!'}, status=status.HTTP_400_BAD_REQUEST)
+            try:
+                token, created = Token.objects.get_or_create(user=user)
+                utc_now = datetime.utcnow()
+                utc_now = utc_now.replace(tzinfo=pytz.UTC)
+                if not created and token.created < utc_now - timedelta(hours=self.EXPIRE_HOURS):
+                    token.delete()
+                    token = Token.objects.create(user=user)
+                    token.created = datetime.utcnow()
+                    token.save()
+                    return Response({'token': token.key, 'user': user.pk})
+            except:
+                return Response({'detail': 'fail to obtain token!'}, status=status.HTTP_400_BAD_REQUEST)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -166,17 +179,22 @@ class GetMyToken(APIView):
 
     def get(self, request, format=None):
         user = request.user
+        if user.is_active is False:
+            return Response({'detail': 'user is deactivated!'}, status=status.HTTP_400_BAD_REQUEST)
         self.check_object_permissions(request, user)
         # get token
-        token, created = Token.objects.get_or_create(user=user)  # create token
-        utc_now = datetime.utcnow()
-        utc_now = utc_now.replace(tzinfo=pytz.UTC)
-        if not created and token.created < utc_now - timedelta(hours=self.EXPIRE_HOURS):
-            token.delete()
-            token = Token.objects.create(user=user)
-            token.created = datetime.utcnow()
-            token.save()
-        return Response({'token': token.key, 'user': user.username})
+        try:
+            token, created = Token.objects.get_or_create(user=user)  # create token
+            utc_now = datetime.utcnow()
+            utc_now = utc_now.replace(tzinfo=pytz.UTC)
+            if not created and token.created < utc_now - timedelta(hours=self.EXPIRE_HOURS):
+                token.delete()
+                token = Token.objects.create(user=user)
+                token.created = datetime.utcnow()
+                token.save()
+            return Response({'token': token.key, 'user': user.pk})
+        except:
+            return Response({'detail': 'fail to obtain token!'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 # owner only
@@ -184,19 +202,25 @@ class GetMyToken(APIView):
 class UserPassword(APIView):
     permission_classes = (permissions.IsAuthenticated, IsOwner,)
 
-    def post(self, request, *args, **kwargs):
+    def put(self, request, *args, **kwargs):
         user = request.user
+        if user.is_active is False:
+            return Response({'detail': 'user is deactivated!'}, status=status.HTTP_400_BAD_REQUEST)
         self.check_object_permissions(request, user)  # check the permission
         serializer = PasswordSerializer(data=request.data, partial=False)
         serializer.is_valid(raise_exception=True)
 
         # save new password
-        data = serializer.data
-        user.set_password(data['new_password'])
-        user.save()
+        try:
+            data = serializer.data
+            # check old_password
+            if not user.check_password(data['old_password']):
+                return Response({'detail': 'wrong password!'}, status=status.HTTP_400_BAD_REQUEST)
+            user.set_password(data['new_password'])
+            user.save()
+            return Response({'detail': 'Your password was successfully changed!'})
+        except:
+            return Response({'detail': 'something went wrong, password not changed!'}, status=status.HTTP_400_BAD_REQUEST)
 
-        # new token
-        token, created = Token.objects.get_or_create(user=user)
-        token.delete()
-        Token.objects.create(user=user)
-        return Response({'detail': _('Your password was successfully changed!')})
+
+

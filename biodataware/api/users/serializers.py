@@ -76,13 +76,13 @@ class UserSerializer(serializers.ModelSerializer):
         #fields = ('pk', 'username', 'first_name', 'last_name', 'email', 'profile', 'roles', 'userrole_set', 'groups', 'groupresearcher_set')
 
 
-class UserDetailSerializer(serializers.Serializer):
+class UserDetailUpdateSerializer(serializers.Serializer):
     email = serializers.EmailField(required=True, allow_blank=False)
     first_name = serializers.RegexField(regex=r'^\w+$', required=False, allow_blank=True, max_length=30)
     last_name = serializers.RegexField(regex=r'^\w+$', required=False, allow_blank=True, max_length=30)
     birth_date = serializers.DateField(required=False, allow_null=True, input_formats=settings.DATE_INPUT_FORMATS)
     photo = serializers.ImageField(required=False, allow_null=True, allow_empty_file=True, max_length=100)
-    telephone = serializers.CharField(validators=[validate_phone], allow_null=True, allow_blank=True, max_length=20)
+    telephone = serializers.CharField(required=False, validators=[validate_phone], allow_null=True, allow_blank=True, max_length=20)
 
     def validate(self, data):
         user = get_object_or_404(User, pk=self.initial_data['pk'])
@@ -93,7 +93,7 @@ class UserDetailSerializer(serializers.Serializer):
 
 
 class PasswordSerializer(serializers.Serializer):
-    username = serializers.CharField(read_only=True)
+    # username = serializers.CharField(read_only=True)
     old_password = serializers.CharField(required=True, allow_blank=False)
     new_password = serializers.CharField(required=True, allow_blank=False)
 
@@ -103,14 +103,18 @@ class PasswordSerializer(serializers.Serializer):
               "1 uppercase letter, 2 lowercase letters, 2 digits and must be longer than 8 characters.")
         if not password_pattern.search(value):
             raise serializers.ValidationError(msg)
-
+        return value
+'''
     def validate(self, data):
         try:
-            if not authenticate(username=data['username'], password=data['old_password']):
+            user = authenticate(username=data['username'], password=data['old_password'])
+            if user is None:
                 raise serializers.ValidationError(_("Username or password incorrect!"))
             return data
         except:
             raise serializers.ValidationError(_("Username or password incorrect!"))
+'''
+
 
 
 

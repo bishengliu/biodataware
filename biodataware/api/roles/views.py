@@ -33,6 +33,7 @@ class RoleList(APIView):
         except:
             return Response({'detail': 'role not added!'}, status=status.HTTP_400_BAD_REQUEST)
 
+
 # role detail
 class RoleDetail(APIView):
     permission_classes = (permissions.IsAuthenticated, permissions.IsAdminUser,)
@@ -93,7 +94,6 @@ class PIManagerList(APIView):
 
 
 class PIManagerDetail(APIView):
-
     permission_classes = (permissions.IsAuthenticated, permissions.IsAdminUser,)
 
     def get(self, request, pk, format=None):
