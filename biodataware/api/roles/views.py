@@ -4,7 +4,6 @@ from rest_framework import permissions, status
 from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext_lazy as _
 from django.db.models import Q
-from django.views.decorators.csrf import csrf_protect
 from .serializers import *
 
 
@@ -44,7 +43,6 @@ class RoleDetail(APIView):
         serializer = RoleSerializer(role)
         return Response(serializer.data)
 
-    @csrf_protect
     def delete(self, request, pk, format=None):
         try:
             role = Role.objects.get(pk=pk)
@@ -77,7 +75,6 @@ class PIManagerList(APIView):
         except:
             return Response({'detail': 'fail to retrieve user roles!'}, status=status.HTTP_400_BAD_REQUEST)
 
-    @csrf_protect
     def post(self, request, format=None):
         try:
             serializer = UserRoleCreateSerializer(data=request.data, partial=True)
@@ -104,7 +101,6 @@ class PIManagerDetail(APIView):
         serializer = PIManagerSerializer(userrole)
         return Response(serializer.data)
 
-    @csrf_protect
     def delete(self, request, pk, format=None):
         userrole = get_object_or_404(UserRole, pk=pk)
         userrole.delete()

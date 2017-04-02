@@ -2,7 +2,6 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 from rest_framework import authentication, permissions, status
-from django.views.decorators.csrf import csrf_protect
 from .serializers import *
 
 from groups.models import Group, GroupResearcher
@@ -17,7 +16,6 @@ class GroupList(APIView):
         serializer = GroupSerializer(groups, many=True)
         return Response(serializer.data)
 
-    @csrf_protect
     def post(self, request, format=None):
         try:
             serializer = GroupDetailCreateSerializer(data=request.data, partial=True)
@@ -38,7 +36,6 @@ class GroupDetail(APIView):
         serializer = GroupSerializer(group)
         return Response(serializer.data)
 
-    @csrf_protect
     def delete(self, request, pk, format=None):
         group = get_object_or_404(Group, pk=pk)
         if group.groupresearcher_set:
@@ -49,7 +46,6 @@ class GroupDetail(APIView):
         group.delete()
         return Response({'detail': 'group deleted!'})
 
-    @csrf_protect
     def put(self, request, pk, format=None):
         group = get_object_or_404(Group, pk=pk)
         serializer = GroupDetailCreateSerializer(group, data=request.data, partial=True)

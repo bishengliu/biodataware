@@ -10,7 +10,6 @@ from users.models import UserRole
 from .serializers import *
 from api.permissions import IsReadOnlyOwner, IsOwner, IsOwnOrReadOnly, IsPIofUser, IsPIAssistantofUser
 from django.contrib.auth import authenticate, login, logout
-from django.views.decorators.csrf import csrf_protect
 
 
 # user list
@@ -35,7 +34,6 @@ class UserDetail(APIView):
         self.check_object_permissions(request, user)  # check the permission
         return Response(serializer.data)
 
-    @csrf_protect
     def put(self, request, pk, format=None):
         user = get_object_or_404(User, pk=pk)
         self.check_object_permissions(request, user)  # check the permission
@@ -91,7 +89,6 @@ class UserRoleDetail(APIView):
         serializer = UserRoleSerializer(roles, many=True).data
         return Response(serializer)
 
-    @csrf_protect
     def post(self, request, pk, format=None):
         user = get_object_or_404(User, pk=pk)
         self.check_object_permissions(request, user)  # check the permission
@@ -132,7 +129,6 @@ class UserRoleDelete(APIView):
         except:
             return Response({'detail': 'user role not found!'}, status=status.HTTP_400_BAD_REQUEST)
 
-    @csrf_protect
     def delete(self, request, pk, ur_pk, format=None):
         user = get_object_or_404(User, pk=pk)
         self.check_object_permissions(request, user)  # check the permission
@@ -156,7 +152,6 @@ class UserRoleDelete(APIView):
 class ObtainToken(ObtainAuthToken):
     EXPIRE_HOURS = getattr(settings, 'REST_FRAMEWORK_TOKEN_EXPIRE_HOURS', 24)
 
-    @csrf_protect
     def post(self, request, *args, **kwargs):
         serializer = self.serializer_class(data=request.DATA)
         if serializer.is_valid(raise_exception=True):
@@ -210,7 +205,6 @@ class UserPassword(APIView):
     permission_classes = (permissions.IsAuthenticated, IsOwner,)
 
     @transaction.atomic
-    @csrf_protect
     def put(self, request, *args, **kwargs):
         user = request.user
         if user.is_active is False:
@@ -243,7 +237,6 @@ class UserPassword(APIView):
 # register new user
 class Register(APIView):
     @transaction.atomic
-    @csrf_protect
     def post(self, request, format=None):
         try:
             serializer = UserCreateSerializer(data=request.data, partial=True)
