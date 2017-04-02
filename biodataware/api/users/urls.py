@@ -1,5 +1,5 @@
 from django.conf.urls import url
-from .views import UserList, UserDetail, GetMyToken, ObtainToken, UserPassword, UserRoleDetail, UserRoleDelete
+from .views import UserList, UserDetail, GetMyToken, ObtainToken, UserPassword, UserRoleDetail, UserRoleDelete, Register, Logout
 
 
 urlpatterns = [
@@ -23,4 +23,10 @@ urlpatterns = [
 
     # get token by posting { 'username': 'admin', 'password': 'admin' }
     url(r'^token/$', ObtainToken.as_view(), name='user_token'),
+
+    # register
+    url(r'^register/$', Register.as_view(), name='register'),
+
+    # logout
+    url(r'^logout/$', Logout.as_view(), name='logout'),
 ]

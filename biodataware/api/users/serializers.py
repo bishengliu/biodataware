@@ -104,17 +104,40 @@ class PasswordSerializer(serializers.Serializer):
         if not password_pattern.search(value):
             raise serializers.ValidationError(msg)
         return value
-'''
-    def validate(self, data):
+
+
+class UserCreateSerializer(serializers.Serializer):
+    username = serializers.RegexField(regex=r'^\w+$', required=True)
+    email = serializers.EmailField(required=True, allow_blank=False)
+    password1 = serializers.CharField(required=True, max_length=30)
+    password2 = serializers.CharField(required=True, max_length=30)
+    first_name = serializers.RegexField(regex=r'^\w+$', required=False, allow_blank=True, max_length=30)
+    last_name = serializers.RegexField(regex=r'^\w+$', required=False, allow_blank=True, max_length=30)
+    birth_date = serializers.DateField(required=False, allow_null=True, input_formats=settings.DATE_INPUT_FORMATS)
+    photo = serializers.ImageField(required=False, allow_null=True, allow_empty_file=True, max_length=100)
+    telephone = serializers.CharField(required=False, validators=[validate_phone], allow_null=True, allow_blank=True, max_length=20)
+
+    def validated_username(self, value):
         try:
-            user = authenticate(username=data['username'], password=data['old_password'])
-            if user is None:
-                raise serializers.ValidationError(_("Username or password incorrect!"))
-            return data
-        except:
-            raise serializers.ValidationError(_("Username or password incorrect!"))
-'''
+            User.objects.get(username__iexact=value)
+        except User.DoesNotExist:
+            return value
+        raise serializers.ValidationError(_("username already taken!"))
 
+    def validated_email(self, value):
+        try:
+            User.objects.get(email__iexact=value)
+        except User.DoesNotExist:
+            return value
+        raise serializers.ValidationError(_("email already taken!"))
 
-
-
+    def validate(self, data):
+        if 'password1' in data and 'password2' in data:
+            if data.get('password1') != data.get('password2'):
+                raise serializers.ValidationError(_("passwords do not match!"))
+            password_pattern = re.compile("^(?=.*[A-Z])(?=.*[a-z].*[a-z])(?=.*[0-9].*[0-9]).{8,}$")
+            if not password_pattern.search(data.get('password1')):
+                msg = "Password contains at least: " \
+                      "1 uppercase letter, 2 lowercase letters, 2 digits and must be longer than 8 characters."
+                raise serializers.ValidationError(_(msg))
+        return data

@@ -3,11 +3,14 @@ from rest_framework.authtoken.models import Token
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from django.db import transaction
 from datetime import datetime, timedelta
 import pytz
 from users.models import UserRole
 from .serializers import *
 from api.permissions import IsReadOnlyOwner, IsOwner, IsOwnOrReadOnly, IsPIofUser, IsPIAssistantofUser
+from django.contrib.auth import authenticate, login, logout
+from django.views.decorators.csrf import csrf_protect
 
 
 # user list
@@ -32,6 +35,7 @@ class UserDetail(APIView):
         self.check_object_permissions(request, user)  # check the permission
         return Response(serializer.data)
 
+    @csrf_protect
     def put(self, request, pk, format=None):
         user = get_object_or_404(User, pk=pk)
         self.check_object_permissions(request, user)  # check the permission
@@ -87,6 +91,7 @@ class UserRoleDetail(APIView):
         serializer = UserRoleSerializer(roles, many=True).data
         return Response(serializer)
 
+    @csrf_protect
     def post(self, request, pk, format=None):
         user = get_object_or_404(User, pk=pk)
         self.check_object_permissions(request, user)  # check the permission
@@ -127,6 +132,7 @@ class UserRoleDelete(APIView):
         except:
             return Response({'detail': 'user role not found!'}, status=status.HTTP_400_BAD_REQUEST)
 
+    @csrf_protect
     def delete(self, request, pk, ur_pk, format=None):
         user = get_object_or_404(User, pk=pk)
         self.check_object_permissions(request, user)  # check the permission
@@ -150,6 +156,7 @@ class UserRoleDelete(APIView):
 class ObtainToken(ObtainAuthToken):
     EXPIRE_HOURS = getattr(settings, 'REST_FRAMEWORK_TOKEN_EXPIRE_HOURS', 24)
 
+    @csrf_protect
     def post(self, request, *args, **kwargs):
         serializer = self.serializer_class(data=request.DATA)
         if serializer.is_valid(raise_exception=True):
@@ -202,6 +209,8 @@ class GetMyToken(APIView):
 class UserPassword(APIView):
     permission_classes = (permissions.IsAuthenticated, IsOwner,)
 
+    @transaction.atomic
+    @csrf_protect
     def put(self, request, *args, **kwargs):
         user = request.user
         if user.is_active is False:
@@ -218,9 +227,63 @@ class UserPassword(APIView):
                 return Response({'detail': 'wrong password!'}, status=status.HTTP_400_BAD_REQUEST)
             user.set_password(data['new_password'])
             user.save()
+
+            # new token
+            token, created = Token.objects.get_or_create(user=user)  # create token
+            token.delete()
+            token = Token.objects.create(user=user)
+            token.created = datetime.utcnow()
+            token.save()
+
             return Response({'detail': 'Your password was successfully changed!'})
         except:
             return Response({'detail': 'something went wrong, password not changed!'}, status=status.HTTP_400_BAD_REQUEST)
 
 
+# register new user
+class Register(APIView):
+    @transaction.atomic
+    @csrf_protect
+    def post(self, request, format=None):
+        try:
+            serializer = UserCreateSerializer(data=request.data, partial=True)
+            serializer.is_valid(raise_exception=True)
+            data = serializer.data
 
+            username = data.get('username')
+            email = data.get('email')
+            first_name = data.get('first_name', "")
+            last_name = data.get('last_name', "")
+            user = User(username=username, email=email, first_name=first_name, last_name=last_name)
+            user.set_password(data.get('password1'))
+            user.save()
+            Token.objects.create(user=user)  # create token
+
+            Profile.objects.create(
+                user=user,
+                birth_date=data.get('birth_date'),
+                telephone=data.get('telephone'),
+                photo=request.FILES['photo'] if request.FILES else None  # auto upload file
+            )
+            # login user
+            user = authenticate(username=data['username'], password=data.get('password1'))
+            if user is not None:
+                if user.is_active:
+                    login(request, user)
+
+                    return Response({'detail': 'user created!'}, status=status.HTTP_200_OK)
+        except:
+            return Response({'detail': 'user not created!'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class Logout(APIView):
+    permission_classes = (permissions.IsAuthenticated, )
+    queryset = User.objects.all()
+
+    def get(self, request, format=None):
+        try:
+            logout(request)
+            #request.user.auth_token.delete()
+            return Response({'detail': 'user logout!'}, status=status.HTTP_200_OK)
+        except:
+            return Response({'detail': 'logout failed!'}, status=status.HTTP_400_BAD_REQUEST)
