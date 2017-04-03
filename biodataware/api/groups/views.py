@@ -39,9 +39,9 @@ class GroupDetail(APIView):
     def delete(self, request, pk, format=None):
         group = get_object_or_404(Group, pk=pk)
         if group.groupresearcher_set:
-            return Response({'detail': 'group not added! The group contains researcher(s).'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'detail': 'group not deleted! The group contains researcher(s).'}, status=status.HTTP_400_BAD_REQUEST)
         if group.groupcontainer_set:
-            return Response({'detail': 'group not added! The group contains container(s).'},
+            return Response({'detail': 'group not deleted! The group contains container(s).'},
                             status=status.HTTP_400_BAD_REQUEST)
         group.delete()
         return Response({'detail': 'group deleted!'}, status=status.HTTP_200_OK)
