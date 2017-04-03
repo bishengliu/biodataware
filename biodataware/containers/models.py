@@ -64,5 +64,11 @@ class BoxResearcher(models.Model):
     box = models.ForeignKey(BoxContainer, on_delete=models.CASCADE)
     researcher = models.ForeignKey(GroupResearcher, on_delete=models.CASCADE)
 
+    def researcher_name(self):
+        return self.researcher.user.username
+
+    def researcher_email(self):
+        return self.researcher.user.email
+
     def __str__(self):
         return self.box.container.name + ' (' + str(self.box.tower) + '-' + str(self.box.shelf) + '-' + str(self.box.box) + ') of researcher: ' + self.researcher.user.username

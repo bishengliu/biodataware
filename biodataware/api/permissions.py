@@ -76,10 +76,10 @@ class IsPIofUser(permissions.BasePermission):
             # check whether there is a group created for PI
             # case one authUser == group emial
             groups1 = Group.objects.all().filter(email__iexact=authUser.email)
-            if groups1.count() >= 1:
+            if groups1:
                 group1_ids = [g.id for g in groups1]
-                intersection1 = user_group_ids & group1_ids
-                if intersection1.count() >= 1:
+                intersection1 = list(set(user_group_ids) & set(group1_ids))
+                if len(intersection1) >= 1:
                     return True
             else:
                 # case tow authUser != group email
@@ -88,8 +88,8 @@ class IsPIofUser(permissions.BasePermission):
                 if not groups2:
                     return False
                 group2_ids = [g.id for g in groups2]
-                intersection2 = user_group_ids & group2_ids
-                if intersection2.count() >= 1:
+                intersection2 = list(set(user_group_ids) & set(group2_ids))
+                if len(intersection2) >= 1:
                     return True
 
         return False
@@ -108,13 +108,13 @@ class IsPIAssistantofUser(permissions.BasePermission):
         if request.user.is_authenticated():
             # check the user groups
             assisUser = request.user
-            groups = GroupResearcher.objects.all().filter(group__email=assisUser.emai)
+            groups = GroupResearcher.objects.all().filter(group__email=assisUser.email)
             if not groups:
                 return False
             group_ids = [g.id for g in groups]
             #get the intersection
-            inter_ids = user_group_ids & group_ids
-            if inter_ids.count() >= 1:
+            inter_ids = list(set(user_group_ids) & set(group_ids))
+            if len(inter_ids) >= 1:
                 assistants = Assistant.objects.all().filter(group_id__in=inter_ids)
                 if not assistants:
                     return False
