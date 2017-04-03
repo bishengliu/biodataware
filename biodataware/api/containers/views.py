@@ -31,12 +31,16 @@ class ContainerList(APIView):
         serializer = ConatainerSerializer(containers, many=True)
         return Response(serializer.data)
 
+    def post(self, request, format=None):
+        pass
 
+# view, edit and delete container
 class ContainerDetail(APIView):
     permission_classes = (permissions.IsAuthenticated,)
 
     def get(self, request, pk, format=None):
         user = request.user
+        self.check_object_permissions(request, user)  # check the permission
         container = get_object_or_404(Container, pk=pk)
         if user.is_superuser:
             serializer = ConatainerSerializer(container)
@@ -52,3 +56,37 @@ class ContainerDetail(APIView):
                         return Response(serializer.data)
 
         return Response({'detail': 'permission denied!'}, status=status.HTTP_400_BAD_REQUEST)
+
+    def put(self, request, pk, format=None):
+        user = request.user
+        self.check_object_permissions(request, user)  # check the permission
+        container = get_object_or_404(Container, pk=pk)
+        try:
+            if user.is_superuser:
+                serializer = ContainerCreateSerializer(container, data=request.data, partial=True)
+                serializer.is_valid(raise_exception=True)
+                serializer.save()
+                serializer = ConatainerSerializer(container)
+                return Response(serializer.data)
+            else:
+                # is manager
+                if settings.ALLOW_PI_TO_MANAGE_CONTAINER:
+                    if isManger(user):
+                        pass
+                    return Response({'detail': 'container info changed!'}, status=status.HTTP_200_OK)
+                # is pi/assistant of the group
+                if isPiorManager(user):
+                    pass
+                    return Response({'detail': 'container info changed!'}, status=status.HTTP_200_OK)
+
+                return Response({'detail': 'container info not changed!'}, status=status.HTTP_400_BAD_REQUEST)
+        except:
+            return Response({'detail': 'container info not changed!'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+    def delete(self, request, pk, format=None):
+        pass
+
+
+# box list view
+# manage box view

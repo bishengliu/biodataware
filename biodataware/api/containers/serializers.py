@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
 from containers.models import Container, GroupContainer, BoxContainer, BoxResearcher
 from groups.models import Group, GroupResearcher
@@ -44,3 +45,9 @@ class ConatainerSerializer(serializers.ModelSerializer):
                   'box', 'description', 'groups', 'boxes')
 
 
+class ContainerCreateSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Container
+        fields = ('name', 'room', 'photo', 'temperature', 'tower', 'shelf',
+                  'box', 'description')
