@@ -1,5 +1,7 @@
 from rest_framework import serializers
+from django.shortcuts import get_object_or_404
 from django.conf import settings
+from django.db.models import Max
 from django.utils.translation import ugettext_lazy as _
 from containers.models import Container, GroupContainer, BoxContainer, BoxResearcher
 from groups.models import Group, GroupResearcher
@@ -45,9 +47,46 @@ class ConatainerSerializer(serializers.ModelSerializer):
                   'box', 'description', 'groups', 'boxes')
 
 
-class ContainerCreateSerializer(serializers.ModelSerializer):
+class ContainerUpdateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Container
         fields = ('name', 'room', 'photo', 'temperature', 'tower', 'shelf',
                   'box', 'description')
+
+    # need to validate the tower, shelf and box
+    def validate_tower(self, value):
+        try:
+            boxes = BoxContainer.objects.all().filter(container_id=self.initial_data['pk'])
+            if boxes:
+                box = boxes.aggregate(Max('tower'))
+                if value < box['tower__max']:
+                    raise serializers.ValidationError(_("The total number of towers must not be smaller than " + box['tower__max'] + "!"))
+                return value
+            return value
+        except:
+            raise serializers.ValidationError(_("Validation of the total number of towers failed!"))
+
+    def validate_shelf(self, value):
+        try:
+            boxes = BoxContainer.objects.all().filter(container_id=self.initial_data['pk'])
+            if boxes:
+                box = boxes.aggregate(Max('shelf'))
+                if value < box['shelf__max']:
+                    raise serializers.ValidationError(_("The total number of shelves must not be smaller than " + box['shelf__max'] + "!"))
+                return value
+            return value
+        except:
+            raise serializers.ValidationError(_("Validation of the total number of shelves failed!"))
+
+    def validate_box(self, value):
+        try:
+            boxes = BoxContainer.objects.all().filter(container_id=self.initial_data['pk'])
+            if boxes:
+                box = boxes.aggregate(Max('box'))
+                if value < box['box__max']:
+                    raise serializers.ValidationError(_("The total number of boxes must not be smaller than " + box['box__max'] + "!"))
+                return value
+            return value
+        except:
+            raise serializers.ValidationError(_("Validation of the total number of boxes failed!"))

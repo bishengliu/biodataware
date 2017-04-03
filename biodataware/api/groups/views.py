@@ -44,11 +44,11 @@ class GroupDetail(APIView):
             return Response({'detail': 'group not added! The group contains container(s).'},
                             status=status.HTTP_400_BAD_REQUEST)
         group.delete()
-        return Response({'detail': 'group deleted!'})
+        return Response({'detail': 'group deleted!'}, status=status.HTTP_200_OK)
 
     def put(self, request, pk, format=None):
         group = get_object_or_404(Group, pk=pk)
         serializer = GroupDetailCreateSerializer(group, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        return Response(serializer.data)
+        return Response({'detail': 'group details changed!'}, status=status.HTTP_200_OK)

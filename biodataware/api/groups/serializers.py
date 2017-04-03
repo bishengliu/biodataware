@@ -11,6 +11,7 @@ class AssistantSerializer(serializers.ModelSerializer):
         model = GroupResearcher
         fields = ('user_id', 'user')
 
+
 # no view
 class GroupResearcherSerializer(serializers.ModelSerializer):
     user = serializers.StringRelatedField()

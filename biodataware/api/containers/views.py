@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 from rest_framework import authentication, permissions, status
 from .serializers import *
-from helpers.acl import isManger, isInGroups
+from helpers.acl import isManger, isInGroups, isPIorAssistantofGroup
 
 from containers.models import Container, GroupContainer, BoxContainer, BoxResearcher
 from groups.models import Group, GroupResearcher
@@ -34,6 +34,7 @@ class ContainerList(APIView):
     def post(self, request, format=None):
         pass
 
+
 # view, edit and delete container
 class ContainerDetail(APIView):
     permission_classes = (permissions.IsAuthenticated,)
@@ -62,26 +63,29 @@ class ContainerDetail(APIView):
         self.check_object_permissions(request, user)  # check the permission
         container = get_object_or_404(Container, pk=pk)
         try:
-            if user.is_superuser:
-                serializer = ContainerCreateSerializer(container, data=request.data, partial=True)
+            if user.is_superuser or isManger(user):
+                serializer = ContainerUpdateSerializer(container, data=request.data, partial=True)
                 serializer.is_valid(raise_exception=True)
                 serializer.save()
-                serializer = ConatainerSerializer(container)
-                return Response(serializer.data)
+                return Response({'detail': 'container info changed!'}, status=status.HTTP_200_OK)
             else:
-                # is manager
                 if settings.ALLOW_PI_TO_MANAGE_CONTAINER:
-                    if isManger(user):
-                        pass
-                    return Response({'detail': 'container info changed!'}, status=status.HTTP_200_OK)
-                # is pi/assistant of the group
-                if isPiorManager(user):
-                    pass
-                    return Response({'detail': 'container info changed!'}, status=status.HTTP_200_OK)
+                    # check which group has/have the container
+                    group_containers = GroupContainer.objects.all().filter(container_id=container.pk)
+                    if group_containers:
+                        group_container_ids = [gc.group_id for gc in group_containers]
+                        # is pi/assistant of the group
+                        if isPIorAssistantofGroup(user, group_container_ids):
+                            # save data
+                            serializer = ContainerUpdateSerializer(container, data=request.data, partial=True)
+                            serializer.is_valid(raise_exception=True)
+                            serializer.save()
+                            return Response({'detail': 'container info changed!'}, status=status.HTTP_200_OK)
 
                 return Response({'detail': 'container info not changed!'}, status=status.HTTP_400_BAD_REQUEST)
         except:
             return Response({'detail': 'container info not changed!'}, status=status.HTTP_400_BAD_REQUEST)
+
 
 
     def delete(self, request, pk, format=None):
