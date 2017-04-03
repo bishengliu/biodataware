@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 from rest_framework import authentication, permissions, status
 from .serializers import *
-from helpers.acl import isManger
+from helpers.acl import isManger, isInGroups
 
 from containers.models import Container, GroupContainer, BoxContainer, BoxResearcher
 from groups.models import Group, GroupResearcher
@@ -11,7 +11,7 @@ from api.permissions import IsManager, IsPIAssistantofUser
 
 
 # all container list only for manager or admin
-#
+# for admin and manager get all the conatiners, otherwise only show current group containers
 class ContainerList(APIView):
     permission_classes = (permissions.IsAuthenticated, permissions.IsAdminUser, IsManager, IsPIAssistantofUser)
 
@@ -30,3 +30,25 @@ class ContainerList(APIView):
 
         serializer = ConatainerSerializer(containers, many=True)
         return Response(serializer.data)
+
+
+class ContainerDetail(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get(self, request, pk, format=None):
+        user = request.user
+        container = get_object_or_404(Container, pk=pk)
+        if user.is_superuser:
+            serializer = ConatainerSerializer(container)
+            return Response(serializer.data)
+        else:
+            # check which group has/have the container
+            group_containers = GroupContainer.objects.all().filter(container_id=container.pk)
+            if group_containers:
+                group_container_ids = [gc.group_id for gc in group_containers]
+                if len(group_container_ids) > 0:
+                    if isInGroups(user, group_container_ids):
+                        serializer = ConatainerSerializer(container)
+                        return Response(serializer.data)
+
+        return Response({'detail': 'permission denied!'}, status=status.HTTP_400_BAD_REQUEST)

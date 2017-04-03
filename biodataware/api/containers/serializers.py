@@ -28,6 +28,7 @@ class GroupContainerSerializer(serializers.ModelSerializer):
 class BoxContainerSerializer(serializers.ModelSerializer):
 
     researchers = BoxResearcherSerializer(many=True, read_only=True, source='boxresearcher_set')
+
     class Meta:
         model = BoxContainer
         fields = ('pk', 'box_position', 'box_vertical', 'box_horizontal', 'tower', 'shelf', 'box', 'code39', 'qrcode', 'researchers')
