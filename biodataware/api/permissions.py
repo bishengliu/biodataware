@@ -2,6 +2,7 @@ from rest_framework import permissions
 from users.models import UserRole
 from roles.models import Role
 from groups.models import Group, GroupResearcher, Assistant
+from django.conf import settings
 
 # owner otherwise readonly
 class IsOwnOrReadOnly(permissions.BasePermission):
@@ -120,4 +121,24 @@ class IsPIAssistantofUser(permissions.BasePermission):
                 else:
                     return True
 
+        return False
+
+
+class IsManager(permissions.BasePermission):
+
+    def has_object_permission(self, request, view, obj):
+        user = request.user
+        if user.is_authenticated():
+            if not settings.ALLOW_PI_TO_MANAGE_CONTAINER:
+                return False
+            # check whether the current user has role as "Manager"
+            try:
+                role = Role.objects.get(role__iexact="Manager")
+                user_roles = UserRole.objects.filter(user_id=user.pk).filter(role_id=role.pk)
+                if not user_roles:
+                    return False
+                else:
+                    return True
+            except:
+                return False
         return False

@@ -52,6 +52,9 @@ class BoxContainer(models.Model):
     box_vertical = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(12)], default=8)   # A-H
     box_horizontal = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(12)], default=8)  # 1-8
 
+    def box_position(self):
+        return str(self.tower) + '-' + str(self.shelf) + '-' + str(self.box)
+
     def __str__(self):
         return self.container.name + ' (' + str(self.tower) + '-' + str(self.shelf) + '-' + str(self.box) + ')'
 
