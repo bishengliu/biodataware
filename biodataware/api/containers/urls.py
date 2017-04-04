@@ -14,42 +14,65 @@ urlpatterns = [
 
 
     # tower details
-    # shelf list
-    # tower
+    # shelf list, number of shelves
     # /12-/ or /12/
-    url(r'^(?P<ct_id>[0-9]+)/(?P<id>[0-9]+(\-)*/$', ContainerBoxList.as_view(), name='container-tower-shelves'),
+    # list all the possible towers in the containers
+    url(r'^(?P<ct_id>[0-9]+)/(?P<id>[0-9]+(\-)*)/$',
+        ContainerBoxList.as_view(),
+        name='container-tower-shelves'),
 
     # shelf details
     # box list
     # /12/3/
-    url(r'^(?P<ct_id>[0-9]+)/(?P<tw_id>[0-9]+)/(?P<pk>[0-9]+)/$', ContainerBoxList.as_view(), name='container-tower-shelf-boxes'),
+    url(r'^(?P<ct_id>[0-9]+)/(?P<tw_id>[0-9]+)/(?P<pk>[0-9]+)/$',
+        ContainerBoxList.as_view(),
+        name='container-tower-shelf-boxes'),
     # /12-3-/ or /12-3/
-    url(r'^(?P<ct_id>[0-9]+)/(?P<id>[0-9]+\-[0-9]+(\-)*)/$', ContainerBoxList.as_view(), name='container-tower-shelf-boxes'),
+    url(r'^(?P<ct_id>[0-9]+)/(?P<id>[0-9]+\-[0-9]+(\-)*)/$',
+        ContainerBoxList.as_view(),
+        name='container-tower-shelf-boxes'),
 
+
+    # ==========================================can be moved to a sep folder=====================================
     # box detail
     # sample list
     # /12/3/4/
-    url(r'^(?P<ct_id>[0-9]+)/(?P<tw_id>[0-9]+)/(?P<sf_id>[0-9]+)/(?P<pk>[0-9]+)/$', ContainerBoxList.as_view(), name='container-tower-shelf-box-samples'),
+    url(r'^(?P<ct_id>[0-9]+)/(?P<tw_id>[0-9]+)/(?P<sf_id>[0-9]+)/(?P<pk>[0-9]+)/$',
+        ContainerBoxList.as_view(),
+        name='container-tower-shelf-box-samples'),
     # /12-3-4/
-    url(r'^(?P<ct_id>[0-9]+)/(?P<id>[0-9]+\-[0-9]+\-[0-9]+)/$', ContainerBoxList.as_view(), name='container-tower-shelf-box-samples'),
+    url(r'^(?P<ct_id>[0-9]+)/(?P<id>[0-9]+\-[0-9]+\-[0-9]+)/$',
+        ContainerBoxList.as_view(),
+        name='container-tower-shelf-box-samples'),
 
     # sample detail in the box
     # /12/3/4/A12/
-    url(r'^(?P<ct_id>[0-9]+)/(?P<tw_id>[0-9]+)/(?P<sf_id>[0-9]+)/(?P<pk>[0-9]+)/(?P<sp_id>[a-zA-Z][0-9]+)/$', ContainerBoxList.as_view(), name='container-tower-shelf-box-sample-detail'),
+    url(r'^(?P<ct_id>[0-9]+)/(?P<tw_id>[0-9]+)/(?P<sf_id>[0-9]+)/(?P<pk>[0-9]+)/(?P<sp_id>[a-zA-Z][0-9]+)/$',
+        ContainerBoxList.as_view(),
+        name='container-tower-shelf-box-sample-detail'),
     # 12-3-4/A12/
-    url(r'^(?P<ct_id>[0-9]+)/(?P<id>[0-9]+\-[0-9]+\-[0-9]+)/(?P<sp_id>[a-zA-Z][0-9]+)/$', ContainerBoxList.as_view(), name='container-tower-shelf-box-sample-detail'),
+    url(r'^(?P<ct_id>[0-9]+)/(?P<id>[0-9]+\-[0-9]+\-[0-9]+)/(?P<sp_id>[a-zA-Z][0-9]+)/$',
+        ContainerBoxList.as_view(),
+        name='container-tower-shelf-box-sample-detail'),
 
 
     # quick get the box
     # boxes in on container
-    url(r'^(?P<ct_id>[0-9]+)/boxes/$', ContainerBoxList.as_view(), name='container-boxes'),
+    url(r'^(?P<ct_id>[0-9]+)/boxes/$',
+        ContainerBoxList.as_view(),
+        name='container-boxes'),
 
     # sample list in the box
     # /boxes/12-3-4/
-    url(r'^(?P<ct_id>[0-9]+)/boxes/(?P<bx_id>[0-9]+\-[0-9]+\-[0-9]+)/$', ContainerBoxList.as_view(), name='container-boxes-samples'),
+    url(r'^(?P<ct_id>[0-9]+)/boxes/(?P<bx_id>[0-9]+\-[0-9]+\-[0-9]+)/$',
+        ContainerBoxList.as_view(),
+        name='container-boxes-samples'),
 
     # sample detail
     # /boxes/12-3-4/A12/
-    url(r'^(?P<ct_id>[0-9]+)/boxes/(?P<bx_id>[0-9]+\-[0-9]+\-[0-9]+)/(?P<sp_id>[a-zA-Z][0-9]+)/$', ContainerBoxList.as_view(), name='container-boxes-sample-detail'),
+    url(r'^(?P<ct_id>[0-9]+)/boxes/(?P<bx_id>[0-9]+\-[0-9]+\-[0-9]+)/(?P<sp_id>[a-zA-Z][0-9]+)/$',
+        ContainerBoxList.as_view(),
+        name='container-boxes-sample-detail'),
+    # ==========================================================================================================
 
 ]
