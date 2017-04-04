@@ -23,7 +23,7 @@ class GroupList(APIView):
             data = serializer.data
             group = Group(**data)
             group.save()
-            return Response(serializer.data)
+            return Response({'detail': 'group added!'}, status=status.HTTP_200_OK)
         except:
             return Response({'detail': 'group not added!'}, status=status.HTTP_400_BAD_REQUEST)
 

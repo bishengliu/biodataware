@@ -140,4 +140,7 @@ class UserCreateSerializer(serializers.Serializer):
                 msg = "Password contains at least: " \
                       "1 uppercase letter, 2 lowercase letters, 2 digits and must be longer than 8 characters."
                 raise serializers.ValidationError(_(msg))
-        return data
+            return data
+
+        msg = _("Something went wrong, validation failed")
+        raise serializers.ValidationError(msg)

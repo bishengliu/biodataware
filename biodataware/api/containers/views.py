@@ -7,7 +7,7 @@ from helpers.acl import isManger, isInGroups, isPIorAssistantofGroup
 from django.db import transaction
 from containers.models import Container, GroupContainer, BoxContainer, BoxResearcher
 from groups.models import Group, GroupResearcher
-from api.permissions import IsManager, IsPIAssistantofUser
+from api.permissions import IsManager, IsPIAssistantofUser, IsPI
 
 
 # all container list only for manager or admin
@@ -154,26 +154,64 @@ class ContainerDetail(APIView):
             return Response({'detail': 'Something went wrong, container not deleted!'}, status=status.HTTP_400_BAD_REQUEST)
 
 
-# add container to group
-class AddContainerGroup(APIView):
-    permission_classes = (permissions.IsAuthenticated, permissions.IsAdminUser, IsManager, )
+# group containers list
+class GroupContainerList(APIView):
+    permission_classes = (permissions.IsAuthenticated, permissions.IsAdminUser, IsManager, IsPI)
 
-    def post(self, request, format=None):
+    def get(self, request, ct_id, format=None):
         user = request.user
         self.check_object_permissions(request, user)  # check the permission
-        pass
-        # need to validate unique
+        if isManger(user) or user.is_superuser:
+            group_containers = GroupContainer.objects.all()
+        else:
+            # get the group id of the current user
+            groupresearchers = GroupResearcher.objects.all().filter(user_id=user.pk)
+            group_ids = [g.group_id for g in groupresearchers]
+            group_containers = GroupContainer.objects.all().filter(group_id__in=group_ids)
+        serializer = GroupContainerSerializer(group_containers, many=True)
+        return Response(serializer.data)
+
+    def post(self, request, ct_id, format=None):
+        user = request.user
+        self.check_object_permissions(request, user)  # check the permission
+        try:
+            serializer = GroupContainerCreateSerializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            data = serializer.data
+            group_container = GroupContainer(**data)
+            group_container.save()
+            return Response({'detail': 'Container is assigned to the group!'}, status=status.HTTP_200_OK)
+        except:
+            return Response({'detail': 'Something went wrong, container not assigned to the group!'},
+                            status=status.HTTP_400_BAD_REQUEST)
 
 
 # remove container from group
-class RemoveContainerGroup(APIView):
-    permission_classes = (permissions.IsAuthenticated, permissions.IsAdminUser, IsManager, IsPIAssistantofUser)
+class GroupContainerDetail(APIView):
+    permission_classes = (permissions.IsAuthenticated, permissions.IsAdminUser, IsManager, IsPI, )
 
-    def delete(self, request, pk, format=None):
+    def get(self, request, ct_id,  pk, format=None):
         user = request.user
         self.check_object_permissions(request, user)  # check the permission
-        pass
-        # need to check BoxResearcher --> BoxContainer --> Container
+        group_container = get_object_or_404(GroupContainer, pk= pk)
+        serializer = GroupContainerSerializer(group_container)
+        return Response(serializer.data)
 
-# box list view
-# manage box view
+    def delete(self, request, ct_id, pk, format=None):
+        user = request.user
+        self.check_object_permissions(request, user)  # check the permission
+        group_container = get_object_or_404(GroupContainer, pk=pk)
+        try:
+            # get the container
+            container = get_object_or_404(Container, pk=group_container.group_id)
+            if container.boxcontainer_set:
+                return Response({'detail': 'the container was not removed from the group! '
+                                           'The container contains box(es) of the group.'},
+                                status=status.HTTP_400_BAD_REQUEST)
+            group_container.delete()
+        except:
+            return Response({'detail': 'Something went wrong, the container was not removed from the group!'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+
+

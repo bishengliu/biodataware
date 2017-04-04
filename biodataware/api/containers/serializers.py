@@ -107,9 +107,23 @@ class ContainerCreateSerializer(serializers.ModelSerializer):
 
 
 class GroupContainerCreateSerializer(serializers.ModelSerializer):
+    group_id = serializers.IntegerField(read_only=False)
+    container_id = serializers.IntegerField(read_only=False)
 
     class Meta:
         model = GroupContainer
         fields = ('group_id', 'container_id')
 
     # need to check the unique
+    def validate(self, data):
+        try:
+            group_id = data.get('group_id')
+            container_id = data.get('container_id')
+            group_containers = GroupContainer.objects.all().filter(group_id=group_id).filter(container_id=container_id)
+            if group_containers:
+                raise serializers.ValidationError(_('Container already assigned to group, '
+                                                    '\You cannot assign to the group again!'))
+            return data
+        except:
+            msg = _("Something went wrong, the container was not assigned to the target researcher group")
+            raise serializers.ValidationError(msg)
