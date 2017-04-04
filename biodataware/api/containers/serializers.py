@@ -127,3 +127,10 @@ class GroupContainerCreateSerializer(serializers.ModelSerializer):
         except:
             msg = _("Something went wrong, the container was not assigned to the target researcher group")
             raise serializers.ValidationError(msg)
+
+
+class ContainerBoxSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = BoxContainer
+        fields = ('pk', 'container',)

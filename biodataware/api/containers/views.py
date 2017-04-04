@@ -7,17 +7,20 @@ from helpers.acl import isManger, isInGroups, isPIorAssistantofGroup
 from django.db import transaction
 from containers.models import Container, GroupContainer, BoxContainer, BoxResearcher
 from groups.models import Group, GroupResearcher
-from api.permissions import IsManager, IsPIAssistantofUser, IsPI
+from api.permissions import IsManager, IsPIAssistantofUser, IsPI, IsInGroupContanier
 
 
 # all container list only for manager or admin
 # for admin and manager get all the conatiners, otherwise only show current group containers
 class ContainerList(APIView):
-    permission_classes = (permissions.IsAuthenticated, permissions.IsAdminUser, IsManager, IsPIAssistantofUser)
+    permission_classes = (permissions.IsAuthenticated, permissions.IsAdminUser, IsManager, IsPI, )
 
     def get(self, request, format=None):
         user = request.user
-        self.check_object_permissions(request, user)  # check the permission
+        obj = {
+            'user': user
+        }
+        self.check_object_permissions(request, obj)  # check the permission
         # filter the containers for the pi or assistant
         # show all the containers if pi or assistant is also the manager
         if isManger(user) or user.is_superuser:
@@ -33,7 +36,10 @@ class ContainerList(APIView):
     @transaction.atomic
     def post(self, request, format=None):
         user = request.user
-        self.check_object_permissions(request, user)  # check the permission
+        obj = {
+            'user': user
+        }
+        self.check_object_permissions(request, obj)  # check the permission
         try:
             if isManger(user) or user.is_superuser:
                 serializer = ContainerCreateSerializer(data=request.data, partial=True)
@@ -65,11 +71,14 @@ class ContainerList(APIView):
 
 # view, edit and delete container
 class ContainerDetail(APIView):
-    permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = (permissions.IsAuthenticated, permissions.IsAdminUser, IsManager, IsPI, )
 
     def get(self, request, pk, format=None):
         user = request.user
-        self.check_object_permissions(request, user)  # check the permission
+        obj = {
+            'user': user
+        }
+        self.check_object_permissions(request, obj)  # check the permission
         container = get_object_or_404(Container, pk=pk)
         if user.is_superuser or isManger(user):
             serializer = ConatainerSerializer(container)
@@ -88,7 +97,10 @@ class ContainerDetail(APIView):
 
     def put(self, request, pk, format=None):
         user = request.user
-        self.check_object_permissions(request, user)  # check the permission
+        obj = {
+            'user': user
+        }
+        self.check_object_permissions(request, obj)  # check the permission
         container = get_object_or_404(Container, pk=pk)
         try:
             if user.is_superuser or isManger(user):
@@ -116,7 +128,10 @@ class ContainerDetail(APIView):
 
     def delete(self, request, pk, format=None):
         user = request.user
-        self.check_object_permissions(request, user)  # check the permission
+        obj = {
+            'user': user
+        }
+        self.check_object_permissions(request, obj)  # check the permission
         container = get_object_or_404(Container, pk=pk)
         try:
             if user.is_superuser or isManger(user):
@@ -156,11 +171,14 @@ class ContainerDetail(APIView):
 
 # group containers list
 class GroupContainerList(APIView):
-    permission_classes = (permissions.IsAuthenticated, permissions.IsAdminUser, IsManager, IsPI)
+    permission_classes = (permissions.IsAuthenticated, permissions.IsAdminUser, IsManager, IsPI, )
 
     def get(self, request, ct_id, format=None):
         user = request.user
-        self.check_object_permissions(request, user)  # check the permission
+        obj = {
+            'user': user
+        }
+        self.check_object_permissions(request, obj)  # check the permission
         if isManger(user) or user.is_superuser:
             group_containers = GroupContainer.objects.all()
         else:
@@ -173,7 +191,10 @@ class GroupContainerList(APIView):
 
     def post(self, request, ct_id, format=None):
         user = request.user
-        self.check_object_permissions(request, user)  # check the permission
+        obj = {
+            'user': user
+        }
+        self.check_object_permissions(request, obj)  # check the permission
         try:
             serializer = GroupContainerCreateSerializer(data=request.data)
             serializer.is_valid(raise_exception=True)
@@ -192,14 +213,20 @@ class GroupContainerDetail(APIView):
 
     def get(self, request, ct_id,  pk, format=None):
         user = request.user
-        self.check_object_permissions(request, user)  # check the permission
+        obj = {
+            'user': user
+        }
+        self.check_object_permissions(request, obj)  # check the permission
         group_container = get_object_or_404(GroupContainer, pk= pk)
         serializer = GroupContainerSerializer(group_container)
         return Response(serializer.data)
 
     def delete(self, request, ct_id, pk, format=None):
         user = request.user
-        self.check_object_permissions(request, user)  # check the permission
+        obj = {
+            'user': user
+        }
+        self.check_object_permissions(request, obj)  # check the permission
         group_container = get_object_or_404(GroupContainer, pk=pk)
         try:
             # get the container
@@ -213,5 +240,25 @@ class GroupContainerDetail(APIView):
             return Response({'detail': 'Something went wrong, the container was not removed from the group!'},
                             status=status.HTTP_400_BAD_REQUEST)
 
+
+# boxes list of a container
+class ContainerBoxList(APIView):
+    permission_classes = (permissions.IsAuthenticated, permissions.IsAdminUser, IsManager, IsPI, IsInGroupContanier, )
+
+    def get(self, request, ct_id, format=None):
+        user = request.user
+        # get the container
+        container = get_object_or_404(Container, pk=ct_id)
+        obj = {
+            'user': user,
+            'container': container
+        }
+        self.check_object_permissions(request, obj)  # check the permission
+        # get the boxes
+        if user.is_superuser or isManger(user):
+            pass
+        else:
+            # get only the boxes of the group(s)
+            pass
 
 

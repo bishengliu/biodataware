@@ -30,13 +30,20 @@ class UserDetail(APIView):
 
     def get(self, request, pk, format=None):
         user = get_object_or_404(User, pk=pk)
+        obj = {
+            'user': user
+        }
+        self.check_object_permissions(request, obj)  # check the permission
         serializer = UserSerializer(user)
-        self.check_object_permissions(request, user)  # check the permission
+
         return Response(serializer.data)
 
     def put(self, request, pk, format=None):
         user = get_object_or_404(User, pk=pk)
-        self.check_object_permissions(request, user)  # check the permission
+        obj = {
+            'user': user
+        }
+        self.check_object_permissions(request, obj)  # check the permission
         serializer = UserDetailUpdateSerializer(data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
         # save data
@@ -84,15 +91,20 @@ class UserRoleDetail(APIView):
 
     def get(self, request, pk, format=None):
         user = get_object_or_404(User, pk=pk)
-        self.check_object_permissions(request, user)  # check the permission
+        obj = {
+            'user': user
+        }
+        self.check_object_permissions(request, obj)  # check the permission
         roles = UserRole.objects.all().filter(user_id=pk)
         serializer = UserRoleSerializer(roles, many=True).data
         return Response(serializer)
 
     def post(self, request, pk, format=None):
         user = get_object_or_404(User, pk=pk)
-        self.check_object_permissions(request, user)  # check the permission
-
+        obj = {
+            'user': user
+        }
+        self.check_object_permissions(request, obj)  # check the permission
         serializer = UserRoleCreateSerializer(data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
         try:
@@ -121,7 +133,10 @@ class UserRoleDelete(APIView):
 
     def get(self, request, pk, ur_pk, format=None):
         user = get_object_or_404(User, pk=pk)
-        self.check_object_permissions(request, user)  # check the permission
+        obj = {
+            'user': user
+        }
+        self.check_object_permissions(request, obj)  # check the permission
         try:
             role = UserRole.objects.get(pk=ur_pk)
             serializer = UserRoleSerializer(role).data
@@ -131,7 +146,10 @@ class UserRoleDelete(APIView):
 
     def delete(self, request, pk, ur_pk, format=None):
         user = get_object_or_404(User, pk=pk)
-        self.check_object_permissions(request, user)  # check the permission
+        obj = {
+            'user': user
+        }
+        self.check_object_permissions(request, obj)  # check the permission
         try:
             user_role = UserRole.objects.get(pk=ur_pk)
             if request.user.is_superuser is False:
