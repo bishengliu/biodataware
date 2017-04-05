@@ -1,4 +1,4 @@
-from rest_framework import authentication, permissions, status
+from rest_framework import permissions, status
 from rest_framework.authtoken.models import Token
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.views import APIView
@@ -8,15 +8,14 @@ from datetime import datetime, timedelta
 import pytz
 from users.models import UserRole
 from .serializers import *
-from api.permissions import IsReadOnlyOwner, IsOwner, IsOwnOrReadOnly, IsPIofUser, IsPIAssistantofUser
+from api.permissions import IsReadOnlyOwner, IsOwner, IsOwnOrReadOnly, IsPIofUser, IsPIAssistantofUser, IsPIAssistantofUserOrReadOnly
 from django.contrib.auth import authenticate, login, logout
 
 
 # user list
-# only admin can acccess all the users
+# readonly for all
 class UserList(APIView):
-    # authentication_classes = (authentication.TokenAuthentication,)
-    permission_classes = (permissions.IsAuthenticated, permissions.IsAdminUser,)
+    permission_classes = (permissions.IsAuthenticated, )
 
     def get(self, request, format=None):
         users = User.objects.all()
@@ -26,7 +25,7 @@ class UserList(APIView):
 
 # get and post user info
 class UserDetail(APIView):
-    permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = (permissions.IsAuthenticated, IsOwnOrReadOnly)
 
     def get(self, request, pk, format=None):
         user = get_object_or_404(User, pk=pk)
@@ -38,6 +37,7 @@ class UserDetail(APIView):
 
         return Response(serializer.data)
 
+    @transaction.atomic
     def put(self, request, pk, format=None):
         user = get_object_or_404(User, pk=pk)
         obj = {
@@ -83,11 +83,9 @@ class UserDetail(APIView):
             return Response({'detail': _('something went wrong, user info is not updated!')}, status=status.HTTP_400_BAD_REQUEST)
 
 
-# only admin pi or assistant can
-# get ot post user role
-# only admin can add pi or manager
+# only pi or assistant can manager researchers in the group
 class UserRoleDetail(APIView):
-    permission_classes = (permissions.IsAuthenticated, IsPIofUser, IsPIAssistantofUser, permissions.IsAdminUser,)
+    permission_classes = (permissions.IsAuthenticated, IsPIAssistantofUserOrReadOnly, )
 
     def get(self, request, pk, format=None):
         user = get_object_or_404(User, pk=pk)
