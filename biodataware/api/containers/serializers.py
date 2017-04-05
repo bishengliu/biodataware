@@ -5,6 +5,7 @@ from django.db.models import Max
 from django.utils.translation import ugettext_lazy as _
 from containers.models import Container, GroupContainer, BoxContainer, BoxResearcher
 from groups.models import Group, GroupResearcher
+from samples.models import SampleAttachment, SampleResearcher, SampleTissue, Sample
 
 
 class BoxResearcherSerializer(serializers.ModelSerializer):
@@ -29,7 +30,6 @@ class GroupContainerSerializer(serializers.ModelSerializer):
 
 
 class BoxContainerSerializer(serializers.ModelSerializer):
-
     researchers = BoxResearcherSerializer(many=True, read_only=True, source='boxresearcher_set')
 
     class Meta:
@@ -129,9 +129,63 @@ class GroupContainerCreateSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(msg)
 
 
-# ===============================================================
-class ContainerBoxSerializer(serializers.ModelSerializer):
+class TowerSerializer(serializers.Serializer):
+    container_pk = serializers.IntegerField()
+    tower_id = serializers.IntegerField()
+    shelf_total = serializers.IntegerField()
+
+
+class BoxContainerCreateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = BoxContainer
-        fields = ('pk', 'container',)
+        fields = ('box_vertical', 'box_horizontal', 'box')
+
+
+# ======for sample =====================
+
+class SampleAttachmentSerializer(serializers.ModelSerializer):
+    sample = serializers.StringRelatedField()
+
+    class Meta:
+        model = SampleAttachment
+        fields = ('pk', 'label', 'attachment', 'description', 'sample')
+
+
+class SampleTissueSerializer(serializers.ModelSerializer):
+    system = serializers.StringRelatedField()
+    tissue = serializers.StringRelatedField()
+    sample = serializers.StringRelatedField()
+
+    class Meta:
+        model = SampleAttachment
+        fields = ('pk', 'system', 'tissue', 'sample')
+
+
+class SampleResearcherSerializer(serializers.ModelSerializer):
+    researcher = serializers.StringRelatedField()
+    sample = serializers.StringRelatedField()
+
+    class Meta:
+        model = SampleResearcher
+        fields = ('pk', 'researcher', 'sample')
+
+
+class SampleSerializer(serializers.ModelSerializer):
+    box = serializers.StringRelatedField()
+    attachments = SampleAttachmentSerializer(many=True, read_only=True, source='sampleattachment_set')
+    tissues = SampleTissueSerializer(many=True, read_only=True, source='sampletissue_set')
+    researchers = SampleResearcherSerializer(many=True, read_only=True, source='sampleresearcher_set')
+
+    class Meta:
+        model = Sample
+        fields = ('pk', 'vposition', 'hposition', 'position', 'date_in', 'name', 'freezing_date', 'registration_code', 'pathology_code', 'freezing_code', 'quantity', 'description', 'code39', 'qrcode', 'box', 'box_id', 'date_out', 'occupied', 'type', 'color', 'attachments', 'tissues', 'researchers')
+
+
+class BoxSamplesSerializer(serializers.ModelSerializer):
+    researchers = BoxResearcherSerializer(many=True, read_only=True, source='boxresearcher_set')
+    samples = SampleSerializer(many=True, read_only=True, source='sample_set')
+
+    class Meta:
+        model = BoxContainer
+        fields = ('pk', 'box_position', 'box_vertical', 'box_horizontal', 'tower', 'shelf', 'box', 'code39', 'qrcode', 'samples', 'researchers')

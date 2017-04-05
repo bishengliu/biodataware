@@ -44,6 +44,9 @@ class Sample(models.Model):
     code39 = models.CharField(max_length=50, null=True, blank=True)  # sample
     qrcode = models.CharField(max_length=50, null=True, blank=True)  # sample
 
+    def position(self):
+        return self.vposition + self.hposition
+
     def __str__(self):
         return self.name + ' (Box: ' + str(self.box.tower) + '-' + str(self.box.shelf) + '-' + str(self.box.box) + ', Position: ' + self.vposition + self.hposition + ')'
 
