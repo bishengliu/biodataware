@@ -6,7 +6,6 @@ from django.utils.translation import ugettext_lazy as _
 from django.db.models import Q
 from .serializers import *
 
-
 from roles.models import Role
 from users.models import UserRole
 from api.users.serializers import UserRoleCreateSerializer
@@ -58,18 +57,17 @@ class RoleDetail(APIView):
 
 # User Role list
 # only PI and Manager
-class PIManagerList(APIView):
+class PIList(APIView):
     permission_classes = (permissions.IsAuthenticated, permissions.IsAdminUser,)
 
     def get_view_name(self):
-        return _('PI and Manager List')
+        return _('PI List')
 
     def get(self, request, format=None):
         try:
             # find the manger or pi role id
-            roles = Role.objects.all().filter(Q(role__iexact='Manager') | Q(role__iexact='PI'))
-            ids = [r.id for r in roles]
-            userroles = UserRole.objects.all().filter(role_id__in=ids)
+            role = Role.objects.all().filter(role__iexact='PI')
+            userroles = UserRole.objects.all().filter(role_id__in=role.pk)
             serializer = PIManagerSerializer(userroles, many=True)
             return Response(serializer.data)
         except:
@@ -81,11 +79,9 @@ class PIManagerList(APIView):
             serializer.is_valid(raise_exception=True)
             data = serializer.data
             # find the manger or pi role id
-            roles = Role.objects.all().filter(Q(role__iexact='Manager') | Q(role__iexact='PI'))
-            ids = [r.id for r in roles]
-
-            if data['role_id'] not in ids:
-                return Response({'detail': 'user can only be manger or PI!'}, status=status.HTTP_400_BAD_REQUEST)
+            role = Role.objects.all().filter(role__iexact='PI').first()
+            if int(data['role_id']) != role.pk:
+                return Response({'detail': 'user can only PI!'}, status=status.HTTP_400_BAD_REQUEST)
             userrole = UserRole(**data)
             userrole.save()
             return Response(serializer.data)
@@ -93,8 +89,11 @@ class PIManagerList(APIView):
             return Response({'detail': 'user not added to the role!'}, status=status.HTTP_400_BAD_REQUEST)
 
 
-class PIManagerDetail(APIView):
+class PIDetail(APIView):
     permission_classes = (permissions.IsAuthenticated, permissions.IsAdminUser,)
+
+    def get_view_name(self):
+        return _('PI Details')
 
     def get(self, request, pk, format=None):
         userrole = get_object_or_404(UserRole, pk=pk)

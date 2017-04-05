@@ -51,6 +51,9 @@ class IsOwnOrReadOnly(permissions.BasePermission):
 class IsInGroupReadonly(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
         try:
+            auth_user = request.user
+            if auth_user.is_superuser:
+                return True
             user = obj['user']
             # first check whether the user is in any group
             user_groups = GroupResearcher.objects.all().filter(user_id=user.id)
@@ -59,18 +62,17 @@ class IsInGroupReadonly(permissions.BasePermission):
             user_group_ids = [g.id for g in user_groups]
 
             if request.user.is_authenticated():
-                auth_user = request.user
-            groups = GroupResearcher.objects.all().filter(group__email=auth_user.email)
-            if not groups:
-                return False
-            group_ids = [g.id for g in groups]
-            # get the intersection
-            inter_ids = list(set(user_group_ids) & set(group_ids))
-            if len(inter_ids) >= 1:
-                # in the same group
-                # safe request
-                if request.method in permissions.SAFE_METHODS:
-                    return True
+                groups = GroupResearcher.objects.all().filter(group__email=auth_user.email)
+                if not groups:
+                    return False
+                group_ids = [g.id for g in groups]
+                # get the intersection
+                inter_ids = list(set(user_group_ids) & set(group_ids))
+                if len(inter_ids) >= 1:
+                    # in the same group
+                    # safe request
+                    if request.method in permissions.SAFE_METHODS:
+                        return True
             return False
         except:
             return False
@@ -80,6 +82,9 @@ class IsInGroupReadonly(permissions.BasePermission):
 class IsInGroup(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
         try:
+            auth_user = request.user
+            if auth_user.is_superuser:
+                return True
             user = obj['user']
             # first check whether the user is in any group
             user_groups = GroupResearcher.objects.all().filter(user_id=user.id)
@@ -88,16 +93,15 @@ class IsInGroup(permissions.BasePermission):
             user_group_ids = [g.id for g in user_groups]
 
             if request.user.is_authenticated():
-                auth_user = request.user
-            groups = GroupResearcher.objects.all().filter(group__email=auth_user.email)
-            if not groups:
-                return False
-            group_ids = [g.id for g in groups]
-            # get the intersection
-            inter_ids = list(set(user_group_ids) & set(group_ids))
-            if len(inter_ids) >= 1:
-                # in the same group
-                    return True
+                groups = GroupResearcher.objects.all().filter(group__email=auth_user.email)
+                if not groups:
+                    return False
+                group_ids = [g.id for g in groups]
+                # get the intersection
+                inter_ids = list(set(user_group_ids) & set(group_ids))
+                if len(inter_ids) >= 1:
+                    # in the same group
+                        return True
             return False
         except:
             return False
@@ -113,13 +117,15 @@ class IsPIReadOnly(permissions.BasePermission):
 
     def has_object_permission(self, request, view, obj):
         try:
+            authUser = request.user
+            if authUser.is_superuser:
+                return True
             user = obj['user']
             # first check whether the user is in any group
             user_groups = GroupResearcher.objects.all().filter(user_id=user.id)
             if not user_groups:
                 return False
             if request.user.is_authenticated():
-                authUser = request.user
                 # find the roles
                 role = Role.objects.all().filter(role__iexact='PI').first()
                 if not role:
@@ -139,13 +145,43 @@ class IsPI(permissions.BasePermission):
 
     def has_object_permission(self, request, view, obj):
         try:
+            authUser = request.user
+            if authUser.is_superuser:
+                return True
             user = obj['user']
             # first check whether the user is in any group
             user_groups = GroupResearcher.objects.all().filter(user_id=user.id)
             if not user_groups:
                 return False
             if request.user.is_authenticated():
-                authUser = request.user
+                # find the roles
+                role = Role.objects.all().filter(role__iexact='PI').first()
+                if not role:
+                    return False
+                pi_role = UserRole.objects.all().filter(user_id=authUser.id).filter(role_id=role.id).first()
+                if pi_role:
+                    return True
+            return False
+        except:
+            return False
+
+
+class IsPIorReadOnly(permissions.BasePermission):
+
+    def has_object_permission(self, request, view, obj):
+        try:
+            if request.method in permissions.SAFE_METHODS:
+                return True
+
+            authUser = request.user
+            if authUser.is_superuser:
+                return True
+            user = obj['user']
+            # first check whether the user is in any group
+            user_groups = GroupResearcher.objects.all().filter(user_id=user.id)
+            if not user_groups:
+                return False
+            if request.user.is_authenticated():
                 # find the roles
                 role = Role.objects.all().filter(role__iexact='PI').first()
                 if not role:
@@ -166,6 +202,9 @@ class IsPIofUser(permissions.BasePermission):
 
     def has_object_permission(self, request, view, obj):
         try:
+            authUser = request.user
+            if authUser.is_superuser:
+                return True
             user = obj['user']
             # first check whether the user is in any group
             user_groups = GroupResearcher.objects.all().filter(user_id=user.id)
@@ -174,7 +213,6 @@ class IsPIofUser(permissions.BasePermission):
             user_group_ids = [g.id for g in user_groups]
             # check authUser
             if request.user.is_authenticated():
-                authUser = request.user
                 # check whether current user is one of the PI
                 role = Role.objects.all().filter(role__iexact='PI').first()
                 if not role:
@@ -198,6 +236,9 @@ class IsPIofUser(permissions.BasePermission):
 class IsPIofUserReadOnly(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
         try:
+            authUser = request.user
+            if authUser.is_superuser:
+                return True
             user = obj['user']
             # first check whether the user is in any group
             user_groups = GroupResearcher.objects.all().filter(user_id=user.id)
@@ -206,7 +247,6 @@ class IsPIofUserReadOnly(permissions.BasePermission):
             user_group_ids = [g.id for g in user_groups]
             # check authUser
             if request.user.is_authenticated():
-                authUser = request.user
                 # check whether current user is one of the PI
                 role = Role.objects.all().filter(role__iexact='PI').first()
                 if not role:
@@ -233,6 +273,9 @@ class IsPIorAssistantofUser(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
         # user must be in the same group
         try:
+            auth_user = request.user
+            if auth_user.is_superuser:
+                return True
             user = obj['user']
             # first check whether the user is in any group
             user_groups = GroupResearcher.objects.all().filter(user_id=user.id)
@@ -241,7 +284,6 @@ class IsPIorAssistantofUser(permissions.BasePermission):
             user_group_ids = [g.id for g in user_groups]
 
             if request.user.is_authenticated():
-                auth_user = request.user
                 # pi
                 role = Role.objects.all().filter(role__iexact='PI').first()
                 if role:
@@ -277,6 +319,10 @@ class IsPIorAssistantofUserReadOnly(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
         # user must be in the same group
         try:
+            auth_user = request.user
+            if auth_user.is_superuser:
+                return True
+
             user = obj['user']
             # first check whether the user is in any group
             user_groups = GroupResearcher.objects.all().filter(user_id=user.id)
@@ -285,7 +331,6 @@ class IsPIorAssistantofUserReadOnly(permissions.BasePermission):
             user_group_ids = [g.id for g in user_groups]
 
             if request.user.is_authenticated():
-                auth_user = request.user
                 # pi
                 role = Role.objects.all().filter(role__iexact='PI').first()
                 if role:
@@ -318,28 +363,13 @@ class IsPIorAssistantofUserReadOnly(permissions.BasePermission):
             return False
 
 
-# write and read access
-class IsManager(permissions.BasePermission):
-
-    def has_object_permission(self, request, view, obj):
-        try:
-            user = request.user
-            if user.is_authenticated():
-                # check whether the current user has role as "Manager"
-                role = Role.objects.get(role__iexact="Manager")
-                user_roles = UserRole.objects.filter(user_id=user.pk).filter(role_id=role.pk)
-                if user_roles:
-                    return True
-            return False
-        except:
-            return False
-
-
 # must pass container object to the obj
 class IsInGroupContanier(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
         try:
             user = request.user
+            if user.is_superuser:
+                return True
             container = obj['container']
             #get the group containers
             group_containers = GroupContainer.objects.all().filter(container_id=container.pk)
@@ -354,3 +384,8 @@ class IsInGroupContanier(permissions.BasePermission):
             return False
         except:
             return False
+
+
+# obj must contain container
+class IsInGroupBox(permissions.BasePermission):
+    pass

@@ -8,7 +8,7 @@ from datetime import datetime, timedelta
 import pytz
 from users.models import UserRole
 from .serializers import *
-from api.permissions import IsReadOnlyOwner, IsOwner, IsOwnOrReadOnly, IsPIofUser, IsPIAssistantofUser, IsPIAssistantofUserOrReadOnly
+from api.permissions import IsReadOnlyOwner, IsOwner, IsOwnOrReadOnly, IsPIorAssistantofUser
 from django.contrib.auth import authenticate, login, logout
 
 
@@ -85,7 +85,7 @@ class UserDetail(APIView):
 
 # only pi or assistant can manager researchers in the group
 class UserRoleDetail(APIView):
-    permission_classes = (permissions.IsAuthenticated, IsPIAssistantofUserOrReadOnly, )
+    permission_classes = (permissions.IsAuthenticated, IsPIorAssistantofUser, )
 
     def get(self, request, pk, format=None):
         user = get_object_or_404(User, pk=pk)
@@ -108,13 +108,10 @@ class UserRoleDetail(APIView):
         try:
             # save new password
             data = serializer.data
-            # is admin
-            if request.user.is_superuser is False:
-                # check whether the role is Manger or PI
-                role = get_object_or_404(Role, pk=data['role_id'])
-                if (role.role.lower() == "manager") or (role.role.lower() == "pi"):
-                    return Response({'detail': 'cannot add role ' + role.role + '!'},
-                                    status=status.HTTP_400_BAD_REQUEST)
+            role = get_object_or_404(Role, pk=data['role_id'])
+            if role.role.lower() == "pi":
+                return Response({'detail': 'cannot add role ' + role.role + '!'},
+                                status=status.HTTP_400_BAD_REQUEST)
             # admin, pi or assistant
             user_role = UserRole(**data)
             user_role.save()
@@ -127,7 +124,7 @@ class UserRoleDetail(APIView):
 # delete user role
 # only admin can delete pi or manager
 class UserRoleDelete(APIView):
-    permission_classes = (permissions.IsAuthenticated, IsPIofUser, IsPIAssistantofUser, permissions.IsAdminUser,)
+    permission_classes = (permissions.IsAuthenticated, IsPIorAssistantofUser,)
 
     def get(self, request, pk, ur_pk, format=None):
         user = get_object_or_404(User, pk=pk)
@@ -150,12 +147,9 @@ class UserRoleDelete(APIView):
         self.check_object_permissions(request, obj)  # check the permission
         try:
             user_role = UserRole.objects.get(pk=ur_pk)
-            if request.user.is_superuser is False:
-                # check whether the role is Manger or PI
-                if (user_role.role.lower() == "manager") or (user_role.role.lower() == "pi"):
-                    return Response({'detail': 'cannot remove role: ' + user_role.role + '!'},
-                                    status=status.HTTP_400_BAD_REQUEST)
-            # admin, pi or assistant
+            if user_role.role.lower() == "pi":
+                return Response({'detail': 'cannot remove role: ' + user_role.role + '!'},
+                                status=status.HTTP_400_BAD_REQUEST)
             user_role.delete()
             return Response({'detail': 'user role deleted!'})
         except:

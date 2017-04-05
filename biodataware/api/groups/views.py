@@ -52,3 +52,13 @@ class GroupDetail(APIView):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response({'detail': 'group details changed!'}, status=status.HTTP_200_OK)
+
+
+
+# ====================================================
+#  PI needs add researcher to a group
+# ====================================================
+class GroupResearcher(APIView):
+    pass
+
+

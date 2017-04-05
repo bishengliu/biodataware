@@ -4,7 +4,7 @@ from .views import *
 
 urlpatterns = [
     # all container list
-    url(r'^$', ContainerList.as_view(), name='containers'), # container-towers
+    url(r'^$', ContainerList.as_view(), name='containers'),  # container-towers
     # container detail
     url(r'^(?P<pk>[0-9]+)/$', ContainerDetail.as_view(), name='container-detail'),
     # group container list view
@@ -32,9 +32,12 @@ urlpatterns = [
         Shelf.as_view(),
         name='container-tower-shelf-boxes'),
 
+    # quick get the box list
+    # boxes in on container
+    url(r'^(?P<ct_id>[0-9]+)/boxes/$',
+        ContainerBoxList.as_view(),
+        name='container-boxes'),
 
-    # ==========================================can be moved to a sep folder=====================================
-    # box detail
     # sample list
     # /12/3/4/
     url(r'^(?P<ct_id>[0-9]+)/(?P<tw_id>[0-9]+)/(?P<sf_id>[0-9]+)/(?P<bx_id>[0-9]+)/$',
@@ -45,36 +48,29 @@ urlpatterns = [
         Box.as_view(),
         name='container-tower-shelf-box-samples'),
 
+    # sample list in the box
+    # /boxes/12-3-4/
+    url(r'^(?P<ct_id>[0-9]+)/boxes/(?P<id>[0-9]+\-[0-9]+\-[0-9]+)/$',
+        Box.as_view(),
+        name='container-boxes-samples'),
 
-
+#  ==========================================================================================================
     # sample detail in the box
     # /12/3/4/A12/
     url(r'^(?P<ct_id>[0-9]+)/(?P<tw_id>[0-9]+)/(?P<sf_id>[0-9]+)/(?P<pk>[0-9]+)/(?P<sp_id>[a-zA-Z][0-9]+)/$',
-        ContainerBoxList.as_view(),
+        SampleDetailAlternative.as_view(),
         name='container-tower-shelf-box-sample-detail'),
     # 12-3-4/A12/
-    url(r'^(?P<ct_id>[0-9]+)/(?P<id>[0-9]+\-[0-9]+\-[0-9]+)/(?P<sp_id>[a-zA-Z][0-9]+)/$',
-        ContainerBoxList.as_view(),
+    url(r'^(?P<ct_id>[0-9]+)/(?P<bx_id>[0-9]+\-[0-9]+\-[0-9]+)/(?P<sp_id>[a-zA-Z][0-9]+)/$',
+        SampleDetail.as_view(),
         name='container-tower-shelf-box-sample-detail'),
 
-
-    # quick get the box
-    # boxes in on container
-    url(r'^(?P<ct_id>[0-9]+)/boxes/$',
-        ContainerBoxList.as_view(),
-        name='container-boxes'),
-
-    # sample list in the box
-    # /boxes/12-3-4/
-    url(r'^(?P<ct_id>[0-9]+)/boxes/(?P<bx_id>[0-9]+\-[0-9]+\-[0-9]+)/$',
-        ContainerBoxList.as_view(),
-        name='container-boxes-samples'),
 
     # sample detail
     # /boxes/12-3-4/A12/
     url(r'^(?P<ct_id>[0-9]+)/boxes/(?P<bx_id>[0-9]+\-[0-9]+\-[0-9]+)/(?P<sp_id>[a-zA-Z][0-9]+)/$',
-        ContainerBoxList.as_view(),
+        SampleDetail.as_view(),
         name='container-boxes-sample-detail'),
-    # ==========================================================================================================
+
 
 ]
