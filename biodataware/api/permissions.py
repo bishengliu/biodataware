@@ -300,10 +300,10 @@ class IsPIorAssistantofUser(permissions.BasePermission):
                     else:
                         # assistants
                         # get the group
-                        pi_groups = GroupResearcher.objects.all().filter(user_id=auth_user.id)
-                        if pi_groups:
-                            pi_group_ids = [g.id for g in pi_groups]
-                            assistant_groups = Assistant.objects.all().filter(group_id__in=pi_group_ids)
+                        auth_groups = GroupResearcher.objects.all().filter(user_id=auth_user.id)
+                        if auth_groups:
+                            auth_group_ids = [g.id for g in auth_groups]
+                            assistant_groups = Assistant.objects.all().filter(group_id__in=auth_group_ids)
                             if assistant_groups:
                                 assistant_group_ids = [a.group_id for a in assistant_groups]
                                 intersection = list(set(user_group_ids) & set(assistant_group_ids))
@@ -348,13 +348,60 @@ class IsPIorAssistantofUserReadOnly(permissions.BasePermission):
                     else:
                         # assistants
                         # get the group
-                        pi_groups = GroupResearcher.objects.all().filter(user_id=auth_user.id)
-                        if pi_groups:
-                            pi_group_ids = [g.id for g in pi_groups]
-                            assistant_groups = Assistant.objects.all().filter(group_id__in=pi_group_ids)
+                        auth_groups = GroupResearcher.objects.all().filter(user_id=auth_user.id)
+                        if auth_groups:
+                            auth_group_ids = [g.id for g in auth_groups]
+                            assistant_groups = Assistant.objects.all().filter(group_id__in=auth_group_ids)
                             if assistant_groups:
                                 assistant_group_ids = [a.group_id for a in assistant_groups]
                                 intersection = list(set(user_group_ids) & set(assistant_group_ids))
+                                if len(intersection) >= 1:
+                                    if request.method in permissions.SAFE_METHODS:
+                                        return True
+            return False
+        except:
+            return False
+
+
+class IsPIorAssistantofUserOrReadOnly(permissions.BasePermission):
+    def has_object_permission(self, request, view, obj):
+        try:
+            auth_user = request.user
+            if auth_user.is_authenticated():
+                if auth_user.is_superuser:
+                    return True
+
+                user = obj['user']
+                # first check whether the user is in any group
+                user_groups = GroupResearcher.objects.all().filter(user_id=user.id)
+                if not user_groups:
+                    return False
+                user_group_ids = [g.id for g in user_groups]
+
+                # pi role
+                role = Role.objects.all().filter(role__iexact='PI').first()
+                if role:
+                    pi_roles = UserRole.objects.all().filter(user_id=auth_user.id).filter(role_id=role.id)
+                    if pi_roles:
+                        pi_groups = Group.objects.all().filter(email__iexact=auth_user.email)
+                        if pi_groups:
+                            pi_group_ids = [g.id for g in pi_groups]
+                            intersection = list(set(user_group_ids) & set(pi_group_ids))
+                            if len(intersection) >= 1:
+                                return True
+                    else:
+                        auth_groups = GroupResearcher.objects.all().filter(user_id=auth_user.id)
+                        if auth_groups:
+                            auth_group_ids = [g.id for g in auth_groups]
+                            assistant_groups = Assistant.objects.all().filter(group_id__in=auth_group_ids)
+                            if assistant_groups:
+                                assistant_group_ids = [a.group_id for a in assistant_groups]
+                                intersection = list(set(user_group_ids) & set(assistant_group_ids))
+                                if len(intersection) >= 1:
+                                    return True
+                            else:
+                                # normal researchers in the group
+                                intersection = list(set(user_group_ids) & set(auth_group_ids))
                                 if len(intersection) >= 1:
                                     if request.method in permissions.SAFE_METHODS:
                                         return True
