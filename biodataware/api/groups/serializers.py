@@ -2,6 +2,7 @@ from rest_framework import serializers
 from groups.models import Group, GroupResearcher, Assistant
 from users.models import UserRole, User
 from django.utils.translation import ugettext_lazy as _
+from users.models import Profile
 
 
 # no view
@@ -41,32 +42,18 @@ class GroupDetailCreateSerializer(serializers.ModelSerializer):
         fields = ('group_name', 'pi', 'pi_fullname', 'photo', 'email', 'telephone', 'department')
 
 
-class ResearcherRoleSerializer(serializers.ModelSerializer):
-    role = serializers.StringRelatedField()
-
-    class Meta:
-        model = UserRole
-        fields = ('role', )
-
-
-class ResearchersSerializer(serializers.ModelSerializer):
-    roles = ResearcherRoleSerializer(many=True, read_only=True, source='userrole_set')
-
-    class Meta:
-        model = User
-        fields = ('pk', 'email', 'username', 'first_name', 'last_name', 'roles')
-
-
+# for assign researcher to a group
 class GroupResearcherCreateSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = GroupResearcher
         field = ('user_id', 'group_id')
 
-    def validated(self, data):
+    def validate(self, data):
         if 'user_id' in data and 'group_id' in data:
-            group_researcher = GroupResearcher.objects.all().filter(user_id=data['user_id']).filter(group_id=data['group_id'])
+            group_researcher = GroupResearcher.objects.all()\
+                .filter(user_id=data['user_id'])\
+                .filter(group_id=data['group_id'])
             if group_researcher:
-                msg = _("Something went wrong, validation failed")
+                msg = _("Researcher already in the group!")
                 raise serializers.ValidationError(msg)
             return data
