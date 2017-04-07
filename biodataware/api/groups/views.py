@@ -8,6 +8,7 @@ from groups.models import Group, GroupResearcher
 from api.permissions import IsPIorAssistantofUserOrReadOnly
 from api.users.serializers import UserSerializer
 
+
 # group list
 class GroupList(APIView):
     permission_classes = (permissions.IsAuthenticated, permissions.IsAdminUser,)
@@ -74,7 +75,7 @@ class GroupResearcherList(APIView):
             my_groups = GroupResearcher.objects.all().filter(user_id=user.pk)
             if my_groups:
                 my_group_ids = [g.group_id for g in my_groups]
-                researchers = User.objects.all().filter(groupresearcher__group_id__in=my_group_ids)
+                researchers = User.objects.all().filter(groupresearcher__group_id__in=my_group_ids).distinct()
                 serializer = UserSerializer(researchers, many=True)
                 return Response(serializer.data)
             return Response({'detail': 'no researcher in the group'}, status=status.HTTP_200_OK)
@@ -88,7 +89,7 @@ class GroupResearcherList(APIView):
                 'user': user
             }
             self.check_object_permissions(request, obj)  # check the permission
-            serializer = GroupResearcherCreateSerializer(data=request.data, partial=True)
+            serializer = GroupResearcherCreateSerializer(data=request.data)
             serializer.is_valid(raise_exception=True)
             data = serializer.data
             group_researcher = GroupResearcher(**data)
@@ -120,13 +121,96 @@ class GroupResearcherDetail(APIView):
         except:
             return Response({'detail': 'something went wrong!'}, status=status.HTTP_400_BAD_REQUEST)
 
-    def put(self, request, pk, format=None):
-        user = request.user
-        obj = {'user': user}
-        self.check_object_permissions(request, obj)  # check the permission
-        pass
+
+class OneGroupResearcherList(APIView):
+
+    permission_classes = (permissions.IsAuthenticated, IsPIorAssistantofUserOrReadOnly,)
+
+    # get the list of current user with role
+    def get(self, request, pk, format=None):
+        try:
+            user = request.user
+            obj = {
+                'user': user
+            }
+            self.check_object_permissions(request, obj)  # check the permission
+            # get my groups
+            my_group = GroupResearcher.objects.all().filter(user_id=user.pk).filter(group_id=pk).first()
+            if my_group:
+                researchers = User.objects.all().filter(groupresearcher__group_id=pk).distinct()
+                serializer = UserSerializer(researchers, many=True)
+                return Response(serializer.data)
+            return Response({'detail': 'no researcher in the group'}, status=status.HTTP_200_OK)
+        except:
+            return Response({'detail': 'something went wrong!'}, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, pk, format=None):
-        pass
+        try:
+            user = request.user
+            obj = {'user': user}
+            self.check_object_permissions(request, obj)  # check the permission
+            # get the researcher
+            researcher = get_object_or_404(User, pk=pk)
+            if researcher.pk == user.pk:
+                return Response({'detail': 'You cannot remove yourself remove the groups!'},
+                                    status=status.HTTP_400_BAD_REQUEST)
+                # get my groups
+            my_groups = GroupResearcher.objects.all().filter(user_id=user.pk)
+            if my_groups:
+                my_group_ids = [g.group_id for g in my_groups]
+                # remvoe the researcher form all my groups
+
+                return Response({'detail': 'researcher removed the group!'}, status=status.HTTP_200_OK)
+            return Response({'detail': 'researcher not removed from the group!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+        except:
+            return Response({'detail': 'something went wrong!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+
+
+class OneGroupResearcherDetail(APIView):
+    permission_classes = (permissions.IsAuthenticated, IsPIorAssistantofUserOrReadOnly,)
+
+    def get(self, request, g_id, u_id, format=None):
+        user = get_object_or_404(User, pk=u_id)
+        obj = {'user': user}
+        self.check_object_permissions(request, obj)  # check the permission
+        auth_user = request.user
+        my_groups = GroupResearcher.objects.all().filter(user_id=auth_user.pk)
+        if my_groups:
+            my_group_ids = [g.group_id for g in my_groups]
+            if int(g_id) in my_group_ids:
+                researcher = get_object_or_404(User, pk=u_id)
+                if researcher:
+                    serializer = UserSerializer(researcher)
+                    return Response(serializer.data)
+        return Response({'detail': 'something went wrong!'}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            pass
+        except:
+            return Response({'detail': 'something went wrong!'}, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, g_id, u_id, format=None):
+        try:
+            user = get_object_or_404(User, pk=u_id)
+            obj = {'user': user}
+            self.check_object_permissions(request, obj)  # check the permission
+            # get my groups
+            auth_user = request.user
+            my_groups = GroupResearcher.objects.all().filter(user_id=auth_user.pk)
+            if my_groups:
+                my_group_ids = [g.group_id for g in my_groups]
+                if int(g_id) in my_group_ids:
+                    group_researcher = GroupResearcher.objects.all().filter(user_id=u_id).filter(group_id=g_id).first()
+                    if group_researcher:
+                        group_researcher.delete()
+                    return Response({'detail': 'user removed from the group!'}, status=status.HTTP_200_OK)
+            return Response({'detail': 'something went wrong!'}, status=status.HTTP_400_BAD_REQUEST)
+        except:
+            return Response({'detail': 'something went wrong!'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+
 
 

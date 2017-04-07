@@ -3,6 +3,8 @@ from groups.models import Group, GroupResearcher, Assistant
 from users.models import UserRole, User
 from django.utils.translation import ugettext_lazy as _
 from users.models import Profile
+from django.shortcuts import get_object_or_404
+from django.conf import settings
 
 
 # no view
@@ -44,9 +46,21 @@ class GroupDetailCreateSerializer(serializers.ModelSerializer):
 
 # for assign researcher to a group
 class GroupResearcherCreateSerializer(serializers.ModelSerializer):
+
+    user_id = serializers.IntegerField(read_only=False)
+    group_id = serializers.IntegerField(read_only=False)
+
     class Meta:
         model = GroupResearcher
-        field = ('user_id', 'group_id')
+        fields = ('user_id', 'group_id')
+
+    def validate_user_id(self, value):
+        get_object_or_404(User, pk=value)
+        return value
+
+    def validate_group_id(self, value):
+        get_object_or_404(Group, pk=value)
+        return value
 
     def validate(self, data):
         if 'user_id' in data and 'group_id' in data:
@@ -57,3 +71,5 @@ class GroupResearcherCreateSerializer(serializers.ModelSerializer):
                 msg = _("Researcher already in the group!")
                 raise serializers.ValidationError(msg)
             return data
+        msg = _("validation failed!")
+        raise serializers.ValidationError(msg)
