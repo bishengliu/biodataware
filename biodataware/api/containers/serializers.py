@@ -142,8 +142,13 @@ class BoxContainerCreateSerializer(serializers.ModelSerializer):
         fields = ('box_vertical', 'box_horizontal', 'box')
 
 
-# ======for sample =====================
+class ContainerBoxCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BoxContainer
+        fields = ('tower', 'shelf', 'box_vertical', 'box_horizontal', 'box')
 
+
+# ======for sample =====================
 class SampleAttachmentSerializer(serializers.ModelSerializer):
     sample = serializers.StringRelatedField()
 

@@ -39,7 +39,6 @@ class ContainerList(APIView):
             return Response({'detail': 'Something went wrong!'},
                             status=status.HTTP_400_BAD_REQUEST)
 
-
     @transaction.atomic
     def post(self, request, format=None):
         user = request.user
@@ -402,7 +401,7 @@ class Shelf(APIView):
             serializer = BoxContainerCreateSerializer(data=request.data)
             serializer.is_valid(raise_exception=True)
             data = serializer.data
-            # value the box
+            # validate the box
             if (int(data['box'])) < 0 or (int(data['box']) > container.box):
                 return Response({'detail': 'Invalid box position!'},
                                 status=status.HTTP_400_BAD_REQUEST)
@@ -433,7 +432,7 @@ class Shelf(APIView):
                                 status=status.HTTP_400_BAD_REQUEST)
 
 
-# boxes list of a container
+# boxes list of a container, quick access
 class ContainerBoxList(APIView):
     permission_classes = (permissions.IsAuthenticated,)
 
@@ -476,23 +475,22 @@ class ContainerBoxList(APIView):
         self.check_object_permissions(request, obj)  # check the permission
         # get the container
         container = get_object_or_404(Container, pk=int(ct_id))
-        # parse tw_id and sf_id
-        id_list = id.split("-")
-        tw_id = int(id_list[0])
-        sf_id = int(id_list[1])
-        if int(tw_id) > int(container.tower) or int(tw_id) < 0:
-            return Response({'detail': 'tower does not exist!'},
-                            status=status.HTTP_400_BAD_REQUEST)
-
-        if int(sf_id) > int(container.shelf) or int(sf_id) < 0:
-            return Response({'detail': 'shelf does not exist!'},
-                            status=status.HTTP_400_BAD_REQUEST)
         # add box
         try:
-            serializer = BoxContainerCreateSerializer(data=request.data)
+            serializer = ContainerBoxCreateSerializer(data=request.data)
             serializer.is_valid(raise_exception=True)
             data = serializer.data
-            # value the box
+
+            tw_id = int(data['tower'])
+            sf_id = int(data['shelf'])
+            if int(tw_id) > int(container.tower) or int(tw_id) < 0:
+                return Response({'detail': 'tower does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+
+            if int(sf_id) > int(container.shelf) or int(sf_id) < 0:
+                return Response({'detail': 'shelf does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+
             if (int(data['box'])) < 0 or (int(data['box']) > container.box):
                 return Response({'detail': 'Invalid box position!'},
                                 status=status.HTTP_400_BAD_REQUEST)
@@ -513,6 +511,7 @@ class ContainerBoxList(APIView):
                 shelf=int(sf_id),
                 box=data['box']
             )
+
             box_researcher = BoxResearcher.objects.create(
                 box_id=box_container.pk,
                 researcher_id=user.pk
@@ -681,8 +680,10 @@ class Box(APIView):
                             status=status.HTTP_400_BAD_REQUEST)
 
 
+# samples
 class SampleDetail(APIView):
     pass
+
 
 class SampleDetailAlternative(APIView):
     pass
