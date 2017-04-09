@@ -3,6 +3,10 @@ from users.models import User
 from containers.models import BoxContainer
 from django.core.validators import MinValueValidator
 
+# Receive the pre_delete signal and delete the file associated with the model instance.
+from django.db.models.signals import pre_delete
+from django.dispatch.dispatcher import receiver
+
 
 # bio-system model
 class Biosystem(models.Model):
@@ -60,6 +64,13 @@ class SampleAttachment(models.Model):
 
     def __str__(self):
         return self.sample.name + ' :' + self.label
+
+
+@receiver(pre_delete, sender=SampleAttachment)
+def sample_attachment_delete(sender, instance, **kwargs):
+    # Pass false so FileField doesn't save the model.
+    if instance.attachment:
+        instance.attachment.delete(False)
 
 
 # sample to tissue

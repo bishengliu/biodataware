@@ -7,7 +7,10 @@ from helpers.acl import isManger, isInGroups, isPIorAssistantofGroup
 from django.db import transaction
 from containers.models import Container, GroupContainer, BoxContainer, BoxResearcher
 from groups.models import Group, GroupResearcher
-from api.permissions import IsInGroupContanier, IsPIorReadOnly
+from users.models import User
+from api.permissions import IsInGroupContanier, IsPIorReadOnly, IsPIorAssistantorOwner
+import re
+import datetime
 
 
 # all container list only for manager or admin
@@ -350,7 +353,7 @@ class ShelfAlternative(APIView):
 
 
 class Shelf(APIView):
-    permission_classes = (permissions.IsAuthenticated, )
+    permission_classes = (permissions.IsAuthenticated, IsInGroupContanier,)
 
     def get(self, request, ct_id, id, format=None):
         user = request.user
@@ -434,7 +437,7 @@ class Shelf(APIView):
 
 # boxes list of a container, quick access
 class ContainerBoxList(APIView):
-    permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = (permissions.IsAuthenticated, IsInGroupContanier,)
 
     def get(self, request, ct_id, format=None):
         user = request.user
@@ -522,19 +525,15 @@ class ContainerBoxList(APIView):
                             status=status.HTTP_400_BAD_REQUEST)
 
 
+# allow view and add samples
 # box and sample list
 # =====================================
 # need to apply permissions to only allow view the box details in the group
 class BoxAlternative(APIView):
-    permission_classes = (permissions.IsAuthenticated, IsInGroupContanier,)
+    permission_classes = (permissions.IsAuthenticated, IsInGroupContanier, IsPIorAssistantorOwner,)
 
     def get(self, request, ct_id, tw_id, sf_id, bx_id, format=None):
         try:
-            user = request.user
-            obj = {
-                'user': user
-            }
-            self.check_object_permissions(request, obj)  # check the permission
             # get the container
             container = get_object_or_404(Container, pk=int(ct_id))
             if int(tw_id) > int(container.tower) or int(tw_id) < 0:
@@ -557,20 +556,84 @@ class BoxAlternative(APIView):
             if not box:
                 return Response({'detail': 'box does not exist!'},
                                 status=status.HTTP_400_BAD_REQUEST)
-            serializer = BoxSamplesSerializer(box)
-            return Response(serializer.data)
+            # get box researcher
+            box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
+            if box_researcher:
+                user = get_object_or_404(User, pk=box_researcher.researcher_id)
+                obj = {
+                    'user': user
+                }
+                self.check_object_permissions(request, obj)  # check the permission
+                serializer = BoxSamplesSerializer(box)
+                return Response(serializer.data)
+            return Response({'detail': 'Permission denied!'},
+                            status=status.HTTP_400_BAD_REQUEST)
         except:
             return Response({'detail': 'Something went wrong!'},
-                            status=status.HTTP_400_BAD_REQUEST)
+                    status=status.HTTP_400_BAD_REQUEST)
 
     # delete box
     def delete(self, request, ct_id, tw_id, sf_id, bx_id, format=None):
         try:
-            user = request.user
-            obj = {
-                'user': user
-            }
-            self.check_object_permissions(request, obj)  # check the permission
+            # get the container
+            container = get_object_or_404(Container, pk=int(ct_id))
+            if int(tw_id) > int(container.tower) or int(tw_id) < 0:
+                return Response({'detail': 'tower does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+
+            if int(sf_id) > int(container.shelf) or int(sf_id) < 0:
+                return Response({'detail': 'shelf does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+            if int(bx_id) > int(container.box) or int(bx_id) < 0:
+                return Response({'detail': 'Box does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+                # box
+            box = BoxContainer.objects.all() \
+                .filter(container_id=int(ct_id)) \
+                .filter(tower=int(tw_id)) \
+                .filter(shelf=int(sf_id)) \
+                .filter(box=int(bx_id)) \
+                .first()
+            if not box:
+                return Response({'detail': 'box does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+            # get box researcher
+            box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
+            if box_researcher:
+                user = get_object_or_404(User, pk=box_researcher.researcher_id)
+                obj = {
+                    'user': user
+                }
+                self.check_object_permissions(request, obj)  # check the permission
+                # check samples
+                if box.sample_set:
+                    return Response({'detail': 'Cannot delete this box, there are samples in the box!'},
+                                    status=status.HTTP_400_BAD_REQUEST)
+                box.delete()
+                return Response({'detail': 'Box deleted!'},
+                                status=status.HTTP_200_OK)
+            return Response({'detail': 'Permission denied!'},
+                            status=status.HTTP_400_BAD_REQUEST)
+        except:
+            return Response({'detail': 'Something went wrong!'},
+                    status=status.HTTP_400_BAD_REQUEST)
+
+    # add sample
+    @transaction.atomic
+    def post(self, request, ct_id, tw_id, sf_id, bx_id, format=None):
+        try:
+            # get the container
+            container = get_object_or_404(Container, pk=int(ct_id))
+            if int(tw_id) > int(container.tower) or int(tw_id) < 0:
+                return Response({'detail': 'tower does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+
+            if int(sf_id) > int(container.shelf) or int(sf_id) < 0:
+                return Response({'detail': 'shelf does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+            if int(bx_id) > int(container.box) or int(bx_id) < 0:
+                return Response({'detail': 'Box does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
             # box
             box = BoxContainer.objects.all() \
                 .filter(container_id=int(ct_id)) \
@@ -581,29 +644,40 @@ class BoxAlternative(APIView):
             if not box:
                 return Response({'detail': 'box does not exist!'},
                                 status=status.HTTP_400_BAD_REQUEST)
-            # check samples
-            if box.sample_set:
-                return Response({'detail': 'Cannot delete this box, there are samples in the box!'},
-                                status=status.HTTP_400_BAD_REQUEST)
-            box.delete()
-            return Response({'detail': 'Box deleted!'},
-                            status=status.HTTP_200_OK)
+            # get box researcher
+            box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
+            if box_researcher:
+                user = get_object_or_404(User, pk=box_researcher.researcher_id)
+                obj = {
+                    'user': user
+                }
+                self.check_object_permissions(request, obj)  # check the permission
+                serializer = SampleCreateSerializer(data=request.data)
+                serializer.is_valid(raise_exception=True)
+                data = serializer.data
+                # save sample
+
+                # save sample tissue
+
+                # save sample attachments
+
+                # save sample researcher
+
+                return Response({'detail': 'sample saved!'},
+                                status=status.HTTP_200_OK)
+            return Response({'detail': 'Permission denied!'},
+                            status=status.HTTP_400_BAD_REQUEST)
         except:
             return Response({'detail': 'Something went wrong!'},
-                     status=status.HTTP_400_BAD_REQUEST)
+                    status=status.HTTP_400_BAD_REQUEST)
 
 
 # box and sample list
 class Box(APIView):
-    permission_classes = (permissions.IsAuthenticated, IsInGroupContanier,)
+    permission_classes = (permissions.IsAuthenticated, IsInGroupContanier, IsPIorAssistantorOwner,)
 
     def get(self, request, ct_id, id, format=None):
         try:
-            user = request.user
-            obj = {
-                'user': user
-            }
-            self.check_object_permissions(request, obj)  # check the permission
             container = get_object_or_404(Container, pk=int(ct_id))
             id_list = id.split("-")
             tw_id = int(id_list[0])
@@ -629,20 +703,25 @@ class Box(APIView):
             if not box:
                 return Response({'detail': 'box does not exist!'},
                                 status=status.HTTP_400_BAD_REQUEST)
-            serializer = BoxSamplesSerializer(box)
-            return Response(serializer.data)
+            # get box researcher
+            box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
+            if box_researcher:
+                user = get_object_or_404(User, pk=box_researcher.researcher_id)
+                obj = {
+                    'user': user
+                }
+                self.check_object_permissions(request, obj)  # check the permission
+                serializer = BoxSamplesSerializer(box)
+                return Response(serializer.data)
+            return Response({'detail': 'Permission denied!'},
+                            status=status.HTTP_400_BAD_REQUEST)
         except:
             return Response({'detail': 'Something went wrong!'},
-                            status=status.HTTP_400_BAD_REQUEST)
+                    status=status.HTTP_400_BAD_REQUEST)
 
     # delete box
     def delete(self, request, ct_id, id, format=None):
         try:
-            user = request.user
-            obj = {
-                'user': user
-            }
-            self.check_object_permissions(request, obj)  # check the permission
             container = get_object_or_404(Container, pk=int(ct_id))
             id_list = id.split("-")
             tw_id = int(id_list[0])
@@ -668,22 +747,647 @@ class Box(APIView):
             if not box:
                 return Response({'detail': 'box does not exist!'},
                                 status=status.HTTP_400_BAD_REQUEST)
-            # check samples
-            if box.sample_set:
-                return Response({'detail': 'Cannot delete this box, there are samples in the box!'},
+            # get box researcher
+            box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
+            if box_researcher:
+                user = get_object_or_404(User, pk=box_researcher.researcher_id)
+                obj = {
+                    'user': user
+                }
+                self.check_object_permissions(request, obj)  # check the permission
+                # check samples
+                if box.sample_set:
+                    return Response({'detail': 'Cannot delete this box, there are samples in the box!'},
+                                    status=status.HTTP_400_BAD_REQUEST)
+                box.delete()
+                return Response({'detail': 'Box deleted!'},
+                                status=status.HTTP_200_OK)
+            return Response({'detail': 'Permission denied!'},
+                            status=status.HTTP_400_BAD_REQUEST)
+        except:
+            return Response({'detail': 'Something went wrong!'},
+                    status=status.HTTP_400_BAD_REQUEST)
+
+    # add sample
+    @transaction.atomic
+    def post(self, request, ct_id, tw_id, sf_id, bx_id, format=None):
+        try:
+            container = get_object_or_404(Container, pk=int(ct_id))
+            id_list = id.split("-")
+            tw_id = int(id_list[0])
+            sf_id = int(id_list[1])
+            bx_id = int(id_list[2])
+            if int(tw_id) > int(container.tower) or int(tw_id) < 0:
+                return Response({'detail': 'tower does not exist!'},
                                 status=status.HTTP_400_BAD_REQUEST)
-            box.delete()
-            return Response({'detail': 'Box deleted!'},
-                            status=status.HTTP_200_OK)
+
+            if int(sf_id) > int(container.shelf) or int(sf_id) < 0:
+                return Response({'detail': 'shelf does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+            if int(bx_id) > int(container.box) or int(bx_id) < 0:
+                return Response({'detail': 'Box does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+            # box
+            box = BoxContainer.objects.all() \
+                .filter(container_id=int(ct_id)) \
+                .filter(tower=int(tw_id)) \
+                .filter(shelf=int(sf_id)) \
+                .filter(box=int(bx_id)) \
+                .first()
+            if not box:
+                return Response({'detail': 'box does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+            # get box researcher
+            box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
+            if box_researcher:
+                user = get_object_or_404(User, pk=box_researcher.researcher_id)
+                obj = {
+                    'user': user
+                }
+                self.check_object_permissions(request, obj)  # check the permission
+                serializer = SampleCreateSerializer(data=request.data)
+                serializer.is_valid(raise_exception=True)
+                data = serializer.data
+                # save sample
+
+                # save sample tissue
+
+                # save sample attachments
+
+                # save sample researcher
+
+                return Response({'detail': 'sample saved!'},
+                                status=status.HTTP_200_OK)
+            return Response({'detail': 'Permission denied!'},
+                            status=status.HTTP_400_BAD_REQUEST)
         except:
             return Response({'detail': 'Something went wrong!'},
                             status=status.HTTP_400_BAD_REQUEST)
 
 
-# samples
-class SampleDetail(APIView):
-    pass
-
-
+# get, put and delete sample
 class SampleDetailAlternative(APIView):
-    pass
+    permission_classes = (permissions.IsAuthenticated, IsInGroupContanier, IsPIorAssistantorOwner,)
+
+    def get(self, request, ct_id, tw_id, sf_id, bx_id, sp_id):
+        # get the container
+        container = get_object_or_404(Container, pk=int(ct_id))
+        if int(tw_id) > int(container.tower) or int(tw_id) < 0:
+            return Response({'detail': 'tower does not exist!'},
+                        status=status.HTTP_400_BAD_REQUEST)
+
+        if int(sf_id) > int(container.shelf) or int(sf_id) < 0:
+            return Response({'detail': 'shelf does not exist!'},
+                        status=status.HTTP_400_BAD_REQUEST)
+        if int(bx_id) > int(container.box) or int(bx_id) < 0:
+            return Response({'detail': 'Box does not exist!'},
+                        status=status.HTTP_400_BAD_REQUEST)
+            # box
+        box = BoxContainer.objects.all() \
+            .filter(container_id=int(ct_id)) \
+            .filter(tower=int(tw_id)) \
+            .filter(shelf=int(sf_id)) \
+            .filter(box=int(bx_id)) \
+            .first()
+        if not box:
+            return Response({'detail': 'box does not exist!'},
+                        status=status.HTTP_400_BAD_REQUEST)
+        # get box researcher
+        box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
+        if box_researcher:
+            user = get_object_or_404(User, pk=box_researcher.researcher_id)
+            obj = {
+                'user': user
+            }
+            self.check_object_permissions(request, obj)  # check the permission
+            # find the sample
+            match = re.match(r"([a-z]+)([0-9]+)", sp_id, re.I)
+            if match:
+                pos =match.groups()
+                sample = Sample.objects.all().filter(box_id=box.pk).filter(vposition__iexact=pos[0]).filter(hposition=pos[1]).first()
+                if sample:
+                    serializer = SampleSerializer(sample)
+                    return Response(serializer.data)
+            return Response({'detail': 'sample does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+        return Response({'detail': 'Permission denied!'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+    @transaction.atomic
+    def delete(self, request, ct_id, tw_id, sf_id, bx_id, sp_id):
+        # get the container
+        container = get_object_or_404(Container, pk=int(ct_id))
+        if int(tw_id) > int(container.tower) or int(tw_id) < 0:
+            return Response({'detail': 'tower does not exist!'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        if int(sf_id) > int(container.shelf) or int(sf_id) < 0:
+            return Response({'detail': 'shelf does not exist!'},
+                            status=status.HTTP_400_BAD_REQUEST)
+        if int(bx_id) > int(container.box) or int(bx_id) < 0:
+            return Response({'detail': 'Box does not exist!'},
+                            status=status.HTTP_400_BAD_REQUEST)
+            # box
+        box = BoxContainer.objects.all() \
+            .filter(container_id=int(ct_id)) \
+            .filter(tower=int(tw_id)) \
+            .filter(shelf=int(sf_id)) \
+            .filter(box=int(bx_id)) \
+            .first()
+        if not box:
+            return Response({'detail': 'box does not exist!'},
+                            status=status.HTTP_400_BAD_REQUEST)
+        # get box researcher
+        box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
+        if box_researcher:
+            user = get_object_or_404(User, pk=box_researcher.researcher_id)
+            obj = {
+                'user': user
+            }
+            self.check_object_permissions(request, obj)  # check the permission
+            # find the sample
+            match = re.match(r"([a-z]+)([0-9]+)", sp_id, re.I)
+            if match:
+                pos = match.groups()
+                sample = Sample.objects.all().filter(box_id=box.pk).filter(vposition__iexact=pos[0]).filter(hposition=pos[1]).first()
+                if sample:
+                    sample.delete()
+                    return Response({'detail': 'sample is removed!'},
+                                status=status.HTTP_200_OK)
+            return Response({'detail': 'sample does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+        return Response({'detail': 'Permission denied!'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+    def put(self, request, ct_id, tw_id, sf_id, bx_id, sp_id):
+        # need to seperate
+        # sample info
+        # sample tissue
+        # sample attachment
+        # sample researcher
+        pass
+
+
+# get, put and delete sample
+class SampleDetail(APIView):
+    permission_classes = (permissions.IsAuthenticated, IsInGroupContanier, IsPIorAssistantorOwner,)
+
+    def get(self, request, ct_id, bx_id, sp_id):
+        container = get_object_or_404(Container, pk=int(ct_id))
+        id_list = bx_id.split("-")
+        tw_id = int(id_list[0])
+        sf_id = int(id_list[1])
+        bx_id = int(id_list[2])
+        if int(tw_id) > int(container.tower) or int(tw_id) < 0:
+            return Response({'detail': 'tower does not exist!'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        if int(sf_id) > int(container.shelf) or int(sf_id) < 0:
+            return Response({'detail': 'shelf does not exist!'},
+                            status=status.HTTP_400_BAD_REQUEST)
+        if int(bx_id) > int(container.box) or int(bx_id) < 0:
+            return Response({'detail': 'Box does not exist!'},
+                            status=status.HTTP_400_BAD_REQUEST)
+        # box
+        box = BoxContainer.objects.all() \
+            .filter(container_id=int(ct_id)) \
+            .filter(tower=int(tw_id)) \
+            .filter(shelf=int(sf_id)) \
+            .filter(box=int(bx_id)) \
+            .first()
+        if not box:
+            return Response({'detail': 'box does not exist!'},
+                        status=status.HTTP_400_BAD_REQUEST)
+        # get box researcher
+        box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
+        if box_researcher:
+            user = get_object_or_404(User, pk=box_researcher.researcher_id)
+            obj = {
+                'user': user
+            }
+            self.check_object_permissions(request, obj)  # check the permission
+            # find the sample
+            match = re.match(r"([a-z]+)([0-9]+)", sp_id, re.I)
+            if match:
+                pos =match.groups()
+                sample = Sample.objects.all().filter(box_id=box.pk).filter(vposition__iexact=pos[0]).filter(hposition=pos[1]).first()
+                if sample:
+                    serializer = SampleSerializer(sample)
+                    return Response(serializer.data)
+            return Response({'detail': 'sample does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+        return Response({'detail': 'Permission denied!'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+    @transaction.atomic
+    def delete(self, request, ct_id, bx_id, sp_id):
+        container = get_object_or_404(Container, pk=int(ct_id))
+        id_list = bx_id.split("-")
+        tw_id = int(id_list[0])
+        sf_id = int(id_list[1])
+        bx_id = int(id_list[2])
+        if int(tw_id) > int(container.tower) or int(tw_id) < 0:
+            return Response({'detail': 'tower does not exist!'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        if int(sf_id) > int(container.shelf) or int(sf_id) < 0:
+            return Response({'detail': 'shelf does not exist!'},
+                            status=status.HTTP_400_BAD_REQUEST)
+        if int(bx_id) > int(container.box) or int(bx_id) < 0:
+            return Response({'detail': 'Box does not exist!'},
+                            status=status.HTTP_400_BAD_REQUEST)
+        # box
+        box = BoxContainer.objects.all() \
+            .filter(container_id=int(ct_id)) \
+            .filter(tower=int(tw_id)) \
+            .filter(shelf=int(sf_id)) \
+            .filter(box=int(bx_id)) \
+            .first()
+        if not box:
+            return Response({'detail': 'box does not exist!'},
+                            status=status.HTTP_400_BAD_REQUEST)
+        # get box researcher
+        box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
+        if box_researcher:
+            user = get_object_or_404(User, pk=box_researcher.researcher_id)
+            obj = {
+                'user': user
+            }
+            self.check_object_permissions(request, obj)  # check the permission
+            # find the sample
+            match = re.match(r"([a-z]+)([0-9]+)", sp_id, re.I)
+            if match:
+                pos = match.groups()
+                sample = Sample.objects.all().filter(box_id=box.pk).filter(vposition__iexact=pos[0]).filter(
+                    hposition=pos[1]).first()
+                if sample:
+                    sample.delete()
+                    return Response({'detail': 'sample is removed!'},
+                                    status=status.HTTP_200_OK)
+            return Response({'detail': 'sample does not exist!'},
+                            status=status.HTTP_400_BAD_REQUEST)
+        return Response({'detail': 'Permission denied!'},
+                        status=status.HTTP_400_BAD_REQUEST)
+
+    def put(self, request, ct_id, bx_id, sp_id):
+        # need to seperate
+        # sample info
+        # sample tissue
+        # sample attachment
+        # sample researcher
+        pass
+
+
+# sample taken out
+class SampleTakeAlternative(APIView):
+    permission_classes = (permissions.IsAuthenticated, IsInGroupContanier, IsPIorAssistantorOwner,)
+
+    def get(self, request, ct_id, tw_id, sf_id, bx_id, sp_id):
+        try:
+            # get the container
+            container = get_object_or_404(Container, pk=int(ct_id))
+            if int(tw_id) > int(container.tower) or int(tw_id) < 0:
+                return Response({'detail': 'tower does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+
+            if int(sf_id) > int(container.shelf) or int(sf_id) < 0:
+                return Response({'detail': 'shelf does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+            if int(bx_id) > int(container.box) or int(bx_id) < 0:
+                return Response({'detail': 'Box does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+                # box
+            box = BoxContainer.objects.all() \
+                .filter(container_id=int(ct_id)) \
+                .filter(tower=int(tw_id)) \
+                .filter(shelf=int(sf_id)) \
+                .filter(box=int(bx_id)) \
+                .first()
+            if not box:
+                return Response({'detail': 'box does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+            # get box researcher
+            box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
+            if box_researcher:
+                user = get_object_or_404(User, pk=box_researcher.researcher_id)
+                obj = {
+                    'user': user
+                }
+                self.check_object_permissions(request, obj)  # check the permission
+                # find the sample
+                match = re.match(r"([a-z]+)([0-9]+)", sp_id, re.I)
+                if match:
+                    pos = match.groups()
+                    sample = Sample.objects.all().filter(box_id=box.pk).filter(vposition__iexact=pos[0]).filter(
+                        hposition=pos[1]).first()
+                    if sample:
+                        sample.occupied = False
+                        sample.date_out = datetime.datetime.now()
+                        sample.save()
+                        return Response({'detail': 'sample is taken out!'},
+                                        status=status.HTTP_200_OK)
+                return Response({'detail': 'sample does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+            return Response({'detail': 'Permission denied!'},
+                            status=status.HTTP_400_BAD_REQUEST)
+        except:
+            return Response({'detail': 'Something went wrong!'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+
+class SampleTake(APIView):
+    permission_classes = (permissions.IsAuthenticated, IsInGroupContanier, IsPIorAssistantorOwner,)
+
+    def get(self, request, ct_id, bx_id, sp_id):
+        try:
+            container = get_object_or_404(Container, pk=int(ct_id))
+            id_list = bx_id.split("-")
+            tw_id = int(id_list[0])
+            sf_id = int(id_list[1])
+            bx_id = int(id_list[2])
+            if int(tw_id) > int(container.tower) or int(tw_id) < 0:
+                return Response({'detail': 'tower does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+
+            if int(sf_id) > int(container.shelf) or int(sf_id) < 0:
+                return Response({'detail': 'shelf does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+            if int(bx_id) > int(container.box) or int(bx_id) < 0:
+                return Response({'detail': 'Box does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+            # box
+            box = BoxContainer.objects.all() \
+                .filter(container_id=int(ct_id)) \
+                .filter(tower=int(tw_id)) \
+                .filter(shelf=int(sf_id)) \
+                .filter(box=int(bx_id)) \
+                .first()
+            if not box:
+                return Response({'detail': 'box does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+            # get box researcher
+            box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
+            if box_researcher:
+                user = get_object_or_404(User, pk=box_researcher.researcher_id)
+                obj = {
+                    'user': user
+                }
+                self.check_object_permissions(request, obj)  # check the permission
+                # find the sample
+                match = re.match(r"([a-z]+)([0-9]+)", sp_id, re.I)
+                if match:
+                    pos = match.groups()
+                    sample = Sample.objects.all().filter(box_id=box.pk).filter(vposition__iexact=pos[0]).filter(
+                        hposition=pos[1]).first()
+                    if sample:
+                        sample.occupied = False
+                        sample.date_out = datetime.datetime.now()
+                        sample.save()
+                        return Response({'detail': 'sample is taken out!'},
+                                        status=status.HTTP_200_OK)
+                return Response({'detail': 'sample does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+            return Response({'detail': 'Permission denied!'},
+                            status=status.HTTP_400_BAD_REQUEST)
+        except:
+            return Response({'detail': 'Something went wrong!'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+
+# put sample back
+class SampleBackAlternative(APIView):
+    permission_classes = (permissions.IsAuthenticated, IsInGroupContanier, IsPIorAssistantorOwner,)
+
+    def get(self, request, ct_id, tw_id, sf_id, bx_id, sp_id):
+        try:
+            # get the container
+            container = get_object_or_404(Container, pk=int(ct_id))
+            if int(tw_id) > int(container.tower) or int(tw_id) < 0:
+                return Response({'detail': 'tower does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+
+            if int(sf_id) > int(container.shelf) or int(sf_id) < 0:
+                return Response({'detail': 'shelf does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+            if int(bx_id) > int(container.box) or int(bx_id) < 0:
+                return Response({'detail': 'Box does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+                # box
+            box = BoxContainer.objects.all() \
+                .filter(container_id=int(ct_id)) \
+                .filter(tower=int(tw_id)) \
+                .filter(shelf=int(sf_id)) \
+                .filter(box=int(bx_id)) \
+                .first()
+            if not box:
+                return Response({'detail': 'box does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+            # get box researcher
+            box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
+            if box_researcher:
+                user = get_object_or_404(User, pk=box_researcher.researcher_id)
+                obj = {
+                    'user': user
+                }
+                self.check_object_permissions(request, obj)  # check the permission
+                # find the sample
+                match = re.match(r"([a-z]+)([0-9]+)", sp_id, re.I)
+                if match:
+                    pos = match.groups()
+                    sample = Sample.objects.all().filter(box_id=box.pk).filter(vposition__iexact=pos[0]).filter(
+                        hposition=pos[1]).first()
+                    if sample:
+                        sample.occupied = True
+                        sample.date_out = datetime.datetime.now()
+                        sample.save()
+                        return Response({'detail': 'sample is put back!'},
+                                        status=status.HTTP_200_OK)
+                return Response({'detail': 'sample does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+            return Response({'detail': 'Permission denied!'},
+                            status=status.HTTP_400_BAD_REQUEST)
+        except:
+            return Response({'detail': 'Something went wrong!'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+
+class SampleBack(APIView):
+    permission_classes = (permissions.IsAuthenticated, IsInGroupContanier, IsPIorAssistantorOwner,)
+
+    def get(self, request, ct_id, bx_id, sp_id):
+        try:
+            container = get_object_or_404(Container, pk=int(ct_id))
+            id_list = bx_id.split("-")
+            tw_id = int(id_list[0])
+            sf_id = int(id_list[1])
+            bx_id = int(id_list[2])
+            if int(tw_id) > int(container.tower) or int(tw_id) < 0:
+                return Response({'detail': 'tower does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+
+            if int(sf_id) > int(container.shelf) or int(sf_id) < 0:
+                return Response({'detail': 'shelf does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+            if int(bx_id) > int(container.box) or int(bx_id) < 0:
+                return Response({'detail': 'Box does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+            # box
+            box = BoxContainer.objects.all() \
+                .filter(container_id=int(ct_id)) \
+                .filter(tower=int(tw_id)) \
+                .filter(shelf=int(sf_id)) \
+                .filter(box=int(bx_id)) \
+                .first()
+            if not box:
+                return Response({'detail': 'box does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+            # get box researcher
+            box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
+            if box_researcher:
+                user = get_object_or_404(User, pk=box_researcher.researcher_id)
+                obj = {
+                    'user': user
+                }
+                self.check_object_permissions(request, obj)  # check the permission
+                # find the sample
+                match = re.match(r"([a-z]+)([0-9]+)", sp_id, re.I)
+                if match:
+                    pos = match.groups()
+                    sample = Sample.objects.all().filter(box_id=box.pk).filter(vposition__iexact=pos[0]).filter(
+                        hposition=pos[1]).first()
+                    if sample:
+                        sample.occupied = True
+                        sample.date_out = datetime.datetime.now()
+                        sample.save()
+                        return Response({'detail': 'sample is put back!'},
+                                        status=status.HTTP_200_OK)
+                return Response({'detail': 'sample does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+            return Response({'detail': 'Permission denied!'},
+                            status=status.HTTP_400_BAD_REQUEST)
+        except:
+            return Response({'detail': 'Something went wrong!'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+
+# change sample color
+class SampleColorAlternative(APIView):
+    permission_classes = (permissions.IsAuthenticated, IsInGroupContanier, IsPIorAssistantorOwner,)
+
+    def put(self, request, ct_id, tw_id, sf_id, bx_id, sp_id):
+        try:
+            # get the container
+            container = get_object_or_404(Container, pk=int(ct_id))
+            if int(tw_id) > int(container.tower) or int(tw_id) < 0:
+                return Response({'detail': 'tower does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+
+            if int(sf_id) > int(container.shelf) or int(sf_id) < 0:
+                return Response({'detail': 'shelf does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+            if int(bx_id) > int(container.box) or int(bx_id) < 0:
+                return Response({'detail': 'Box does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+                # box
+            box = BoxContainer.objects.all() \
+                .filter(container_id=int(ct_id)) \
+                .filter(tower=int(tw_id)) \
+                .filter(shelf=int(sf_id)) \
+                .filter(box=int(bx_id)) \
+                .first()
+            if not box:
+                return Response({'detail': 'box does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+            # get box researcher
+            box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
+            if box_researcher:
+                user = get_object_or_404(User, pk=box_researcher.researcher_id)
+                obj = {
+                    'user': user
+                }
+                self.check_object_permissions(request, obj)  # check the permission
+                # find the sample
+                match = re.match(r"([a-z]+)([0-9]+)", sp_id, re.I)
+                if match:
+                    pos = match.groups()
+                    sample = Sample.objects.all().filter(box_id=box.pk).filter(vposition__iexact=pos[0]).filter(
+                        hposition=pos[1]).first()
+                    if sample:
+                        # validate serializer
+                        serializer = SampleColorSerializer(data=request.data)
+                        serializer.is_valid(raise_exception=True)
+                        data = serializer.data
+                        sample.color = data['color']
+                        sample.save()
+                        return Response({'detail': 'color is updated!'},
+                                        status=status.HTTP_200_OK)
+                return Response({'detail': 'sample does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+            return Response({'detail': 'Permission denied!'},
+                            status=status.HTTP_400_BAD_REQUEST)
+        except:
+            return Response({'detail': 'Something went wrong!'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+
+class SampleColor(APIView):
+    permission_classes = (permissions.IsAuthenticated, IsInGroupContanier, IsPIorAssistantorOwner,)
+
+    def put(self, request, ct_id, bx_id, sp_id):
+        try:
+            container = get_object_or_404(Container, pk=int(ct_id))
+            id_list = bx_id.split("-")
+            tw_id = int(id_list[0])
+            sf_id = int(id_list[1])
+            bx_id = int(id_list[2])
+            if int(tw_id) > int(container.tower) or int(tw_id) < 0:
+                return Response({'detail': 'tower does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+
+            if int(sf_id) > int(container.shelf) or int(sf_id) < 0:
+                return Response({'detail': 'shelf does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+            if int(bx_id) > int(container.box) or int(bx_id) < 0:
+                return Response({'detail': 'Box does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+            # box
+            box = BoxContainer.objects.all() \
+                .filter(container_id=int(ct_id)) \
+                .filter(tower=int(tw_id)) \
+                .filter(shelf=int(sf_id)) \
+                .filter(box=int(bx_id)) \
+                .first()
+            if not box:
+                return Response({'detail': 'box does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+            # get box researcher
+            box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
+            if box_researcher:
+                user = get_object_or_404(User, pk=box_researcher.researcher_id)
+                obj = {
+                    'user': user
+                }
+                self.check_object_permissions(request, obj)  # check the permission
+                # find the sample
+                match = re.match(r"([a-z]+)([0-9]+)", sp_id, re.I)
+                if match:
+                    pos = match.groups()
+                    sample = Sample.objects.all().filter(box_id=box.pk).filter(vposition__iexact=pos[0]).filter(
+                        hposition=pos[1]).first()
+                    if sample:
+                        # validate serializer
+                        serializer = SampleColorSerializer(data=request.data)
+                        serializer.is_valid(raise_exception=True)
+                        data = serializer.data
+                        sample.color = data['color']
+                        sample.save()
+                        return Response({'detail': 'color is updated!'},
+                                        status=status.HTTP_200_OK)
+                return Response({'detail': 'sample does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+            return Response({'detail': 'Permission denied!'},
+                            status=status.HTTP_400_BAD_REQUEST)
+        except:
+            return Response({'detail': 'Something went wrong!'},
+                            status=status.HTTP_400_BAD_REQUEST)
+

@@ -172,7 +172,6 @@ class IsPIorReadOnly(permissions.BasePermission):
         try:
             if request.method in permissions.SAFE_METHODS:
                 return True
-
             authUser = request.user
             if authUser.is_superuser:
                 return True
@@ -282,7 +281,6 @@ class IsPIorAssistantofUser(permissions.BasePermission):
             if not user_groups:
                 return False
             user_group_ids = [g.id for g in user_groups]
-
             if request.user.is_authenticated():
                 # pi
                 role = Role.objects.all().filter(role__iexact='PI').first()
@@ -414,8 +412,8 @@ class IsPIorAssistantofUserOrReadOnly(permissions.BasePermission):
 class IsInGroupContanier(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
         try:
-            user = request.user
-            if user.is_superuser:
+            auth_user = request.user
+            if auth_user.is_superuser:
                 return True
             container = obj['container']
             #get the group containers
@@ -425,7 +423,7 @@ class IsInGroupContanier(permissions.BasePermission):
                 container_group_ids = [g.group_id for g in group_containers]
                 if len(container_group_ids) > 0:
                     # get the current user group
-                    group_researchers = GroupResearcher.objects.all().filter(user_id=user.pk).filter(group_id__in=container_group_ids)
+                    group_researchers = GroupResearcher.objects.all().filter(user_id=auth_user.pk).filter(group_id__in=container_group_ids)
                     if group_researchers:
                         return True
             return False
@@ -433,6 +431,50 @@ class IsInGroupContanier(permissions.BasePermission):
             return False
 
 
-# obj must contain container
-class IsInGroupBox(permissions.BasePermission):
-    pass
+# must be PI or owner
+class IsPIorAssistantorOwner(permissions.BasePermission):
+    def has_object_permission(self, request, view, obj):
+        try:
+            if request.user.is_authenticated():
+                auth_user = request.user
+                if auth_user.is_superuser:
+                    return True
+                user = obj['user']
+                # first check self
+                if user == request.user:
+                    return True
+                else:
+                    # if not self check for pi or assistant
+                    # first check whether the user is in any group
+                    user_groups = GroupResearcher.objects.all().filter(user_id=user.id)
+                    if not user_groups:
+                        return False
+                    user_group_ids = [g.id for g in user_groups]
+                    # pi
+                    role = Role.objects.all().filter(role__iexact='PI').first()
+                    if role:
+                        # pi
+                        pi_roles = UserRole.objects.all().filter(user_id=auth_user.id).filter(role_id=role.id)
+                        if pi_roles:
+                            # pi
+                            pi_groups = Group.objects.all().filter(email__iexact=auth_user.email)
+                            if pi_groups:
+                                pi_group_ids = [g.id for g in pi_groups]
+                                intersection = list(set(user_group_ids) & set(pi_group_ids))
+                                if len(intersection) >= 1:
+                                    return True
+                        else:
+                            # assistants
+                            # get the group
+                            auth_groups = GroupResearcher.objects.all().filter(user_id=auth_user.id)
+                            if auth_groups:
+                                auth_group_ids = [g.id for g in auth_groups]
+                                assistant_groups = Assistant.objects.all().filter(group_id__in=auth_group_ids)
+                                if assistant_groups:
+                                    assistant_group_ids = [a.group_id for a in assistant_groups]
+                                    intersection = list(set(user_group_ids) & set(assistant_group_ids))
+                                    if len(intersection) >= 1:
+                                        return True
+            return False
+        except:
+            return False

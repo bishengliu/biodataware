@@ -6,6 +6,7 @@ from django.utils.translation import ugettext_lazy as _
 from containers.models import Container, GroupContainer, BoxContainer, BoxResearcher
 from groups.models import Group, GroupResearcher
 from samples.models import SampleAttachment, SampleResearcher, SampleTissue, Sample
+from django.core.validators import MinValueValidator
 
 
 class BoxResearcherSerializer(serializers.ModelSerializer):
@@ -194,3 +195,34 @@ class BoxSamplesSerializer(serializers.ModelSerializer):
     class Meta:
         model = BoxContainer
         fields = ('pk', 'box_position', 'box_vertical', 'box_horizontal', 'tower', 'shelf', 'box', 'code39', 'qrcode', 'samples', 'researchers')
+
+
+# sample color
+class SampleColorSerializer(serializers.Serializer):
+    color = serializers.RegexField(regex=r'^#[0-9a-fA-F]{6}$', required=True)
+
+
+# add a new sample
+class SampleCreateSerializer(serializers.Serializer):
+    hposition = serializers.RegexField(regex=r'^[0-9]{1,2}$', required=True)  # h position
+    vposition = serializers.RegexField(regex=r'^[a-zA-Z]$', required=True)  # v position
+    color = serializers.RegexField(regex=r'^#[0-9a-fA-F]{6}$', required=False)  # color of the position
+    name = serializers.CharField(max_length=150)  # sample
+    freezing_date = serializers.DateField()  # sample freezing date
+    registration_code = serializers.CharField(max_length=50, required=False, allow_null=True, allow_blank=True)  # sample registration code, such as promas barcode
+    pathology_code = serializers.CharField(max_length=50, required=False, allow_null=True, allow_blank=True)  # sample pathology code
+    freezing_code = serializers.CharField(max_length=50, required=False, allow_null=True, allow_blank=True)  # sample freezing code
+    quantity = serializers.IntegerField(validators=[MinValueValidator(1)], default=1)  # sample quantity
+    type = serializers.CharField(max_length=200, required=False, allow_null=True, allow_blank=True)  # sample type, such as tumor
+    description = serializers.CharField(required=False, allow_null=True, allow_blank=True)
+
+    # attachment
+    label = serializers.CharField()  # attachment label
+    attachment_description = serializers.CharField(required=False, allow_null=True, allow_blank=True)
+
+    # tissues
+    system = serializers.CharField(required=False, allow_null=True, allow_blank=True)
+    tissue = serializers.CharField(required=False, allow_null=True, allow_blank=True)
+
+    # researcher
+    researcher = serializers.CharField(required=False, allow_null=True, allow_blank=True)
