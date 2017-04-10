@@ -216,13 +216,14 @@ class SampleCreateSerializer(serializers.Serializer):
     type = serializers.CharField(max_length=200, required=False, allow_null=True, allow_blank=True)  # sample type, such as tumor
     description = serializers.CharField(required=False, allow_null=True, allow_blank=True)
 
-    # attachment
-    label = serializers.CharField()  # attachment label
+    # attachment only one file is allowed
+    label = serializers.CharField(required=False, allow_null=True, allow_blank=True)  # attachment label
+    attachment = serializers.FileField(required=False, allow_null=True, allow_empty_file=True, max_length=100)
     attachment_description = serializers.CharField(required=False, allow_null=True, allow_blank=True)
 
     # tissues
-    system = serializers.CharField(required=False, allow_null=True, allow_blank=True)
-    tissue = serializers.CharField(required=False, allow_null=True, allow_blank=True)
+    system = serializers.CharField(required=False, allow_null=True, allow_blank=True)  # 1-2
+    tissue = serializers.CharField(required=False, allow_null=True, allow_blank=True)  # 2,4,5-2,3,4
 
     # researcher
-    researcher = serializers.CharField(required=False, allow_null=True, allow_blank=True)
+    researcher = serializers.CharField(required=False, allow_null=True, allow_blank=True) # 1,2,3

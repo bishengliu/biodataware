@@ -656,12 +656,100 @@ class BoxAlternative(APIView):
                 serializer.is_valid(raise_exception=True)
                 data = serializer.data
                 # save sample
-
+                sample = Sample.objects.create(
+                    box_id=box.pk,
+                    hposition=data['hposition'],
+                    vposition=data['vposition'],
+                    color=data.get('color', '#EEEEEE'),
+                    name=data['name'],
+                    occupied=True,
+                    date_in=datetime.datetime.now(),
+                    freezing_date=data.get('freezing_date', datetime.datetime.now()),
+                    registration_code=data.get('registration_code', ''),
+                    pathology_code=data.get('pathology_code', ''),
+                    freezing_code=data.get('freezing_code', ''),
+                    quantity=data['quantity'],
+                    type=data.get('type', ''),
+                    description=data.get('description', '')
+                )
                 # save sample tissue
+                # seperated by '-'
+                if data.get('system', "") != "" and data.get('tissue', "") != "":
+                    # parse system
+                    if "-" in data.get('system', ""):
+                        system_List = data.get('system', "").split("-")
+                        if "-" in data.get('tissue', ""):
+                            tissue_list = data.get('tissue', "").split("-")
+                            if len(system_List) == len(tissue_list):
+                                # create object
+                                for s in range(0, len(system_List)):
+                                    if "," in tissue_list[s]:
+                                        tissue_ids = tissue_list[s].split(",")
+                                        for t in len(tissue_ids):
+                                            SampleTissue.objects.create(
+                                                sample_id=sample.pk,
+                                                system_id=int(system_List[s]),
+                                                tissue_id=int(tissue_ids[t])
+                                            )
+                                    else:
+                                        SampleTissue.objects.create(
+                                            sample_id=sample.pk,
+                                            system_id=int(system_List[s]),
+                                            tissue_id=int(tissue_list[s])
+                                        )
+                    else:
+                        system_id = int(data.get('system', ""))
+                        if "-" not in data.get('tissue', ""):
+                            tissue_id = int(data.get('tissue', ""))
+                            if "," in tissue_id:
+                                tissue_ids = tissue_id.split(",")
+                                for t in len(tissue_ids):
+                                    SampleTissue.objects.create(
+                                        sample_id=sample.pk,
+                                        system_id=system_id,
+                                        tissue_id=tissue_ids[t]
+                                    )
+                            else:
+                                SampleTissue.objects.create(
+                                    sample_id=sample.pk,
+                                    system_id=system_id,
+                                    tissue_id=tissue_id
+                                )
 
                 # save sample attachments
+                # sperated by '|'
+                if data.get('label', "") != "":
+                    if "|" in data.get('label', ""):
+                        labels = data.get('label', "").split("|")
+                        for l in len(labels):
+                            SampleAttachment.objects.create(
+                                sample_id=sample.pk,
+                                label=labels[l],
+                                description=data.get("attachment_description", ""),
+                                attachment=request.FILES['attachment' + str(l)] if request.FILES['attachment'+ str(l)] else None
+                            )
+                    else:
+                        SampleAttachment.objects.create(
+                            sample_id=sample.pk,
+                            label=data.get('label', ""),
+                            description=data.get("attachment_description", ""),
+                            attachment=request.FILES['attachment'] if request.FILES['attachment'] else None
+                        )
 
                 # save sample researcher
+                if data.get('researcher', "") != "":
+                    if "," in data.get('researcher', ""):
+                        researchers = data.get('researcher', "").split(",")
+                        for r in len(researchers):
+                            SampleResearcher.objects.create(
+                                sample_id=sample.pk,
+                                researcher_id=int(researchers[r])
+                            )
+                    else:
+                        SampleResearcher.objects.create(
+                            sample_id=sample.pk,
+                            researcher_id=int(data.get('researcher', ""))
+                        )
 
                 return Response({'detail': 'sample saved!'},
                                 status=status.HTTP_200_OK)
