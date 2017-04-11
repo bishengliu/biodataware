@@ -8,6 +8,7 @@ from django.db import transaction
 from containers.models import Container, GroupContainer, BoxContainer, BoxResearcher
 from groups.models import Group, GroupResearcher
 from users.models import User
+from samples.models import Biosystem, Tissue
 from api.permissions import IsInGroupContanier, IsPIorReadOnly, IsPIorAssistantorOwner
 import re
 import datetime
@@ -655,6 +656,10 @@ class BoxAlternative(APIView):
                 serializer = SampleCreateSerializer(data=request.data)
                 serializer.is_valid(raise_exception=True)
                 data = serializer.data
+                # check whether the position of the sample has already be occupied
+                if Sample.objects.all().filter(box_id=box.pk).filter(hposition=data.get("hposition", "")).filter(vposition=data.get("vposition", "")).filter(occupied=True):
+                    return Response({'detail': 'Sample position has already been taken!'},
+                                    status=status.HTTP_400_BAD_REQUEST)
                 # save sample
                 sample = Sample.objects.create(
                     box_id=box.pk,
@@ -673,84 +678,100 @@ class BoxAlternative(APIView):
                     description=data.get('description', '')
                 )
                 # save sample tissue
-                # seperated by '-'
+                # separated by '-'
                 if data.get('system', "") != "" and data.get('tissue', "") != "":
                     # parse system
                     if "-" in data.get('system', ""):
-                        system_List = data.get('system', "").split("-")
+                        system_list = data.get('system', "").split("-")
                         if "-" in data.get('tissue', ""):
                             tissue_list = data.get('tissue', "").split("-")
-                            if len(system_List) == len(tissue_list):
+                            if len(system_list) == len(tissue_list):
                                 # create object
-                                for s in range(0, len(system_List)):
-                                    if "," in tissue_list[s]:
-                                        tissue_ids = tissue_list[s].split(",")
-                                        for t in len(tissue_ids):
-                                            SampleTissue.objects.create(
-                                                sample_id=sample.pk,
-                                                system_id=int(system_List[s]),
-                                                tissue_id=int(tissue_ids[t])
-                                            )
-                                    else:
-                                        SampleTissue.objects.create(
-                                            sample_id=sample.pk,
-                                            system_id=int(system_List[s]),
-                                            tissue_id=int(tissue_list[s])
-                                        )
+                                for s in list(range(len(system_list))):
+                                    # validate the system
+                                    if get_object_or_404(Biosystem, pk=int(system_list[s])):
+                                        if "," in tissue_list[s]:
+                                            tissue_ids = tissue_list[s].split(",")
+                                            for t in list(range(len(tissue_ids))):
+                                                # validate tissue
+                                                if get_object_or_404(Tissue, pk=int(tissue_ids[t])):
+                                                    SampleTissue.objects.create(
+                                                        sample_id=sample.pk,
+                                                        system_id=int(system_list[s]),
+                                                        tissue_id=int(tissue_ids[t])
+                                                    )
+                                        else:
+                                            # validate tissue
+                                            if get_object_or_404(Tissue, pk=int(tissue_list[s])):
+                                                SampleTissue.objects.create(
+                                                    sample_id=sample.pk,
+                                                    system_id=int(system_list[s]),
+                                                    tissue_id=int(tissue_list[s])
+                                                )
                     else:
                         system_id = int(data.get('system', ""))
-                        if "-" not in data.get('tissue', ""):
-                            tissue_id = int(data.get('tissue', ""))
-                            if "," in tissue_id:
-                                tissue_ids = tissue_id.split(",")
-                                for t in len(tissue_ids):
-                                    SampleTissue.objects.create(
-                                        sample_id=sample.pk,
-                                        system_id=system_id,
-                                        tissue_id=tissue_ids[t]
-                                    )
-                            else:
-                                SampleTissue.objects.create(
-                                    sample_id=sample.pk,
-                                    system_id=system_id,
-                                    tissue_id=tissue_id
-                                )
+                        if get_object_or_404(Biosystem, pk=system_id):
+                            if "-" not in data.get('tissue', ""):
+                                tissue_id = data.get('tissue', "")
+                                if "," in tissue_id:
+                                    tissue_ids = tissue_id.split(",")
+                                    for t in list(range(len(tissue_ids))):
+                                        # validate tissue
+                                        if get_object_or_404(Tissue, pk=int(tissue_ids[t])):
+                                            SampleTissue.objects.create(
+                                                sample_id=sample.pk,
+                                                system_id=system_id,
+                                                tissue_id=int(tissue_ids[t])
+                                            )
+                                else:
+                                    # validate tissue
+                                    if get_object_or_404(Tissue, pk=int(tissue_id)):
+                                        SampleTissue.objects.create(
+                                            sample_id=sample.pk,
+                                            system_id=system_id,
+                                            tissue_id=int(tissue_id)
+                                        )
 
                 # save sample attachments
-                # sperated by '|'
+                # separated by '|'
                 if data.get('label', "") != "":
-                    if "|" in data.get('label', ""):
+                    if "|" in data.get('label', "") and "|" in data.get("attachment_description", ""):
                         labels = data.get('label', "").split("|")
-                        for l in len(labels):
-                            SampleAttachment.objects.create(
-                                sample_id=sample.pk,
-                                label=labels[l],
-                                description=data.get("attachment_description", ""),
-                                attachment=request.FILES['attachment' + str(l)] if request.FILES['attachment'+ str(l)] else None
-                            )
+                        descriptions = data.get("attachment_description", "").split("|")
+                        if len(labels) == len(descriptions):
+                            for l in list(range(len(labels))):
+                                SampleAttachment.objects.create(
+                                    sample_id=sample.pk,
+                                    label=labels[l],
+                                    description=descriptions[l],
+                                    # attachment name=attachment0, 1, 2...
+                                    attachment=request.FILES['attachment' + str(l)] if (request.FILES and request.FILES['attachment' + str(l)]) else None
+                                )
                     else:
                         SampleAttachment.objects.create(
                             sample_id=sample.pk,
                             label=data.get('label', ""),
                             description=data.get("attachment_description", ""),
-                            attachment=request.FILES['attachment'] if request.FILES['attachment'] else None
+                            attachment=request.FILES['attachment'] if (request.FILES and request.FILES['attachment']) else None
                         )
 
                 # save sample researcher
                 if data.get('researcher', "") != "":
                     if "," in data.get('researcher', ""):
                         researchers = data.get('researcher', "").split(",")
-                        for r in len(researchers):
+                        for r in list(range(len(researchers))):
+                            # validate suer
+                            if get_object_or_404(User, pk=int(researchers[r])):
+                                SampleResearcher.objects.create(
+                                    sample_id=sample.pk,
+                                    researcher_id=int(researchers[r])
+                                )
+                    else:
+                        if get_object_or_404(User, pk=int(data.get('researcher', ""))):
                             SampleResearcher.objects.create(
                                 sample_id=sample.pk,
-                                researcher_id=int(researchers[r])
+                                researcher_id=int(data.get('researcher', ""))
                             )
-                    else:
-                        SampleResearcher.objects.create(
-                            sample_id=sample.pk,
-                            researcher_id=int(data.get('researcher', ""))
-                        )
-
                 return Response({'detail': 'sample saved!'},
                                 status=status.HTTP_200_OK)
             return Response({'detail': 'Permission denied!'},
@@ -896,13 +917,125 @@ class Box(APIView):
                 serializer = SampleCreateSerializer(data=request.data)
                 serializer.is_valid(raise_exception=True)
                 data = serializer.data
-                # save sample
-
+                # check whether the position of the sample has already be occupied
+                if Sample.objects.all().filter(box_id=box.pk).filter(hposition=data.get("hposition", "")).filter(
+                        vposition=data.get("vposition", "")).filter(occupied=True):
+                    return Response({'detail': 'Sample position has already been taken!'},
+                                    status=status.HTTP_400_BAD_REQUEST)
+                    # save sample
+                sample = Sample.objects.create(
+                    box_id=box.pk,
+                    hposition=data['hposition'],
+                    vposition=data['vposition'],
+                    color=data.get('color', '#EEEEEE'),
+                    name=data['name'],
+                    occupied=True,
+                    date_in=datetime.datetime.now(),
+                    freezing_date=data.get('freezing_date', datetime.datetime.now()),
+                    registration_code=data.get('registration_code', ''),
+                    pathology_code=data.get('pathology_code', ''),
+                    freezing_code=data.get('freezing_code', ''),
+                    quantity=data['quantity'],
+                    type=data.get('type', ''),
+                    description=data.get('description', '')
+                )
                 # save sample tissue
+                # separated by '-'
+                if data.get('system', "") != "" and data.get('tissue', "") != "":
+                    # parse system
+                    if "-" in data.get('system', ""):
+                        system_list = data.get('system', "").split("-")
+                        if "-" in data.get('tissue', ""):
+                            tissue_list = data.get('tissue', "").split("-")
+                            if len(system_list) == len(tissue_list):
+                                # create object
+                                for s in list(range(len(system_list))):
+                                    # validate the system
+                                    if get_object_or_404(Biosystem, pk=int(system_list[s])):
+                                        if "," in tissue_list[s]:
+                                            tissue_ids = tissue_list[s].split(",")
+                                            for t in list(range(len(tissue_ids))):
+                                                # validate tissue
+                                                if get_object_or_404(Tissue, pk=int(tissue_ids[t])):
+                                                    SampleTissue.objects.create(
+                                                        sample_id=sample.pk,
+                                                        system_id=int(system_list[s]),
+                                                        tissue_id=int(tissue_ids[t])
+                                                    )
+                                        else:
+                                            # validate tissue
+                                            if get_object_or_404(Tissue, pk=int(tissue_list[s])):
+                                                SampleTissue.objects.create(
+                                                    sample_id=sample.pk,
+                                                    system_id=int(system_list[s]),
+                                                    tissue_id=int(tissue_list[s])
+                                                )
+                    else:
+                        system_id = int(data.get('system', ""))
+                        if get_object_or_404(Biosystem, pk=system_id):
+                            if "-" not in data.get('tissue', ""):
+                                tissue_id = data.get('tissue', "")
+                                if "," in tissue_id:
+                                    tissue_ids = tissue_id.split(",")
+                                    for t in list(range(len(tissue_ids))):
+                                        # validate tissue
+                                        if get_object_or_404(Tissue, pk=int(tissue_ids[t])):
+                                            SampleTissue.objects.create(
+                                                sample_id=sample.pk,
+                                                system_id=system_id,
+                                                tissue_id=int(tissue_ids[t])
+                                            )
+                                else:
+                                    # validate tissue
+                                    if get_object_or_404(Tissue, pk=int(tissue_id)):
+                                        SampleTissue.objects.create(
+                                            sample_id=sample.pk,
+                                            system_id=system_id,
+                                            tissue_id=int(tissue_id)
+                                        )
 
                 # save sample attachments
+                # separated by '|'
+                if data.get('label', "") != "":
+                    if "|" in data.get('label', "") and "|" in data.get("attachment_description", ""):
+                        labels = data.get('label', "").split("|")
+                        descriptions = data.get("attachment_description", "").split("|")
+                        if len(labels) == len(descriptions):
+                            for l in list(range(len(labels))):
+                                SampleAttachment.objects.create(
+                                    sample_id=sample.pk,
+                                    label=labels[l],
+                                    description=descriptions[l],
+                                    # attachment name=attachment0, 1, 2...
+                                    attachment=request.FILES['attachment' + str(l)] if (
+                                    request.FILES and request.FILES['attachment' + str(l)]) else None
+                                )
+                    else:
+                        SampleAttachment.objects.create(
+                            sample_id=sample.pk,
+                            label=data.get('label', ""),
+                            description=data.get("attachment_description", ""),
+                            attachment=request.FILES['attachment'] if (
+                            request.FILES and request.FILES['attachment']) else None
+                        )
 
                 # save sample researcher
+                if data.get('researcher', "") != "":
+                    if "," in data.get('researcher', ""):
+                        researchers = data.get('researcher', "").split(",")
+                        for r in list(range(len(researchers))):
+                            # validate suer
+                            if get_object_or_404(User, pk=int(researchers[r])):
+                                SampleResearcher.objects.create(
+                                    sample_id=sample.pk,
+                                    researcher_id=int(researchers[r])
+                                )
+                    else:
+                        if get_object_or_404(User, pk=int(data.get('researcher', ""))):
+                            SampleResearcher.objects.create(
+                                sample_id=sample.pk,
+                                researcher_id=int(data.get('researcher', ""))
+                            )
 
                 return Response({'detail': 'sample saved!'},
                                 status=status.HTTP_200_OK)
