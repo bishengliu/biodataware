@@ -1,9 +1,9 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
-from rest_framework import authentication, permissions, status
+from rest_framework import permissions, status
 from .serializers import *
-from helpers.acl import isManger, isInGroups, isPIorAssistantofGroup
+from helpers.acl import isInGroups, isPIorAssistantofGroup
 from django.db import transaction
 from containers.models import Container, GroupContainer, BoxContainer, BoxResearcher
 from groups.models import Group, GroupResearcher
@@ -137,7 +137,7 @@ class ContainerDetail(APIView):
         self.check_object_permissions(request, obj)  # check the permission
         container = get_object_or_404(Container, pk=pk)
         try:
-            if user.is_superuser or isManger(user):
+            if user.is_superuser:
                 serializer = ContainerUpdateSerializer(container, data=request.data, partial=True)
                 serializer.is_valid(raise_exception=True)
                 data = serializer.data
@@ -157,31 +157,30 @@ class ContainerDetail(APIView):
                 return Response({'detail': 'container info changed!'}, status=status.HTTP_200_OK)
                 #return Response(ConatainerSerializer(container).data)
             else:
-                if settings.ALLOW_PI_TO_MANAGE_CONTAINER:
-                    # check which group has/have the container
-                    group_containers = GroupContainer.objects.all().filter(container_id=container.pk)
-                    if group_containers:
-                        group_container_ids = [gc.group_id for gc in group_containers]
-                        # is pi/assistant of the group
-                        if isPIorAssistantofGroup(user, group_container_ids):
-                            # save data
-                            serializer = ContainerUpdateSerializer(container, data=request.data, partial=True)
-                            serializer.is_valid(raise_exception=True)
-                            data = serializer.data
-                            # serializer.save()
-                            # save the container
-                            container.name = data.get("name", "")
-                            container.room = data.get("room", "")
-                            container.temperature = data.get("temperature", "")
-                            container.tower = data.get("tower", 1)
-                            container.shelf = data.get("shelf", 1)
-                            container.box = data.get("box", 1)
-                            container.description = data.get("description", "")
-                            if request.FILES and request.FILES['photo'] and container.photo:
-                                container.photo.delete()
-                                container.photo = request.FILES['photo']
-                            container.save()
-                            return Response({'detail': 'container info changed!'}, status=status.HTTP_200_OK)
+                # check which group has/have the container
+                group_containers = GroupContainer.objects.all().filter(container_id=container.pk)
+                if group_containers:
+                    group_container_ids = [gc.group_id for gc in group_containers]
+                    # is pi/assistant of the group
+                    if isPIorAssistantofGroup(user, group_container_ids):
+                        # save data
+                        serializer = ContainerUpdateSerializer(container, data=request.data, partial=True)
+                        serializer.is_valid(raise_exception=True)
+                        data = serializer.data
+                        # serializer.save()
+                        # save the container
+                        container.name = data.get("name", "")
+                        container.room = data.get("room", "")
+                        container.temperature = data.get("temperature", "")
+                        container.tower = data.get("tower", 1)
+                        container.shelf = data.get("shelf", 1)
+                        container.box = data.get("box", 1)
+                        container.description = data.get("description", "")
+                        if request.FILES and request.FILES['photo'] and container.photo:
+                            container.photo.delete()
+                            container.photo = request.FILES['photo']
+                        container.save()
+                        return Response({'detail': 'container info changed!'}, status=status.HTTP_200_OK)
                 return Response({'detail': 'container info not changed!'}, status=status.HTTP_400_BAD_REQUEST)
         except:
             return Response({'detail': 'container info not changed!'}, status=status.HTTP_400_BAD_REQUEST)
@@ -205,24 +204,23 @@ class ContainerDetail(APIView):
                 container.delete()
                 return Response({'detail': 'container deleted!'}, status=status.HTTP_200_OK)
             else:
-                if settings.ALLOW_PI_TO_MANAGE_CONTAINER:
-                    # check which group has/have the container
-                    group_containers = GroupContainer.objects.all().filter(container_id=container.pk)
-                    if group_containers:
-                        # which groups the container is assigned to:
-                        group_container_ids = [gc.group_id for gc in group_containers]
-                        # is pi/assistant of the group
-                        if isPIorAssistantofGroup(user, group_container_ids):
-                            if container.groupcontainer_set:
-                                return Response(
-                                    {'detail': 'container not deleted! '
-                                               '\The container is assigned to researcher group(s).'},
-                                    status=status.HTTP_400_BAD_REQUEST)
-                            if container.boxcontainer_set:
-                                return Response({'detail': 'container not deleted! The container contains box(es).'},
-                                                status=status.HTTP_400_BAD_REQUEST)
-                            container.delete()
-                            return Response({'detail': 'container deleted!'}, status=status.HTTP_200_OK)
+                # check which group has/have the container
+                group_containers = GroupContainer.objects.all().filter(container_id=container.pk)
+                if group_containers:
+                    # which groups the container is assigned to:
+                    group_container_ids = [gc.group_id for gc in group_containers]
+                    # is pi/assistant of the group
+                    if isPIorAssistantofGroup(user, group_container_ids):
+                        if container.groupcontainer_set:
+                            return Response(
+                                {'detail': 'container not deleted! '
+                                           '\The container is assigned to researcher group(s).'},
+                                status=status.HTTP_400_BAD_REQUEST)
+                        if container.boxcontainer_set:
+                            return Response({'detail': 'container not deleted! The container contains box(es).'},
+                                            status=status.HTTP_400_BAD_REQUEST)
+                        container.delete()
+                        return Response({'detail': 'container deleted!'}, status=status.HTTP_200_OK)
                 return Response({'detail': 'permission denied, container not deleted!'},
                                 status=status.HTTP_400_BAD_REQUEST)
         except:
@@ -576,6 +574,7 @@ class ContainerBoxList(APIView):
                             status=status.HTTP_400_BAD_REQUEST)
 
 
+# ==============================================================
 # allow view and add samples
 # box and sample list
 # =====================================

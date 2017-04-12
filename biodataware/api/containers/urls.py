@@ -17,15 +17,16 @@ urlpatterns = [
 
     # ====================================================tower details=================================================
     # shelf list, number of shelves
-    # /12-/ or /12/
+    # containers/container_id/12-(tower_id)/ or containers/container_id/12(tower_id)/
     # list all the possible towers in the containers
     url(r'^(?P<ct_id>[0-9]+)/(?P<id>[0-9]+(\-)*)/$',
         Tower.as_view(),
         name='container-tower-shelves'),
 
+
     # =======================================================shelf details==============================================
     # =======================================================box list===================================================
-    # /12/3/
+    # /12(tower_id)/3(shelf_id)/
     url(r'^(?P<ct_id>[0-9]+)/(?P<tw_id>[0-9]+)/(?P<sf_id>[0-9]+)/$',
         ShelfAlternative.as_view(),
         name='container-tower-shelf-boxes'),
@@ -40,13 +41,14 @@ urlpatterns = [
         ContainerBoxList.as_view(),
         name='container-boxes'),
 
+
     # =======================================================sample list================================================
     # add new sample
-    # /12/3/4/
+    # /12/3/4(box_id)/
     url(r'^(?P<ct_id>[0-9]+)/(?P<tw_id>[0-9]+)/(?P<sf_id>[0-9]+)/(?P<bx_id>[0-9]+)/$',
         BoxAlternative.as_view(),
         name='container-tower-shelf-box-samples'),
-    # /12-3-4/
+    # /12-3-4(box)/
     url(r'^(?P<ct_id>[0-9]+)/(?P<id>[0-9]+\-[0-9]+\-[0-9]+)/$',
         Box.as_view(),
         name='container-tower-shelf-box-samples'),
@@ -103,6 +105,7 @@ urlpatterns = [
     url(r'^(?P<ct_id>[0-9]+)/boxes/(?P<bx_id>[0-9]+\-[0-9]+\-[0-9]+)/(?P<sp_id>[a-zA-Z][0-9]+)/attachments/(?P<at_id>[0-9]+)/$',
         SampleAttachmentDetail.as_view(),
         name='container-boxes-sample-attachments-detail'),
+
 
     # ==============================================take sample out=====================================================
     # /12/3/4/A12/take
