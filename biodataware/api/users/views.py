@@ -248,6 +248,7 @@ class UserPassword(APIView):
 class Register(APIView):
     @transaction.atomic
     def post(self, request, format=None):
+        profile = Profile()
         try:
             serializer = UserCreateSerializer(data=request.data, partial=True)
             serializer.is_valid(raise_exception=True)
@@ -262,7 +263,7 @@ class Register(APIView):
             user.save()
             Token.objects.create(user=user)  # create token
 
-            Profile.objects.create(
+            profile = Profile.objects.create(
                 user=user,
                 birth_date=data.get('birth_date'),
                 telephone=data.get('telephone'),
@@ -276,6 +277,8 @@ class Register(APIView):
 
                     return Response({'detail': 'user created!'}, status=status.HTTP_200_OK)
         except:
+            if profile.photo is not None:
+                profile.photo.delete()
             return Response({'detail': 'user not created!'}, status=status.HTTP_400_BAD_REQUEST)
 
 

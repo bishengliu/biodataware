@@ -151,11 +151,11 @@ class ContainerBoxCreateSerializer(serializers.ModelSerializer):
 
 # ======for sample =====================
 class SampleAttachmentSerializer(serializers.ModelSerializer):
-    sample = serializers.StringRelatedField()
+    #sample = serializers.StringRelatedField()
 
     class Meta:
         model = SampleAttachment
-        fields = ('pk', 'label', 'attachment', 'description', 'sample')
+        fields = ('pk', 'label', 'attachment', 'description', 'sample_id')
 
 
 class SampleTissueSerializer(serializers.ModelSerializer):
@@ -251,3 +251,12 @@ class SampleEditSerializer(serializers.Serializer):
 
     # researcher
     researcher = serializers.CharField(required=False, allow_null=True, allow_blank=True)  # 1,2,3
+
+
+# edit sample attachment
+class SampleAttachmentEditSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = SampleAttachment
+        fields = ('label', 'attachment', 'description')
+

@@ -65,15 +65,39 @@ class ContainerList(APIView):
                 serializer = ContainerCreateSerializer(data=request.data, partial=True)
                 serializer.is_valid(raise_exception=True)
                 data = serializer.data
-                container = Container(**data)
-                container.save()
-                # add container to groups
-                for group_id in group_ids:
-                    GroupContainer.objects.create(
-                        container_id=container.pk,
-                        group_id=group_id
+                # save the container
+                container = Container()
+                name = data.get("name", "")
+                room = data.get("room", "")
+                temperature = data.get("temperature", "")
+                tower = data.get("tower", 1)
+                shelf = data.get("shelf", 1)
+                box = data.get("box", 1)
+                description = data.get("description", "")
+
+                try:
+                    container = Container.objects.create(
+                        name=name,
+                        room=room,
+                        temperature=temperature,
+                        tower=tower,
+                        shelf=shelf,
+                        box=box,
+                        description=description,
+                        photo=request.FILES['photo'] if request.FILES and request.FILES['photo'] else None
                     )
-                return Response({'detail': 'container added!'}, status=status.HTTP_200_OK)
+                    # add container to groups
+                    for group_id in group_ids:
+                        GroupContainer.objects.create(
+                            container_id=container.pk,
+                            group_id=group_id
+                        )
+                    return Response({'detail': 'container added!'}, status=status.HTTP_200_OK)
+                except:
+                    if request.FILES and request.FILES['photo']:
+                        container.photo.delete()
+                    return Response({'detail': 'Something went wrong, container not added!'},
+                                    status=status.HTTP_400_BAD_REQUEST)
         except:
             return Response({'detail': 'Something went wrong, container not added!'},
                             status=status.HTTP_400_BAD_REQUEST)
@@ -116,7 +140,20 @@ class ContainerDetail(APIView):
             if user.is_superuser or isManger(user):
                 serializer = ContainerUpdateSerializer(container, data=request.data, partial=True)
                 serializer.is_valid(raise_exception=True)
-                serializer.save()
+                data = serializer.data
+                #serializer.save()
+                # save the container
+                container.name = data.get("name", "")
+                container.room = data.get("room", "")
+                container.temperature = data.get("temperature", "")
+                container.tower = data.get("tower", 1)
+                container.shelf = data.get("shelf", 1)
+                container.box = data.get("box", 1)
+                container.description = data.get("description", "")
+                if request.FILES and request.FILES['photo'] and container.photo:
+                    container.photo.delete()
+                    container.photo = request.FILES['photo']
+                container.save()
                 return Response({'detail': 'container info changed!'}, status=status.HTTP_200_OK)
                 #return Response(ConatainerSerializer(container).data)
             else:
@@ -130,7 +167,20 @@ class ContainerDetail(APIView):
                             # save data
                             serializer = ContainerUpdateSerializer(container, data=request.data, partial=True)
                             serializer.is_valid(raise_exception=True)
-                            serializer.save()
+                            data = serializer.data
+                            # serializer.save()
+                            # save the container
+                            container.name = data.get("name", "")
+                            container.room = data.get("room", "")
+                            container.temperature = data.get("temperature", "")
+                            container.tower = data.get("tower", 1)
+                            container.shelf = data.get("shelf", 1)
+                            container.box = data.get("box", 1)
+                            container.description = data.get("description", "")
+                            if request.FILES and request.FILES['photo'] and container.photo:
+                                container.photo.delete()
+                                container.photo = request.FILES['photo']
+                            container.save()
                             return Response({'detail': 'container info changed!'}, status=status.HTTP_200_OK)
                 return Response({'detail': 'container info not changed!'}, status=status.HTTP_400_BAD_REQUEST)
         except:
@@ -1651,6 +1701,19 @@ class SampleAttachmentListAlternative(APIView):
                         serializer = SampleAttachmentSerializer(data=request.data)
                         serializer.is_valid(raise_exception=True)
                         data = serializer.data
+                        sample_attachment = SampleAttachment()
+                        try:
+                            sample_attachment = SampleAttachment.objects.create(
+                                sample_id=sample.pk,
+                                label=data.get("label", ""),
+                                attachment=request.FILES['attachment'] if request.FILES and request.FILES['attachment'] else None,
+                                description=data.get("description", "")
+                            )
+                        except:
+                            if request.FILES and request.FILES['attachment']:
+                                sample_attachment.attachment.delete()
+                                return Response({'detail': 'Something went wrong, attachment not added!'},
+                                                status=status.HTTP_400_BAD_REQUEST)
                         # sample_attachment = SampleAttachmentSerializer(**data)
                         # sample_attachment.save()
                         return Response({'detail': 'sample attachment saved!'},
@@ -1767,8 +1830,20 @@ class SampleAttachmentList(APIView):
                         serializer = SampleAttachmentSerializer(data=request.data)
                         serializer.is_valid(raise_exception=True)
                         data = serializer.data
-                        #sample_attachment = SampleAttachmentSerializer(**data)
-                        #sample_attachment.save()
+                        sample_attachment = SampleAttachment()
+                        try:
+                            sample_attachment = SampleAttachment.objects.create(
+                                sample_id=sample.pk,
+                                label=data.get("label", ""),
+                                attachment=request.FILES['attachment'] if request.FILES and request.FILES[
+                                    'attachment'] else None,
+                                description=data.get("description", "")
+                            )
+                        except:
+                            if request.FILES and request.FILES['attachment']:
+                                sample_attachment.attachment.delete()
+                                return Response({'detail': 'Something went wrong, attachment not added!'},
+                                                status=status.HTTP_400_BAD_REQUEST)
                         return Response({'detail': 'sample attachment saved!'},
                                         status=status.HTTP_200_OK)
             return Response({'detail': 'Permission denied!'},
@@ -1783,21 +1858,162 @@ class SampleAttachmentDetailAlternative(APIView):
 
     def get(self, request, ct_id, tw_id, sf_id, bx_id, sp_id, at_id):
         try:
-            pass
+            # get the container
+            container = get_object_or_404(Container, pk=int(ct_id))
+            if int(tw_id) > int(container.tower) or int(tw_id) < 0:
+                return Response({'detail': 'tower does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+
+            if int(sf_id) > int(container.shelf) or int(sf_id) < 0:
+                return Response({'detail': 'shelf does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+            if int(bx_id) > int(container.box) or int(bx_id) < 0:
+                return Response({'detail': 'Box does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+                # box
+            box = BoxContainer.objects.all() \
+                .filter(container_id=int(ct_id)) \
+                .filter(tower=int(tw_id)) \
+                .filter(shelf=int(sf_id)) \
+                .filter(box=int(bx_id)) \
+                .first()
+            if not box:
+                return Response({'detail': 'box does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+            # get box researcher
+            box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
+            if box_researcher:
+                user = get_object_or_404(User, pk=box_researcher.researcher_id)
+                obj = {
+                    'user': user
+                }
+                self.check_object_permissions(request, obj)  # check the permission
+                # find the sample
+                match = re.match(r"([a-z]+)([0-9]+)", sp_id, re.I)
+                if match:
+                    pos = match.groups()
+                    sample = Sample.objects.all().filter(box_id=box.pk).filter(vposition__iexact=pos[0]).filter(
+                        hposition=pos[1]).first()
+                    if sample:
+                        # get the attachments
+                        attachment = get_object_or_404(SampleAttachment, pk=at_id)
+                        serializer = SampleAttachmentSerializer(attachment)
+                        return Response(serializer.data)
+                return Response({'detail': 'sample does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+            return Response({'detail': 'Permission denied!'},
+                            status=status.HTTP_400_BAD_REQUEST)
         except:
             return Response({'detail': 'Something went wrong!'},
                             status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, ct_id, tw_id, sf_id, bx_id, sp_id, at_id):
         try:
-            pass
+            # get the container
+            container = get_object_or_404(Container, pk=int(ct_id))
+            if int(tw_id) > int(container.tower) or int(tw_id) < 0:
+                return Response({'detail': 'tower does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+
+            if int(sf_id) > int(container.shelf) or int(sf_id) < 0:
+                return Response({'detail': 'shelf does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+            if int(bx_id) > int(container.box) or int(bx_id) < 0:
+                return Response({'detail': 'Box does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+                # box
+            box = BoxContainer.objects.all() \
+                .filter(container_id=int(ct_id)) \
+                .filter(tower=int(tw_id)) \
+                .filter(shelf=int(sf_id)) \
+                .filter(box=int(bx_id)) \
+                .first()
+            if not box:
+                return Response({'detail': 'box does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+            # get box researcher
+            box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
+            if box_researcher:
+                user = get_object_or_404(User, pk=box_researcher.researcher_id)
+                obj = {
+                    'user': user
+                }
+                self.check_object_permissions(request, obj)  # check the permission
+                # find the sample
+                match = re.match(r"([a-z]+)([0-9]+)", sp_id, re.I)
+                if match:
+                    pos = match.groups()
+                    sample = Sample.objects.all().filter(box_id=box.pk).filter(vposition__iexact=pos[0]).filter(
+                        hposition=pos[1]).first()
+                    if sample:
+                        # get the attachments
+                        attachment = get_object_or_404(SampleAttachment, pk=at_id)
+                        attachment.delete()
+                        return Response({'detail': 'sample attachment deleted!'},
+                                        status=status.HTTP_400_BAD_REQUEST)
+                return Response({'detail': 'sample does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+            return Response({'detail': 'Permission denied!'},
+                            status=status.HTTP_400_BAD_REQUEST)
         except:
             return Response({'detail': 'Something went wrong!'},
                             status=status.HTTP_400_BAD_REQUEST)
 
     def put(self, request, ct_id, tw_id, sf_id, bx_id, sp_id, at_id):
         try:
-            pass
+            # get the container
+            container = get_object_or_404(Container, pk=int(ct_id))
+            if int(tw_id) > int(container.tower) or int(tw_id) < 0:
+                return Response({'detail': 'tower does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+
+            if int(sf_id) > int(container.shelf) or int(sf_id) < 0:
+                return Response({'detail': 'shelf does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+            if int(bx_id) > int(container.box) or int(bx_id) < 0:
+                return Response({'detail': 'Box does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+                # box
+            box = BoxContainer.objects.all() \
+                .filter(container_id=int(ct_id)) \
+                .filter(tower=int(tw_id)) \
+                .filter(shelf=int(sf_id)) \
+                .filter(box=int(bx_id)) \
+                .first()
+            if not box:
+                return Response({'detail': 'box does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+            # get box researcher
+            box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
+            if box_researcher:
+                user = get_object_or_404(User, pk=box_researcher.researcher_id)
+                obj = {
+                    'user': user
+                }
+                self.check_object_permissions(request, obj)  # check the permission
+                # find the sample
+                match = re.match(r"([a-z]+)([0-9]+)", sp_id, re.I)
+                if match:
+                    pos = match.groups()
+                    sample = Sample.objects.all().filter(box_id=box.pk).filter(vposition__iexact=pos[0]).filter(
+                        hposition=pos[1]).first()
+                    if sample:
+                        # get the attachments
+                        attachment = get_object_or_404(SampleAttachment, pk=at_id)
+                        serializer = SampleAttachmentEditSerializer(data=request.data)
+                        serializer.is_valid(raise_exception=True)
+                        data = serializer.data
+                        attachment.label = data.get("label", "")
+                        attachment.description = data.get("description", "")
+                        if request.FILES and request.FILES['attachment'] and attachment.attachment:
+                            attachment.attachment.delete()
+                            attachment.attachment = request.FILES['attachment']
+                        attachment.save()
+                        return Response({'detail': 'sample attachment changed!'}, status=status.HTTP_200_OK)
+                return Response({'detail': 'sample does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+            return Response({'detail': 'Permission denied!'},
+                            status=status.HTTP_400_BAD_REQUEST)
         except:
             return Response({'detail': 'Something went wrong!'},
                             status=status.HTTP_400_BAD_REQUEST)
@@ -1808,21 +2024,169 @@ class SampleAttachmentDetail(APIView):
 
     def get(self, request, ct_id, bx_id, sp_id, at_id):
         try:
-            pass
+            container = get_object_or_404(Container, pk=int(ct_id))
+            id_list = bx_id.split("-")
+            tw_id = int(id_list[0])
+            sf_id = int(id_list[1])
+            bx_id = int(id_list[2])
+            if int(tw_id) > int(container.tower) or int(tw_id) < 0:
+                return Response({'detail': 'tower does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+
+            if int(sf_id) > int(container.shelf) or int(sf_id) < 0:
+                return Response({'detail': 'shelf does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+            if int(bx_id) > int(container.box) or int(bx_id) < 0:
+                return Response({'detail': 'Box does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+            # box
+            box = BoxContainer.objects.all() \
+                .filter(container_id=int(ct_id)) \
+                .filter(tower=int(tw_id)) \
+                .filter(shelf=int(sf_id)) \
+                .filter(box=int(bx_id)) \
+                .first()
+            if not box:
+                return Response({'detail': 'box does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+            # get box researcher
+            box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
+            if box_researcher:
+                user = get_object_or_404(User, pk=box_researcher.researcher_id)
+                obj = {
+                    'user': user
+                }
+                self.check_object_permissions(request, obj)  # check the permission
+                # find the sample
+                match = re.match(r"([a-z]+)([0-9]+)", sp_id, re.I)
+                if match:
+                    pos = match.groups()
+                    sample = Sample.objects.all().filter(box_id=box.pk).filter(vposition__iexact=pos[0]).filter(
+                        hposition=pos[1]).first()
+                    if sample:
+                        attachment = get_object_or_404(SampleAttachment, pk=at_id)
+                        serializer = SampleAttachmentSerializer(attachment)
+                        return Response(serializer.data)
+                return Response({'detail': 'sample does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+            return Response({'detail': 'Permission denied!'},
+                            status=status.HTTP_400_BAD_REQUEST)
         except:
             return Response({'detail': 'Something went wrong!'},
                             status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, ct_id, bx_id, sp_id, at_id):
         try:
-            pass
+            container = get_object_or_404(Container, pk=int(ct_id))
+            id_list = bx_id.split("-")
+            tw_id = int(id_list[0])
+            sf_id = int(id_list[1])
+            bx_id = int(id_list[2])
+            if int(tw_id) > int(container.tower) or int(tw_id) < 0:
+                return Response({'detail': 'tower does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+
+            if int(sf_id) > int(container.shelf) or int(sf_id) < 0:
+                return Response({'detail': 'shelf does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+            if int(bx_id) > int(container.box) or int(bx_id) < 0:
+                return Response({'detail': 'Box does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+            # box
+            box = BoxContainer.objects.all() \
+                .filter(container_id=int(ct_id)) \
+                .filter(tower=int(tw_id)) \
+                .filter(shelf=int(sf_id)) \
+                .filter(box=int(bx_id)) \
+                .first()
+            if not box:
+                return Response({'detail': 'box does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+            # get box researcher
+            box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
+            if box_researcher:
+                user = get_object_or_404(User, pk=box_researcher.researcher_id)
+                obj = {
+                    'user': user
+                }
+                self.check_object_permissions(request, obj)  # check the permission
+                # find the sample
+                match = re.match(r"([a-z]+)([0-9]+)", sp_id, re.I)
+                if match:
+                    pos = match.groups()
+                    sample = Sample.objects.all().filter(box_id=box.pk).filter(vposition__iexact=pos[0]).filter(
+                        hposition=pos[1]).first()
+                    if sample:
+                        attachment = get_object_or_404(SampleAttachment, pk=at_id)
+                        attachment.delete()
+                        return Response({'detail': 'sample attachment deleted!'},
+                                status=status.HTTP_200_OK)
+                return Response({'detail': 'sample does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+            return Response({'detail': 'Permission denied!'},
+                            status=status.HTTP_400_BAD_REQUEST)
         except:
             return Response({'detail': 'Something went wrong!'},
                             status=status.HTTP_400_BAD_REQUEST)
 
     def put(self, request, ct_id, bx_id, sp_id, at_id):
         try:
-            pass
+            container = get_object_or_404(Container, pk=int(ct_id))
+            id_list = bx_id.split("-")
+            tw_id = int(id_list[0])
+            sf_id = int(id_list[1])
+            bx_id = int(id_list[2])
+            if int(tw_id) > int(container.tower) or int(tw_id) < 0:
+                return Response({'detail': 'tower does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+
+            if int(sf_id) > int(container.shelf) or int(sf_id) < 0:
+                return Response({'detail': 'shelf does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+            if int(bx_id) > int(container.box) or int(bx_id) < 0:
+                return Response({'detail': 'Box does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+            # box
+            box = BoxContainer.objects.all() \
+                .filter(container_id=int(ct_id)) \
+                .filter(tower=int(tw_id)) \
+                .filter(shelf=int(sf_id)) \
+                .filter(box=int(bx_id)) \
+                .first()
+            if not box:
+                return Response({'detail': 'box does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+            # get box researcher
+            box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
+            if box_researcher:
+                user = get_object_or_404(User, pk=box_researcher.researcher_id)
+                obj = {
+                    'user': user
+                }
+                self.check_object_permissions(request, obj)  # check the permission
+                # find the sample
+                match = re.match(r"([a-z]+)([0-9]+)", sp_id, re.I)
+                if match:
+                    pos = match.groups()
+                    sample = Sample.objects.all().filter(box_id=box.pk).filter(vposition__iexact=pos[0]).filter(
+                        hposition=pos[1]).first()
+                    if sample:
+                        # get the attachments
+                        attachment = get_object_or_404(SampleAttachment, pk=at_id)
+                        serializer = SampleAttachmentEditSerializer(data=request.data)
+                        serializer.is_valid(raise_exception=True)
+                        data = serializer.data
+                        attachment.label = data.get("label", "")
+                        attachment.description = data.get("description", "")
+                        if request.FILES and request.FILES['attachment'] and attachment.attachment:
+                            attachment.attachment.delete()
+                            attachment.attachment = request.FILES['attachment']
+                        attachment.save()
+                        return Response({'detail': 'sample attachment changed!'}, status=status.HTTP_200_OK)
+                return Response({'detail': 'sample does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+            return Response({'detail': 'Permission denied!'},
+                            status=status.HTTP_400_BAD_REQUEST)
         except:
             return Response({'detail': 'Something went wrong!'},
                             status=status.HTTP_400_BAD_REQUEST)
