@@ -3,17 +3,19 @@ from .views import *
 
 
 urlpatterns = [
-    # all container list
+    # ===================================================container list=================================================
     url(r'^$', ContainerList.as_view(), name='containers'),  # container-towers
-    # container detail
+
+    # ====================================================container detail==============================================
     url(r'^(?P<pk>[0-9]+)/$', ContainerDetail.as_view(), name='container-detail'),
-    # group container list view
+
+    # ======================================================group container list========================================
     url(r'^(?P<ct_id>[0-9]+)/groups/$', GroupContainerList.as_view(), name='groupcontainers'),
-    # group container detail view
+
+    # ====================================================group container detail========================================
     url(r'^(?P<ct_id>[0-9]+)/groups/(?P<pk>[0-9]+)/$', GroupContainerDetail.as_view(), name='groupcontainers-detail'),
 
-
-    # tower details
+    # ====================================================tower details=================================================
     # shelf list, number of shelves
     # /12-/ or /12/
     # list all the possible towers in the containers
@@ -21,8 +23,8 @@ urlpatterns = [
         Tower.as_view(),
         name='container-tower-shelves'),
 
-    # shelf details
-    # box list
+    # =======================================================shelf details==============================================
+    # =======================================================box list===================================================
     # /12/3/
     url(r'^(?P<ct_id>[0-9]+)/(?P<tw_id>[0-9]+)/(?P<sf_id>[0-9]+)/$',
         ShelfAlternative.as_view(),
@@ -38,7 +40,7 @@ urlpatterns = [
         ContainerBoxList.as_view(),
         name='container-boxes'),
 
-    # sample list
+    # =======================================================sample list================================================
     # add new sample
     # /12/3/4/
     url(r'^(?P<ct_id>[0-9]+)/(?P<tw_id>[0-9]+)/(?P<sf_id>[0-9]+)/(?P<bx_id>[0-9]+)/$',
@@ -55,9 +57,7 @@ urlpatterns = [
         Box.as_view(),
         name='container-boxes-samples'),
 
-
-    #  ==========================================================================================================
-    # sample detail
+    # =====================================================sample detail================================================
     # edit sample
     # /12/3/4/A12/
     url(r'^(?P<ct_id>[0-9]+)/(?P<tw_id>[0-9]+)/(?P<sf_id>[0-9]+)/(?P<bx_id>[0-9]+)/(?P<sp_id>[a-zA-Z][0-9]+)/$',
@@ -73,7 +73,38 @@ urlpatterns = [
         SampleDetail.as_view(),
         name='container-boxes-sample-detail'),
 
-    # take sample out
+
+    # =============================================sample attachments list==============================================
+    # /12/3/4/A12/attachments/
+    url(r'^(?P<ct_id>[0-9]+)/(?P<tw_id>[0-9]+)/(?P<sf_id>[0-9]+)/(?P<bx_id>[0-9]+)/(?P<sp_id>[a-zA-Z][0-9]+)/attachments/$',
+        SampleAttachmentListAlternative.as_view(),
+        name='container-tower-shelf-box-sample-attachments'),
+    # /12-3-4/A12/attachments/
+    url(r'^(?P<ct_id>[0-9]+)/(?P<bx_id>[0-9]+\-[0-9]+\-[0-9]+)/(?P<sp_id>[a-zA-Z][0-9]+)/attachments/$',
+        SampleAttachmentList.as_view(),
+        name='container-tower-shelf-box-sample-attachments'),
+
+    # /boxes/12-3-4/A12/attachments/
+    url(r'^(?P<ct_id>[0-9]+)/boxes/(?P<bx_id>[0-9]+\-[0-9]+\-[0-9]+)/(?P<sp_id>[a-zA-Z][0-9]+)/attachments/$',
+        SampleAttachmentList.as_view(),
+        name='container-boxes-sample-attachments'),
+
+    # =====================================================sample attachment details====================================
+    # /12/3/4/A12/attachments/
+    url(r'^(?P<ct_id>[0-9]+)/(?P<tw_id>[0-9]+)/(?P<sf_id>[0-9]+)/(?P<bx_id>[0-9]+)/(?P<sp_id>[a-zA-Z][0-9]+)/attachments/(?P<at_id>[0-9]+)/$',
+        SampleAttachmentDetailAlternative.as_view(),
+        name='container-tower-shelf-box-sample-attachments-detail'),
+    # /12-3-4/A12/attachments/
+    url(r'^(?P<ct_id>[0-9]+)/(?P<bx_id>[0-9]+\-[0-9]+\-[0-9]+)/(?P<sp_id>[a-zA-Z][0-9]+)/attachments/(?P<at_id>[0-9]+)/$',
+        SampleAttachmentDetail.as_view(),
+        name='container-tower-shelf-box-sample-attachments-detail'),
+
+    # /boxes/12-3-4/A12/attachments/
+    url(r'^(?P<ct_id>[0-9]+)/boxes/(?P<bx_id>[0-9]+\-[0-9]+\-[0-9]+)/(?P<sp_id>[a-zA-Z][0-9]+)/attachments/(?P<at_id>[0-9]+)/$',
+        SampleAttachmentDetail.as_view(),
+        name='container-boxes-sample-attachments-detail'),
+
+    # ==============================================take sample out=====================================================
     # /12/3/4/A12/take
     url(r'^(?P<ct_id>[0-9]+)/(?P<tw_id>[0-9]+)/(?P<sf_id>[0-9]+)/(?P<bx_id>[0-9]+)/(?P<sp_id>[a-zA-Z][0-9]+)/take/$',
         SampleTakeAlternative.as_view(),
@@ -88,7 +119,7 @@ urlpatterns = [
         SampleTake.as_view(),
         name='container-boxes-sample-out'),
 
-    # put sample back
+    # =================================================put sample back==================================================
     # /12/3/4/A12/back
     url(r'^(?P<ct_id>[0-9]+)/(?P<tw_id>[0-9]+)/(?P<sf_id>[0-9]+)/(?P<bx_id>[0-9]+)/(?P<sp_id>[a-zA-Z][0-9]+)/back/$',
         SampleBackAlternative.as_view(),
@@ -103,17 +134,17 @@ urlpatterns = [
         SampleBack.as_view(),
         name='container-boxes-sample-back'),
 
-    # update sample color
+    # ==================================================update sample color============================================
     # /12/3/4/A12/color
     url(r'^(?P<ct_id>[0-9]+)/(?P<tw_id>[0-9]+)/(?P<sf_id>[0-9]+)/(?P<bx_id>[0-9]+)/(?P<sp_id>[a-zA-Z][0-9]+)/color/$',
         SampleColorAlternative.as_view(),
         name='container-tower-shelf-box-sample-color'),
-    # 12-3-4/A12/back
+    # 12-3-4/A12/color
     url(r'^(?P<ct_id>[0-9]+)/(?P<bx_id>[0-9]+\-[0-9]+\-[0-9]+)/(?P<sp_id>[a-zA-Z][0-9]+)/color/$',
         SampleColor.as_view(),
         name='container-tower-shelf-box-sample-color'),
 
-    # /boxes/12-3-4/A12/back
+    # /boxes/12-3-4/A12/color
     url(r'^(?P<ct_id>[0-9]+)/boxes/(?P<bx_id>[0-9]+\-[0-9]+\-[0-9]+)/(?P<sp_id>[a-zA-Z][0-9]+)/color/$',
         SampleColor.as_view(),
         name='container-boxes-sample-color'),
