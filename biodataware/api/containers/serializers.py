@@ -227,3 +227,27 @@ class SampleCreateSerializer(serializers.Serializer):
 
     # researcher
     researcher = serializers.CharField(required=False, allow_null=True, allow_blank=True) # 1,2,3
+
+
+# edit sample info
+class SampleEditSerializer(serializers.Serializer):
+    color = serializers.RegexField(regex=r'^#[0-9a-fA-F]{6}$', required=False)  # color of the position
+    name = serializers.CharField(max_length=150)  # sample
+    freezing_date = serializers.DateField()  # sample freezing date
+    registration_code = serializers.CharField(max_length=50, required=False, allow_null=True,
+                                              allow_blank=True)  # sample registration code, such as promas barcode
+    pathology_code = serializers.CharField(max_length=50, required=False, allow_null=True,
+                                           allow_blank=True)  # sample pathology code
+    freezing_code = serializers.CharField(max_length=50, required=False, allow_null=True,
+                                          allow_blank=True)  # sample freezing code
+    quantity = serializers.IntegerField(validators=[MinValueValidator(1)], default=1)  # sample quantity
+    type = serializers.CharField(max_length=200, required=False, allow_null=True,
+                                 allow_blank=True)  # sample type, such as tumor
+    description = serializers.CharField(required=False, allow_null=True, allow_blank=True)
+
+    # tissues
+    system = serializers.CharField(required=False, allow_null=True, allow_blank=True)  # 1-2
+    tissue = serializers.CharField(required=False, allow_null=True, allow_blank=True)  # 2,4,5-2,3,4
+
+    # researcher
+    researcher = serializers.CharField(required=False, allow_null=True, allow_blank=True)  # 1,2,3
