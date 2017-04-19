@@ -45,6 +45,7 @@ DJANGO_APPS = [
 
 THIRD_PARTY_APPS = [
     'rest_framework_swagger', # doc ui
+    'corsheaders', #cors
 ]
 
 LOCAL_APPS = [
@@ -66,6 +67,7 @@ AUTH_USER_MODEL = 'users.User'
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware', #cors
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -194,3 +196,30 @@ REST_FRAMEWORK_TOKEN_EXPIRE_HOURS = 24
 # ALLOW PI TO MANAGE CONTAINER
 # ALLOW_PI_TO_MANAGE_CONTAINER = True
 
+# ===============================
+# https://github.com/ottoyiu/django-cors-headers/#configuration
+# cors rest api request
+CORS_ORIGIN_WHITELIST = (
+    'http://localhost:4200'
+)
+
+CORS_ALLOW_METHODS = (
+    'DELETE',
+    'GET',
+    'OPTIONS',
+    'PATCH',
+    'POST',
+    'PUT',
+)
+
+CORS_ALLOW_HEADERS = (
+    'accept',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
+)

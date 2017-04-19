@@ -83,6 +83,16 @@ class UserDetail(APIView):
             return Response({'detail': _('something went wrong, user info is not updated!')}, status=status.HTTP_400_BAD_REQUEST)
 
 
+# get auth user details
+class AuthUserDetail(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get(self, request, format=None):
+        user = request.user
+        serializer = UserSerializer(user)
+        return Response(serializer.data)
+
+
 # only pi or assistant can manager researchers in the group
 class UserRoleDetail(APIView):
     permission_classes = (permissions.IsAuthenticated, IsPIorAssistantofUser, )
@@ -163,9 +173,10 @@ class ObtainToken(ObtainAuthToken):
     EXPIRE_HOURS = getattr(settings, 'REST_FRAMEWORK_TOKEN_EXPIRE_HOURS', 24)
 
     def post(self, request, *args, **kwargs):
-        serializer = self.serializer_class(data=request.DATA)
-        if serializer.is_valid(raise_exception=True):
-            user = serializer.object['user']
+        #serializer = LoginSerializer(data=request.data)
+        data = request.data
+        if data['username'] and data['password']:
+            user = authenticate(username=data['username'], password=data['password'])
             if user.is_active is False:
                 return Response({'detail': 'user is deactivated!'}, status=status.HTTP_400_BAD_REQUEST)
             try:
@@ -177,10 +188,10 @@ class ObtainToken(ObtainAuthToken):
                     token = Token.objects.create(user=user)
                     token.created = datetime.utcnow()
                     token.save()
-                    return Response({'token': token.key, 'user': user.pk})
+                return Response({'token': token.key, 'user': user.pk})
             except:
                 return Response({'detail': 'fail to obtain token!'}, status=status.HTTP_400_BAD_REQUEST)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response("Something went wrong", status=status.HTTP_400_BAD_REQUEST)
 
 
 # owner only

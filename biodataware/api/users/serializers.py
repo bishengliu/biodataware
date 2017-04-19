@@ -144,3 +144,9 @@ class UserCreateSerializer(serializers.Serializer):
 
         msg = _("Something went wrong, validation failed")
         raise serializers.ValidationError(msg)
+
+
+# class for get token
+class LoginSerializer(serializers.Serializer):
+    username = serializers.RegexField(regex=r'^\w+$', required=True)
+    password = serializers.CharField(required=True, max_length=30)

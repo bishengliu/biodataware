@@ -23,6 +23,8 @@ INTERNAL_IPS = (
 MESSAGE_LEVEL = 10  # DEBUG
 
 
+CORS_ORIGIN_ALLOW_ALL = True
+
 # restful
 REST_FRAMEWORK = {
     # Use Django's standard `django.contrib.auth` permissions,
@@ -31,7 +33,7 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.IsAuthenticated',
     ],
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework.authentication.BasicAuthentication', # login plain password
+        #'rest_framework.authentication.BasicAuthentication', # login plain password
         #'rest_framework.authentication.TokenAuthentication',  # token
         #'helpers.authentication.ExpiringTokenAuthentication', # custom token
     )
