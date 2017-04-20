@@ -173,24 +173,26 @@ class ObtainToken(ObtainAuthToken):
     EXPIRE_HOURS = getattr(settings, 'REST_FRAMEWORK_TOKEN_EXPIRE_HOURS', 24)
 
     def post(self, request, *args, **kwargs):
-        #serializer = LoginSerializer(data=request.data)
-        data = request.data
+        serializer = LoginSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        data = serializer.data
         if data['username'] and data['password']:
-            user = authenticate(username=data['username'], password=data['password'])
-            if user.is_active is False:
-                return Response({'detail': 'user is deactivated!'}, status=status.HTTP_400_BAD_REQUEST)
-            try:
-                token, created = Token.objects.get_or_create(user=user)
-                utc_now = datetime.utcnow()
-                utc_now = utc_now.replace(tzinfo=pytz.UTC)
-                if not created and token.created < utc_now - timedelta(hours=self.EXPIRE_HOURS):
-                    token.delete()
-                    token = Token.objects.create(user=user)
-                    token.created = datetime.utcnow()
-                    token.save()
-                return Response({'token': token.key, 'user': user.pk})
-            except:
-                return Response({'detail': 'fail to obtain token!'}, status=status.HTTP_400_BAD_REQUEST)
+            user = User.objects.get(username=data['username'])
+            if user is not None and user.check_password(data['password']):
+                if user.is_active is False:
+                    return Response({'detail': 'user is deactivated!'}, status=status.HTTP_400_BAD_REQUEST)
+                try:
+                    token, created = Token.objects.get_or_create(user=user)
+                    utc_now = datetime.utcnow()
+                    utc_now = utc_now.replace(tzinfo=pytz.UTC)
+                    if not created and token.created < utc_now - timedelta(hours=self.EXPIRE_HOURS):
+                        token.delete()
+                        token = Token.objects.create(user=user)
+                        token.created = datetime.utcnow()
+                        token.save()
+                    return Response({'token': token.key, 'user': user.pk})
+                except:
+                    return Response({'detail': 'fail to obtain token!'}, status=status.HTTP_400_BAD_REQUEST)
         return Response("Something went wrong", status=status.HTTP_400_BAD_REQUEST)
 
 
