@@ -10,7 +10,7 @@ from users.models import UserRole
 from .serializers import *
 from api.permissions import IsReadOnlyOwner, IsOwner, IsOwnOrReadOnly, IsPIorAssistantofUser
 from django.contrib.auth import authenticate, login, logout
-
+from django.http import HttpResponse
 
 # user list
 # readonly for all
@@ -81,6 +81,26 @@ class UserDetail(APIView):
             return Response(serializer.data)
         except:
             return Response({'detail': _('something went wrong, user info is not updated!')}, status=status.HTTP_400_BAD_REQUEST)
+
+
+# get user image
+class UserImage(APIView):
+    permission_classes = (permissions.IsAuthenticated, )
+
+    def get(self, request, pk, format=None):
+        user = get_object_or_404(User, pk=pk)
+        obj = {
+            'user': user
+        }
+        self.check_object_permissions(request, obj)  # check the permission
+
+        if user.profile is not None and user.profile.photo is not None:
+            image = user.profile.photo
+            # get image type
+            image_type = image.name.split(".")[-1]
+            content_type = "image/"+image_type+'"'
+            return HttpResponse(image, content_type=content_type)
+        return HttpResponse({'detail': 'image not found!'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 # get auth user details

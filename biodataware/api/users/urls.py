@@ -1,5 +1,5 @@
 from django.conf.urls import url
-from .views import UserList, UserDetail, GetMyToken, ObtainToken, UserPassword, UserRoleDetail, UserRoleDelete, Register, Logout, AuthUserDetail
+from .views import UserList, UserDetail, GetMyToken, ObtainToken, UserPassword, UserRoleDetail, UserRoleDelete, Register, Logout, AuthUserDetail, UserImage
 
 
 urlpatterns = [
@@ -9,6 +9,8 @@ urlpatterns = [
 
     # get or post user details
     url(r'^(?P<pk>[0-9]+)/$', UserDetail.as_view(), name='user_detail'),
+
+    url(r'^(?P<pk>[0-9]+)/image/$', UserImage.as_view(), name='user_image'),
 
     # get auth user details
     url(r'^auth_user/$', AuthUserDetail.as_view(), name='auth_user_detail'),
