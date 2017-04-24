@@ -115,7 +115,7 @@ class UserCreateSerializer(serializers.Serializer):
     last_name = serializers.RegexField(regex=r'^\w+$', required=False, allow_blank=True, max_length=30)
     birth_date = serializers.DateField(required=False, allow_null=True, input_formats=settings.DATE_INPUT_FORMATS)
     photo = serializers.ImageField(required=False, allow_null=True, allow_empty_file=True, max_length=100)
-    telephone = serializers.CharField(required=False, validators=[validate_phone], allow_null=True, allow_blank=True, max_length=20)
+    telephone = serializers.CharField(required=False, allow_null=True, allow_blank=True, max_length=20)
 
     def validated_username(self, value):
         try:

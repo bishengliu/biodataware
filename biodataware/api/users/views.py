@@ -301,12 +301,10 @@ class UserPassword(APIView):
 class Register(APIView):
     @transaction.atomic
     def post(self, request, format=None):
-        profile = Profile()
         try:
             serializer = UserCreateSerializer(data=request.data, partial=True)
             serializer.is_valid(raise_exception=True)
             data = serializer.data
-
             username = data.get('username')
             email = data.get('email')
             first_name = data.get('first_name', "")
@@ -315,7 +313,7 @@ class Register(APIView):
             user.set_password(data.get('password1'))
             user.save()
             Token.objects.create(user=user)  # create token
-
+            profile = Profile()
             profile = Profile.objects.create(
                 user=user,
                 birth_date=data.get('birth_date'),
@@ -328,11 +326,11 @@ class Register(APIView):
                 if user.is_active:
                     login(request, user)
 
-                    return Response({'detail': 'user created!'}, status=status.HTTP_200_OK)
+                    return Response({'detail': True}, status=status.HTTP_200_OK)
         except:
             if profile.photo is not None:
                 profile.photo.delete()
-            return Response({'detail': 'user not created!'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'detail': False}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class Logout(APIView):
