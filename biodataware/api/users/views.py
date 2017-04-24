@@ -108,15 +108,15 @@ class UserImage(APIView):
 class UserSearch(APIView):
 
     def post(self, request, format=None):
+        key = request.data.get('query', '')
+        value = request.data.get('value', '')
         try:
-            key = request.data.get('query', '')
-            value = request.data.get('value', '')
-            if key == 'username':
-                user = User.objects.all().filter(username_iexact=value)
+            if key == 'username' and value:
+                user = User.objects.all().filter(username__iexact=value)
                 if user:
                     return Response({'matched': True})
-            if key == 'email':
-                user = User.objects.all().filter(email_iexact=value)
+            if key == 'email' and value:
+                user = User.objects.all().filter(email__iexact=value)
                 if user:
                     return Response({'matched': True})
             return Response({'matched': False})
