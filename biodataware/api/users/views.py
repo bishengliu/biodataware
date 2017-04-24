@@ -103,6 +103,26 @@ class UserImage(APIView):
         return HttpResponse({'detail': 'image not found!'}, status=status.HTTP_400_BAD_REQUEST)
 
 
+# search user info
+# {'query': 'username', 'value': value}
+class UserSearch(APIView):
+
+    def post(self, request, format=None):
+        try:
+            key = request.data.get('query', '')
+            value = request.data.get('value', '')
+            if key == 'username':
+                user = User.objects.all().filter(username_iexact=value)
+                if user:
+                    return Response({'matched': True})
+            if key == 'email':
+                user = User.objects.all().filter(email_iexact=value)
+                if user:
+                    return Response({'matched': True})
+            return Response({'matched': False})
+        except:
+            return HttpResponse({'detail': 'Something went wrong!'}, status=status.HTTP_400_BAD_REQUEST)
+
 # get auth user details
 class AuthUserDetail(APIView):
     permission_classes = (permissions.IsAuthenticated,)
