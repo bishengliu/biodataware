@@ -11,6 +11,8 @@ from .serializers import *
 from api.permissions import IsReadOnlyOwner, IsOwner, IsOwnOrReadOnly, IsPIorAssistantofUser
 from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponse
+from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
+import json
 
 # user list
 # readonly for all
@@ -300,11 +302,22 @@ class UserPassword(APIView):
 
 # register new user
 class Register(APIView):
+
+    parser_classes = (JSONParser, FormParser, MultiPartParser, )
     @transaction.atomic
     def post(self, request, format=None):
+        form_data = dict(request.data)
+        # check upload photo
+        has_photo = False
+        if 'file' in form_data.keys():
+            has_photo = True
+        # form model data
+        model = form_data['obj'][0]
+        # load into dict
+        obj = json.loads(model)
         profile = Profile()
         try:
-            serializer = UserCreateSerializer(data=request.data, partial=True)
+            serializer = UserCreateSerializer(data=obj, partial=True)
             serializer.is_valid(raise_exception=True)
             data = serializer.data
             username = data.get('username')
@@ -315,11 +328,12 @@ class Register(APIView):
             user.set_password(data.get('password1'))
             user.save()
             token = Token.objects.create(user=user)  # create token
+
             profile = Profile.objects.create(
                 user=user,
                 birth_date=data.get('birth_date', ''),
                 telephone=data.get('telephone', ''),
-                photo=request.FILES['photo'] if request.FILES else None  # auto upload file
+                photo=form_data['file'][0] if has_photo else None  # auto upload file
             )
             # return user token
             return Response({'detail': True, 'token': token.key, 'user': user.pk}, status=status.HTTP_200_OK)
