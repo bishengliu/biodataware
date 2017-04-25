@@ -123,6 +123,7 @@ class UserSearch(APIView):
         except:
             return HttpResponse({'detail': 'Something went wrong!'}, status=status.HTTP_400_BAD_REQUEST)
 
+
 # get auth user details
 class AuthUserDetail(APIView):
     permission_classes = (permissions.IsAuthenticated,)
@@ -301,6 +302,7 @@ class UserPassword(APIView):
 class Register(APIView):
     @transaction.atomic
     def post(self, request, format=None):
+        profile = Profile()
         try:
             serializer = UserCreateSerializer(data=request.data, partial=True)
             serializer.is_valid(raise_exception=True)
@@ -312,21 +314,15 @@ class Register(APIView):
             user = User(username=username, email=email, first_name=first_name, last_name=last_name)
             user.set_password(data.get('password1'))
             user.save()
-            Token.objects.create(user=user)  # create token
-            profile = Profile()
+            token = Token.objects.create(user=user)  # create token
             profile = Profile.objects.create(
                 user=user,
-                birth_date=data.get('birth_date'),
-                telephone=data.get('telephone'),
+                birth_date=data.get('birth_date', ''),
+                telephone=data.get('telephone', ''),
                 photo=request.FILES['photo'] if request.FILES else None  # auto upload file
             )
-            # login user
-            user = authenticate(username=data['username'], password=data.get('password1'))
-            if user is not None:
-                if user.is_active:
-                    login(request, user)
-
-                    return Response({'detail': True}, status=status.HTTP_200_OK)
+            # return user token
+            return Response({'detail': True, 'token': token.key, 'user': user.pk}, status=status.HTTP_200_OK)
         except:
             if profile.photo is not None:
                 profile.photo.delete()
