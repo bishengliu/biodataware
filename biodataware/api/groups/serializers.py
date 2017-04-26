@@ -5,11 +5,12 @@ from django.utils.translation import ugettext_lazy as _
 from users.models import Profile
 from django.shortcuts import get_object_or_404
 from django.conf import settings
+from api.users.serializers import UserSerializer
 
 
 # no view
 class AssistantSerializer(serializers.ModelSerializer):
-    user = serializers.StringRelatedField()
+    user = UserSerializer()
 
     class Meta:
         model = GroupResearcher
@@ -18,7 +19,8 @@ class AssistantSerializer(serializers.ModelSerializer):
 
 # no view
 class GroupResearcherSerializer(serializers.ModelSerializer):
-    user = serializers.StringRelatedField()
+    #user = serializers.StringRelatedField()
+    user = UserSerializer()
 
     class Meta:
         model = GroupResearcher

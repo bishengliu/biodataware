@@ -173,20 +173,19 @@ class OneGroupResearcherDetail(APIView):
 
     def get(self, request, g_id, u_id, format=None):
         user = get_object_or_404(User, pk=u_id)
-        obj = {'user': user}
-        self.check_object_permissions(request, obj)  # check the permission
-        auth_user = request.user
-        my_groups = GroupResearcher.objects.all().filter(user_id=auth_user.pk)
-        if my_groups:
-            my_group_ids = [g.group_id for g in my_groups]
-            if int(g_id) in my_group_ids:
-                researcher = get_object_or_404(User, pk=u_id)
-                if researcher:
-                    serializer = UserSerializer(researcher)
-                    return Response(serializer.data)
-        return Response({'detail': 'something went wrong!'}, status=status.HTTP_400_BAD_REQUEST)
         try:
-            pass
+            obj = {'user': user}
+            self.check_object_permissions(request, obj)  # check the permission
+            auth_user = request.user
+            my_groups = GroupResearcher.objects.all().filter(user_id=auth_user.pk)
+            if my_groups:
+                my_group_ids = [g.group_id for g in my_groups]
+                if int(g_id) in my_group_ids:
+                    researcher = get_object_or_404(User, pk=u_id)
+                    if researcher:
+                        serializer = UserSerializer(researcher)
+                        return Response(serializer.data)
+            return Response({'detail': 'something went wrong!'}, status=status.HTTP_400_BAD_REQUEST)
         except:
             return Response({'detail': 'something went wrong!'}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -210,7 +209,25 @@ class OneGroupResearcherDetail(APIView):
             return Response({'detail': 'something went wrong!'}, status=status.HTTP_400_BAD_REQUEST)
 
 
+class MyGroupList(APIView):
+    permission_classes = (permissions.IsAuthenticated, IsPIorAssistantofUserOrReadOnly,)
 
-
+    def get(self, request, format=None):
+        try:
+            user = request.user
+            obj = {
+                'user': user
+            }
+            self.check_object_permissions(request, obj)  # check the permission
+            # get my groups
+            my_groups = GroupResearcher.objects.all().filter(user_id=user.pk)
+            if my_groups:
+                my_group_ids = [g.group_id for g in my_groups]
+                groups = Group.objects.all().filter(pk__in=my_group_ids).distinct()
+                serializer = GroupSerializer(groups, many=True)
+                return Response(serializer.data)
+            return Response({'detail': 'something went wrong!'}, status=status.HTTP_400_BAD_REQUEST)
+        except:
+            return Response({'detail': 'something went wrong!'}, status=status.HTTP_400_BAD_REQUEST)
 
 

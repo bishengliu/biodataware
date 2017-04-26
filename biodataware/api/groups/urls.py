@@ -1,5 +1,5 @@
 from django.conf.urls import url
-from .views import GroupList, GroupDetail, GroupResearcherList, GroupResearcherDetail, OneGroupResearcherList, OneGroupResearcherDetail
+from .views import GroupList, GroupDetail, GroupResearcherList, GroupResearcherDetail, OneGroupResearcherList, OneGroupResearcherDetail, MyGroupList
 
 urlpatterns = [
 
@@ -15,4 +15,7 @@ urlpatterns = [
     url(r'^researchers/$', GroupResearcherList.as_view(), name='groups-researcher-list'),
     #  group researcher detail
     url(r'^researchers/(?P<pk>[0-9]+)/$', GroupResearcherDetail.as_view(), name='groups-researcher-detail'),
+    # my groups + members + assistants
+    url(r'^mygroups/$', MyGroupList.as_view(), name='my-groups-list')
+
 ]

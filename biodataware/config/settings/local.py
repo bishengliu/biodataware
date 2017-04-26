@@ -33,7 +33,7 @@ REST_FRAMEWORK = {
     #    'rest_framework.permissions.IsAuthenticated',
     #],
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        #'rest_framework.authentication.BasicAuthentication', # login plain password
+        'rest_framework.authentication.BasicAuthentication', # login plain password
         'rest_framework.authentication.TokenAuthentication',  # token
         #'helpers.authentication.ExpiringTokenAuthentication', # custom token
     ),
