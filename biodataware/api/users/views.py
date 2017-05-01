@@ -249,7 +249,10 @@ class GetMyToken(APIView):
         user = request.user
         if user.is_active is False:
             return Response({'detail': 'user is deactivated!'}, status=status.HTTP_400_BAD_REQUEST)
-        self.check_object_permissions(request, user)
+        obj = {
+            'user': user
+        }
+        self.check_object_permissions(request, obj)
         # get token
         try:
             token, created = Token.objects.get_or_create(user=user)  # create token
@@ -275,7 +278,10 @@ class UserPassword(APIView):
         user = request.user
         if user.is_active is False:
             return Response({'detail': 'user is deactivated!'}, status=status.HTTP_400_BAD_REQUEST)
-        self.check_object_permissions(request, user)  # check the permission
+        obj = {
+            'user': user
+        }
+        self.check_object_permissions(request, obj)  # check the permission
         serializer = PasswordSerializer(data=request.data, partial=False)
         serializer.is_valid(raise_exception=True)
 
@@ -295,7 +301,7 @@ class UserPassword(APIView):
             token.created = datetime.utcnow()
             token.save()
 
-            return Response({'detail': 'Your password was successfully changed!'})
+            return Response({'detail': 'Your password was successfully changed!'}, status=status.HTTP_200_OK)
         except:
             return Response({'detail': 'something went wrong, password not changed!'}, status=status.HTTP_400_BAD_REQUEST)
 
