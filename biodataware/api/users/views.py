@@ -112,15 +112,21 @@ class UserSearch(APIView):
     def post(self, request, format=None):
         key = request.data.get('query', '')
         value = request.data.get('value', '')
+        user_pk = int(request.data.get('user_pk', -1))
         try:
             if key == 'username' and value:
                 user = User.objects.all().filter(username__iexact=value)
                 if user:
                     return Response({'matched': True})
             if key == 'email' and value:
-                user = User.objects.all().filter(email__iexact=value)
-                if user:
-                    return Response({'matched': True})
+                if user_pk >= 0:
+                    user = User.objects.all().exclude(pk=user_pk).filter(email__iexact=value)
+                    if user:
+                        return Response({'matched': True})
+                else:
+                    user = User.objects.all().filter(email__iexact=value)
+                    if user:
+                        return Response({'matched': True})
             return Response({'matched': False})
         except:
             return HttpResponse({'detail': 'Something went wrong!'}, status=status.HTTP_400_BAD_REQUEST)
