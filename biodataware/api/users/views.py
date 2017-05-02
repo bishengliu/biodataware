@@ -28,6 +28,8 @@ class UserList(APIView):
 # get and post user info
 class UserDetail(APIView):
     permission_classes = (permissions.IsAuthenticated, IsOwnOrReadOnly)
+    EXPIRE_HOURS = getattr(settings, 'REST_FRAMEWORK_TOKEN_EXPIRE_HOURS', 24)
+    parser_classes = (JSONParser, FormParser, MultiPartParser,)
 
     def get(self, request, pk, format=None):
         user = get_object_or_404(User, pk=pk)
@@ -46,7 +48,18 @@ class UserDetail(APIView):
             'user': user
         }
         self.check_object_permissions(request, obj)  # check the permission
-        serializer = UserDetailUpdateSerializer(data=request.data, partial=True)
+        # parse data
+        form_data = dict(request.data)
+        # check upload photo
+        has_photo = False
+        if 'file' in form_data.keys():
+            has_photo = True
+        # form model data
+        model = form_data['obj'][0]
+        # load into dict
+        obj = json.loads(model)
+
+        serializer = UserDetailUpdateSerializer(data=obj, partial=True)
         serializer.is_valid(raise_exception=True)
         # save data
         data = serializer.data
@@ -74,15 +87,25 @@ class UserDetail(APIView):
                 profile.birth_date = data['birth_date']
             if 'telephone' in data:
                 profile.telephone = data['telephone']
-            if request.FILES:
+            if has_photo:
                 if profile.photo:
                     profile.photo.delete()
-                profile.photo = request.FILES['photo']
-            if ('birth_date' in data) or ('telephone' in data) or request.FILES:
+                profile.photo = form_data['file'][0]
+            if ('birth_date' in data) or ('telephone' in data) or has_photo:
                 profile.save()
-            return Response(serializer.data)
+
+            # get the token
+            token, created = Token.objects.get_or_create(user=user)  # create token
+            utc_now = datetime.utcnow()
+            utc_now = utc_now.replace(tzinfo=pytz.UTC)
+            if not created and token.created < utc_now - timedelta(hours=self.EXPIRE_HOURS):
+                token.delete()
+                token = Token.objects.create(user=user)
+                token.created = datetime.utcnow()
+                token.save()
+            return Response({'detail': True, 'token': token.key, 'user': user.pk}, status=status.HTTP_200_OK)
         except:
-            return Response({'detail': _('something went wrong, user info is not updated!')}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'detail': False}, status=status.HTTP_400_BAD_REQUEST)
 
 
 # get user image
