@@ -82,14 +82,7 @@ class UserDetailUpdateSerializer(serializers.Serializer):
     last_name = serializers.RegexField(regex=r'^\w+$', required=False, allow_blank=True, max_length=30)
     birth_date = serializers.DateField(required=False, allow_null=True, input_formats=settings.DATE_INPUT_FORMATS)
     photo = serializers.ImageField(required=False, allow_null=True, allow_empty_file=True, max_length=100)
-    telephone = serializers.CharField(required=False, validators=[validate_phone], allow_null=True, allow_blank=True, max_length=20)
-
-    def validate(self, data):
-        user = get_object_or_404(User, pk=self.initial_data['pk'])
-        users = User.objects.exclude(username__iexact=user.username).filter(email__iexact=data['email'])
-        if users.count() <= 1:
-            return data
-        raise serializers.ValidationError(_("The email already taken"))
+    telephone = serializers.CharField(required=False, allow_null=True, allow_blank=True, max_length=20)
 
 
 class PasswordSerializer(serializers.Serializer):
