@@ -144,25 +144,11 @@ class OneGroupResearcherList(APIView):
         except:
             return Response({'detail': 'something went wrong!'}, status=status.HTTP_400_BAD_REQUEST)
 
-    def delete(self, request, pk, format=None):
+    def post(self, request, pk, format=None):
         try:
-            user = request.user
-            obj = {'user': user}
-            self.check_object_permissions(request, obj)  # check the permission
-            # get the researcher
-            researcher = get_object_or_404(User, pk=pk)
-            if researcher.pk == user.pk:
-                return Response({'detail': 'You cannot remove yourself remove the groups!'},
-                                    status=status.HTTP_400_BAD_REQUEST)
-                # get my groups
-            my_groups = GroupResearcher.objects.all().filter(user_id=user.pk)
-            if my_groups:
-                my_group_ids = [g.group_id for g in my_groups]
-                # remvoe the researcher form all my groups
 
-                return Response({'detail': 'researcher removed the group!'}, status=status.HTTP_200_OK)
-            return Response({'detail': 'researcher not removed from the group!'},
-                                status=status.HTTP_400_BAD_REQUEST)
+            return Response({'detail': 'researcher added the group!'}, status=status.HTTP_200_OK)
+
         except:
             return Response({'detail': 'something went wrong!'},
                                 status=status.HTTP_400_BAD_REQUEST)
