@@ -29,7 +29,6 @@ urlpatterns = [
     url(r'^(?P<g_id>[0-9]+)/researchers/(?P<u_id>[0-9]+)/$', OneGroupResearcherDetail.as_view(), name='one-group-researcher-detail'),
 
 
-    # list all the assiatants in all my groups
     # manage assistants in one group
     # list researchers in one of my groups
     url(r'^(?P<pk>[0-9]+)/assistants/$', OneGroupAssistantList.as_view(), name='one-group-assistant-list'),

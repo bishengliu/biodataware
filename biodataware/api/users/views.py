@@ -138,19 +138,19 @@ class UserSearch(APIView):
         user_pk = int(request.data.get('user_pk', -1))
         try:
             if key == 'username' and value:
-                user = User.objects.all().filter(username__iexact=value)
+                user = User.objects.all().filter(username__iexact=value).first()
                 if user:
-                    return Response({'matched': True})
+                    return Response({'matched': True, 'user': UserSerializer(user).data})
             if key == 'email' and value:
                 if user_pk >= 0:
-                    user = User.objects.all().exclude(pk=user_pk).filter(email__iexact=value)
+                    user = User.objects.all().exclude(pk=user_pk).filter(email__iexact=value).first()
                     if user:
-                        return Response({'matched': True})
+                        return Response({'matched': True, 'user': UserSerializer(user).data})
                 else:
-                    user = User.objects.all().filter(email__iexact=value)
+                    user = User.objects.all().filter(email__iexact=value).first()
                     if user:
-                        return Response({'matched': True})
-            return Response({'matched': False})
+                        return Response({'matched': True, 'user': UserSerializer(user).data})
+            return Response({'matched': False, 'user': ''})
         except:
             return HttpResponse({'detail': 'Something went wrong!'}, status=status.HTTP_400_BAD_REQUEST)
 

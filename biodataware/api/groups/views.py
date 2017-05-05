@@ -347,27 +347,28 @@ class OneGroupAssistantList(APIView):
             return Response({'detail': 'something went wrong!'}, status=status.HTTP_400_BAD_REQUEST)
 
     def post(self, request, pk, format=None):
+        user = request.user
+        obj = {
+            'user': user
+        }
+        self.check_object_permissions(request, obj)  # check the permission
+        serializer = GroupResearcherCreateSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        data = serializer.data
+        group = get_object_or_404(Group, pk=data.group_id)
+        if group and pk == data.group_id:
+            # check user
+            if get_object_or_404(User, pk=data.user_id):
+                if Assistant.objects.all().filter(user_id=data.user_id).filter(
+                        group_id=data.group_id).first():
+                    return Response({'detail': 'assistant already in the group!'},
+                                    status=status.HTTP_400_BAD_REQUEST)
+                assistant = Assistant(**data)
+                assistant.save()
+                return Response({'detail': 'assistant added to the group!'}, status=status.HTTP_200_OK)
+        return Response({'detail': 'something went wrong!'}, status=status.HTTP_400_BAD_REQUEST)
         try:
-            user = request.user
-            obj = {
-                'user': user
-            }
-            self.check_object_permissions(request, obj)  # check the permission
-            serializer = GroupResearcherCreateSerializer(data=request.data)
-            serializer.is_valid(raise_exception=True)
-            data = serializer.data
-            group = get_object_or_404(Group, pk=data.group_id)
-            if group and pk == data.group_id:
-                # check user
-                if get_object_or_404(User, pk=data.user_id):
-                    if Assistant.objects.all().filter(user_id=data.user_id).filter(
-                            group_id=data.group_id).first():
-                        return Response({'detail': 'assistant already in the group!'},
-                                        status=status.HTTP_400_BAD_REQUEST)
-                    assistant = Assistant(**data)
-                    assistant.save()
-                    return Response({'detail': 'assistant added to the group!'}, status=status.HTTP_200_OK)
-            return Response({'detail': 'something went wrong!'}, status=status.HTTP_400_BAD_REQUEST)
+            pass
         except:
             return Response({'detail': 'something went wrong!'}, status=status.HTTP_400_BAD_REQUEST)
 
