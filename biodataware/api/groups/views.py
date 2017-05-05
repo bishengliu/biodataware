@@ -5,8 +5,11 @@ from rest_framework import authentication, permissions, status
 from .serializers import *
 
 from groups.models import Group, GroupResearcher, Assistant
-from api.permissions import IsPIorAssistantofUserOrReadOnly, IsPIorReadOnly
+from api.permissions import IsPIorAssistantofUserOrReadOnly, IsPIorReadOnly, IsPI
 from api.users.serializers import UserSerializer
+from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
+import json
+
 
 # for admin
 # group list
@@ -54,6 +57,49 @@ class GroupDetail(APIView):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response({'detail': 'group details changed!'}, status=status.HTTP_200_OK)
+
+
+# edit group info by PI
+class MyGroupUpdate(APIView):
+    parser_classes = (JSONParser, FormParser, MultiPartParser,)
+    permission_classes = (permissions.IsAuthenticated, IsPI)
+
+    def put(self, request, format=None):
+        try:
+            user = request.user
+            # group
+            group = Group.objects.all().filter(email__iexact=user.email).first()
+            obj = {'user': user}
+            self.check_object_permissions(request, obj)  # check the permission
+            # parse data
+            form_data = dict(request.data)
+            # check upload photo
+            has_photo = False
+            if 'file' in form_data.keys():
+                has_photo = True
+            # form model data
+            model = form_data['obj'][0]
+            # load into dict
+            obj = json.loads(model)
+            serializer = GroupUpdateSerializer(data=obj, partial=False)
+            serializer.is_valid(raise_exception=True)
+            # save data
+            data = serializer.data
+
+            group.group_name = data.get('group_name')
+            group.pi = data.get('pi')
+            group.pi_fullname = data.get('pi_fullname')
+            group.email = data.get('email')
+            group.telephone = data.get('telephone', '')
+            group.department = data.get('department', '')
+            if has_photo:
+                if group.photo:
+                    group.photo.delete()
+                    group.photo = form_data['file'][0]
+            group.save()
+            return Response({'detail': True }, status=status.HTTP_200_OK)
+        except:
+            return Response({'detail': 'something went wrong!'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 # for PI
