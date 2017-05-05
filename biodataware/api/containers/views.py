@@ -114,7 +114,7 @@ class ContainerDetail(APIView):
         }
         self.check_object_permissions(request, obj)  # check the permission
         container = get_object_or_404(Container, pk=pk)
-        if user.is_superuser or isManger(user):
+        if user.is_superuser:
             serializer = ConatainerSerializer(container)
             return Response(serializer.data)
         else:
@@ -193,7 +193,7 @@ class ContainerDetail(APIView):
         self.check_object_permissions(request, obj)  # check the permission
         container = get_object_or_404(Container, pk=pk)
         try:
-            if user.is_superuser or isManger(user):
+            if user.is_superuser:
                 if container.groupcontainer_set:
                     return Response(
                         {'detail': 'container not deleted! The container is assigned to researcher group(s).'},
