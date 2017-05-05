@@ -92,9 +92,20 @@ class GroupResearcherList(APIView):
             serializer = GroupResearcherCreateSerializer(data=request.data)
             serializer.is_valid(raise_exception=True)
             data = serializer.data
-            group_researcher = GroupResearcher(**data)
-            group_researcher.save()
-            return Response({'detail': 'researcher added to the group!'}, status=status.HTTP_200_OK)
+            # get my groups
+            my_groups = GroupResearcher.objects.all().filter(user_id=user.pk)
+            if my_groups:
+                my_group_ids = [g.group_id for g in my_groups]
+                if data.group_id not in my_group_ids:
+                    return Response({'detail': 'researcher cannot be added to the group!'}, status=status.HTTP_400_BAD_REQUEST)
+                # check researcher is not added before
+                if GroupResearcher.objects.all().filter(user_id=data.user_id).filter(group_id=data.group_id).first():
+                    return Response({'detail': 'researcher already in the group!'}, status=status.HTTP_400_BAD_REQUEST)
+                group_researcher = GroupResearcher(**data)
+                group_researcher.save()
+                return Response({'detail': 'researcher added to the group!'}, status=status.HTTP_200_OK)
+            return Response({'detail': 'you do not have research group yet!'},
+                            status=status.HTTP_400_BAD_REQUEST)
         except:
             return Response({'detail': 'researcher not added to the group!'}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -144,15 +155,6 @@ class OneGroupResearcherList(APIView):
         except:
             return Response({'detail': 'something went wrong!'}, status=status.HTTP_400_BAD_REQUEST)
 
-    def post(self, request, pk, format=None):
-        try:
-
-            return Response({'detail': 'researcher added the group!'}, status=status.HTTP_200_OK)
-
-        except:
-            return Response({'detail': 'something went wrong!'},
-                                status=status.HTTP_400_BAD_REQUEST)
-
 
 class OneGroupResearcherDetail(APIView):
     permission_classes = (permissions.IsAuthenticated, IsPIorAssistantofUserOrReadOnly,)
@@ -195,6 +197,7 @@ class OneGroupResearcherDetail(APIView):
             return Response({'detail': 'something went wrong!'}, status=status.HTTP_400_BAD_REQUEST)
 
 
+# list all my groups
 class MyGroupList(APIView):
     permission_classes = (permissions.IsAuthenticated, IsPIorAssistantofUserOrReadOnly,)
 
