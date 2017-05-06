@@ -14,6 +14,7 @@ from django.http import HttpResponse
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 import json
 
+
 # user list
 # readonly for all
 class UserList(APIView):

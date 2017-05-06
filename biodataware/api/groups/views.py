@@ -59,6 +59,10 @@ class GroupDetail(APIView):
         return Response({'detail': 'group details changed!'}, status=status.HTTP_200_OK)
 
 
+# for PI
+# ====================================================
+#  PI needs add researcher to a group
+# ====================================================
 # edit group info by PI
 class MyGroupUpdate(APIView):
     parser_classes = (JSONParser, FormParser, MultiPartParser,)
@@ -102,10 +106,6 @@ class MyGroupUpdate(APIView):
             return Response({'detail': 'something went wrong!'}, status=status.HTTP_400_BAD_REQUEST)
 
 
-# for PI
-# ====================================================
-#  PI needs add researcher to a group
-# ====================================================
 # list all my groups
 class MyGroupList(APIView):
     permission_classes = (permissions.IsAuthenticated, IsPIorAssistantofUserOrReadOnly,)
@@ -113,9 +113,7 @@ class MyGroupList(APIView):
     def get(self, request, format=None):
         try:
             user = request.user
-            obj = {
-                'user': user
-            }
+            obj = {'user': user}
             self.check_object_permissions(request, obj)  # check the permission
             # pi groups
             group_ids = []
@@ -146,9 +144,7 @@ class GroupResearcherList(APIView):
     def get(self, request, format=None):
         try:
             user = request.user
-            obj = {
-                'user': user
-            }
+            obj = {'user': user}
             self.check_object_permissions(request, obj)  # check the permission
             # pi groups
             group_ids = []
@@ -169,42 +165,8 @@ class GroupResearcherList(APIView):
         except:
             return Response({'detail': 'something went wrong!'}, status=status.HTTP_400_BAD_REQUEST)
 
-    def post(self, request, format=None):
-        try:
-            user = request.user
-            obj = {
-                'user': user
-            }
-            self.check_object_permissions(request, obj)  # check the permission
-            serializer = GroupResearcherCreateSerializer(data=request.data)
-            serializer.is_valid(raise_exception=True)
-            data = serializer.data
-            # pi groups
-            group_ids = []
-            pi_groups = Group.objects.all().filter(email__iexact=user.email).distinct()
-            if pi_groups:
-                group_ids = [g.pk for g in pi_groups]
-            # get my groups
-            my_groups = GroupResearcher.objects.all().filter(user_id=user.pk)
-            if my_groups:
-                my_group_ids = [g.group_id for g in my_groups]
-                # combine 2 arrays
-                group_ids = list(set(group_ids + my_group_ids))
-            if group_ids:
-                if data.group_id not in group_ids:
-                    return Response({'detail': 'researcher cannot be added to the group!'}, status=status.HTTP_400_BAD_REQUEST)
-                # check researcher is not added before
-                if GroupResearcher.objects.all().filter(user_id=data.user_id).filter(group_id=data.group_id).first():
-                    return Response({'detail': 'researcher already in the group!'}, status=status.HTTP_400_BAD_REQUEST)
-                group_researcher = GroupResearcher(**data)
-                group_researcher.save()
-                return Response({'detail': 'researcher added to the group!'}, status=status.HTTP_200_OK)
-            return Response({'detail': 'you do not have research group yet!'},
-                            status=status.HTTP_400_BAD_REQUEST)
-        except:
-            return Response({'detail': 'researcher not added to the group!'}, status=status.HTTP_400_BAD_REQUEST)
 
-
+# for one group
 # researcher details
 class GroupResearcherDetail(APIView):
 
@@ -237,9 +199,7 @@ class OneGroupResearcherList(APIView):
     def get(self, request, pk, format=None):
         try:
             user = request.user
-            obj = {
-                'user': user
-            }
+            obj = {'user': user}
             self.check_object_permissions(request, obj)  # check the permission
             # get my groups
             my_group = GroupResearcher.objects.all().filter(user_id=user.pk).filter(group_id=pk).first()
@@ -254,19 +214,17 @@ class OneGroupResearcherList(APIView):
     def post(self, request, pk, format=None):
         try:
             user = request.user
-            obj = {
-                'user': user
-            }
+            obj = {'user': user}
             self.check_object_permissions(request, obj)  # check the permission
             serializer = GroupResearcherCreateSerializer(data=request.data)
             serializer.is_valid(raise_exception=True)
             data = serializer.data
-            group = get_object_or_404(Group, pk=data.group_id)
-            if group and pk == data.group_id:
-                if get_object_or_404(User, pk=data.user_id):
+            group = get_object_or_404(Group, pk=data.get("group_id"))
+            if group and int(pk) == data.get("group_id"):
+                if get_object_or_404(User, pk=data.get("user_id")):
                     # check researcher is not added before
-                    if GroupResearcher.objects.all().filter(user_id=data.user_id).filter(
-                            group_id=data.group_id).first():
+                    if GroupResearcher.objects.all().filter(user_id=data.get("user_id")).filter(
+                            group_id=data.get("group_id")).first():
                         return Response({'detail': 'researcher already in the group!'},
                                         status=status.HTTP_400_BAD_REQUEST)
                     group_researcher = GroupResearcher(**data)
@@ -347,28 +305,25 @@ class OneGroupAssistantList(APIView):
             return Response({'detail': 'something went wrong!'}, status=status.HTTP_400_BAD_REQUEST)
 
     def post(self, request, pk, format=None):
-        user = request.user
-        obj = {
-            'user': user
-        }
-        self.check_object_permissions(request, obj)  # check the permission
-        serializer = GroupResearcherCreateSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        data = serializer.data
-        group = get_object_or_404(Group, pk=data.group_id)
-        if group and pk == data.group_id:
-            # check user
-            if get_object_or_404(User, pk=data.user_id):
-                if Assistant.objects.all().filter(user_id=data.user_id).filter(
-                        group_id=data.group_id).first():
-                    return Response({'detail': 'assistant already in the group!'},
-                                    status=status.HTTP_400_BAD_REQUEST)
-                assistant = Assistant(**data)
-                assistant.save()
-                return Response({'detail': 'assistant added to the group!'}, status=status.HTTP_200_OK)
-        return Response({'detail': 'something went wrong!'}, status=status.HTTP_400_BAD_REQUEST)
         try:
-            pass
+            user = request.user
+            obj = {'user': user}
+            self.check_object_permissions(request, obj)  # check the permission
+            serializer = GroupResearcherCreateSerializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            data = serializer.data
+            group = get_object_or_404(Group, pk=data.get("group_id"))
+            if group and int(pk) == data.get("group_id"):
+                # check user
+                if get_object_or_404(User, pk=data.get("user_id")):
+                    if Assistant.objects.all().filter(user_id=data.get("user_id")).filter(
+                            group_id=data.get("group_id")).first():
+                        return Response({'detail': 'assistant already in the group!'},
+                                        status=status.HTTP_400_BAD_REQUEST)
+                    assistant = Assistant(**data)
+                    assistant.save()
+                    return Response({'detail': 'assistant added to the group!'}, status=status.HTTP_200_OK)
+            return Response({'detail': 'something went wrong!'}, status=status.HTTP_400_BAD_REQUEST)
         except:
             return Response({'detail': 'something went wrong!'}, status=status.HTTP_400_BAD_REQUEST)
 
