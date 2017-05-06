@@ -78,7 +78,6 @@ class GroupResearcherCreateSerializer(serializers.ModelSerializer):
     """
 
 
-
 class GroupUpdateSerializer(serializers.Serializer):
     group_name = serializers.RegexField(regex=r'^\w+$', required=True, max_length=100)
     email = serializers.EmailField(required=True, allow_blank=False)
