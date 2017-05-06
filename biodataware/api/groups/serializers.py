@@ -63,8 +63,8 @@ class GroupResearcherCreateSerializer(serializers.ModelSerializer):
     def validate_group_id(self, value):
         get_object_or_404(Group, pk=value)
         return value
-
-    def validate(self, data):
+    """
+        def validate(self, data):
         if 'user_id' in data and 'group_id' in data:
             group_researcher = GroupResearcher.objects.all()\
                 .filter(user_id=data['user_id'])\
@@ -75,6 +75,8 @@ class GroupResearcherCreateSerializer(serializers.ModelSerializer):
             return data
         msg = _("validation failed!")
         raise serializers.ValidationError(msg)
+    """
+
 
 
 class GroupUpdateSerializer(serializers.Serializer):
