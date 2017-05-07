@@ -10,7 +10,7 @@ class Group(models.Model):
     pi = models.CharField(max_length=100)
     pi_fullname = models.CharField(max_length=150, null=True, blank=True)
     photo = models.ImageField(upload_to='groups/', max_length=150, null=True, blank=True)
-    email = models.EmailField(max_length=50, null=True, blank=True)
+    email = models.EmailField(max_length=50, null=True, blank=True, unique=True)
     telephone = models.CharField(validators=[validate_phone], null=True, blank=True, max_length=20)
     department = models.CharField(max_length=150, null=True, blank=True)
 
