@@ -371,3 +371,30 @@ class OneGroupAssistantDetail(APIView):
         except:
             return Response({'detail': 'something went wrong!'}, status=status.HTTP_400_BAD_REQUEST)
 
+
+# search user info
+# {'query': 'group_name', 'value': value, 'group_id': -1 }
+class GroupSearch(APIView):
+
+    permission_classes = (permissions.IsAuthenticated, )
+
+    def post(self, request, format=None):
+        key = request.data.get('query', '')
+        value = request.data.get('value', '')
+        group_id = int(request.data.get('group_pk', -1))
+        try:
+            groups = Group.objects.all()
+            if group_id >= 0:
+                groups = groups.exclude(pk=group_id)
+            if key == 'group_name' and value:
+                group = groups.filter(group_name__iexact=value).first()
+                if group:
+                    return Response({'matched': True, 'group': GroupSerializer(group).data})
+            if key == 'email' and value:
+                group = groups.filter(email__iexact=value).first()
+                if group:
+                    return Response({'matched': True, 'group': GroupSerializer(group).data})
+            return Response({'matched': False, 'group': ''})
+        except:
+            return Response({'detail': 'Something went wrong!'}, status=status.HTTP_400_BAD_REQUEST)
+

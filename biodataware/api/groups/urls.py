@@ -1,5 +1,5 @@
 from django.conf.urls import url
-from .views import GroupList, GroupDetail, GroupResearcherList, GroupResearcherDetail, OneGroupResearcherList, OneGroupResearcherDetail, MyGroupList, OneGroupAssistantList, OneGroupAssistantDetail, MyGroupUpdate
+from .views import GroupList, GroupDetail, GroupResearcherList, GroupResearcherDetail, OneGroupResearcherList, OneGroupResearcherDetail, MyGroupList, OneGroupAssistantList, OneGroupAssistantDetail, MyGroupUpdate, GroupSearch
 
 urlpatterns = [
 
@@ -8,6 +8,8 @@ urlpatterns = [
     # group detail
     url(r'^(?P<pk>[0-9]+)/$', GroupDetail.as_view(), name='group-detail'),
 
+    # find group info
+    url(r'^search/$', GroupSearch.as_view(), name='user_search'),
 
     # PI update own group info
     url(r'^update/$', MyGroupUpdate.as_view(), name='my-groups-update'),

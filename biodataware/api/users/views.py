@@ -126,7 +126,7 @@ class UserImage(APIView):
             image_type = image.name.split(".")[-1]
             content_type = "image/"+image_type+'"'
             return HttpResponse(image, content_type=content_type)
-        return HttpResponse({'detail': 'image not found!'}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'detail': 'image not found!'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 # search user info
@@ -153,7 +153,7 @@ class UserSearch(APIView):
                         return Response({'matched': True, 'user': UserSerializer(user).data})
             return Response({'matched': False, 'user': ''})
         except:
-            return HttpResponse({'detail': 'Something went wrong!'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'detail': 'Something went wrong!'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 # get auth user details
