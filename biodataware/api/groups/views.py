@@ -101,7 +101,7 @@ class MyGroupUpdate(APIView):
                     group.photo.delete()
                     group.photo = form_data['file'][0]
             group.save()
-            return Response({'detail': True }, status=status.HTTP_200_OK)
+            return Response({'detail': True}, status=status.HTTP_200_OK)
         except:
             return Response({'detail': 'something went wrong!'}, status=status.HTTP_400_BAD_REQUEST)
 
