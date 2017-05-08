@@ -2,11 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="e07c48b7-1c00-4eca-bd6a-d182d44a745f" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/biodataware/config/db.sqlite3" afterPath="$PROJECT_DIR$/biodataware/config/db.sqlite3" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/biodataware/api/groups/serializers.py" afterPath="$PROJECT_DIR$/biodataware/api/groups/serializers.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/biodataware/api/groups/views.py" afterPath="$PROJECT_DIR$/biodataware/api/groups/views.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/biodataware/groups/models.py" afterPath="$PROJECT_DIR$/biodataware/groups/models.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/biodataware/api/users/serializers.py" afterPath="$PROJECT_DIR$/biodataware/api/users/serializers.py" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -18,12 +14,37 @@
   <component name="ExecutionTargetManager" SELECTED_TARGET="default_target" />
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="models.py" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/biodataware/groups/models.py">
+      <file leaf-file-name="views.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/biodataware/api/users/views.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="90">
-              <caret line="10" column="49" lean-forward="false" selection-start-line="10" selection-start-column="49" selection-end-line="10" selection-end-column="49" />
-              <folding />
+            <state relative-caret-position="405">
+              <caret line="164" column="35" lean-forward="false" selection-start-line="164" selection-start-column="21" selection-end-line="164" selection-end-column="35" />
+              <folding>
+                <element signature="e#729#956#0" expanded="false" />
+                <element signature="e#1012#4131#0" expanded="false" />
+                <element signature="e#4178#4853#0" expanded="false" />
+                <element signature="e#4944#6085#0" expanded="false" />
+                <element signature="e#6446#7852#0" expanded="false" />
+                <element signature="e#7978#9269#0" expanded="false" />
+                <element signature="e#9425#10824#0" expanded="false" />
+                <element signature="e#10898#12011#0" expanded="false" />
+                <element signature="e#12078#13482#0" expanded="false" />
+                <element signature="e#13532#15172#0" expanded="false" />
+                <element signature="e#15202#15610#0" expanded="false" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="serializers.py" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/biodataware/api/users/serializers.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="579">
+              <caret line="74" column="90" lean-forward="false" selection-start-line="74" selection-start-column="90" selection-end-line="74" selection-end-column="90" />
+              <folding>
+                <element signature="e#3393#4007#0" expanded="false" />
+                <element signature="e#4066#6095#0" expanded="false" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -100,19 +121,19 @@
         <option value="$PROJECT_DIR$/biodataware/api/users/urls.py" />
         <option value="$PROJECT_DIR$/biodataware/helpers/validators.py" />
         <option value="$PROJECT_DIR$/biodataware/config/settings/local.py" />
-        <option value="$PROJECT_DIR$/biodataware/api/users/serializers.py" />
         <option value="$PROJECT_DIR$/biodataware/api/containers/views.py" />
         <option value="$PROJECT_DIR$/biodataware/api/groups/urls.py" />
         <option value="$PROJECT_DIR$/biodataware/api/users/views.py" />
         <option value="$PROJECT_DIR$/biodataware/api/groups/serializers.py" />
         <option value="$PROJECT_DIR$/biodataware/api/groups/views.py" />
         <option value="$PROJECT_DIR$/biodataware/groups/models.py" />
+        <option value="$PROJECT_DIR$/biodataware/api/users/serializers.py" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="1735" />
-    <option name="y" value="586" />
+    <option name="x" value="418" />
+    <option name="y" value="99" />
     <option name="width" value="2371" />
     <option name="height" value="1369" />
   </component>
@@ -176,24 +197,6 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="groups" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="biodataware" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="biodataware" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="biodataware" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
               <option name="myItemId" value="api" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
@@ -217,50 +220,6 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="users" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="biodataware" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="biodataware" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="biodataware" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="api" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="groups" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="biodataware" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="biodataware" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="biodataware" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="api" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="containers" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -427,7 +386,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="1735" y="586" width="2371" height="1369" extended-state="0" />
+    <frame x="418" y="99" width="2371" height="1369" extended-state="1" />
     <editor active="true" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.11678832" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
@@ -724,34 +683,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/biodataware/api/users/views.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="150">
-          <caret line="62" column="70" lean-forward="false" selection-start-line="62" selection-start-column="66" selection-end-line="62" selection-end-column="70" />
-          <folding>
-            <element signature="e#729#956#0" expanded="false" />
-            <element signature="e#4178#4853#0" expanded="false" />
-            <element signature="e#4944#6085#0" expanded="false" />
-            <element signature="e#6144#6351#0" expanded="false" />
-            <element signature="e#6446#7852#0" expanded="false" />
-            <element signature="e#7978#9269#0" expanded="false" />
-            <element signature="e#9425#10824#0" expanded="false" />
-            <element signature="e#10898#12011#0" expanded="false" />
-            <element signature="e#12078#13482#0" expanded="false" />
-            <element signature="e#13532#15172#0" expanded="false" />
-            <element signature="e#15202#15610#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/biodataware/api/users/serializers.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="165">
-          <caret line="80" column="103" lean-forward="false" selection-start-line="80" selection-start-column="88" selection-end-line="80" selection-end-column="103" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/biodataware/api/groups/views.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="390">
@@ -813,6 +744,37 @@
         <state relative-caret-position="90">
           <caret line="10" column="49" lean-forward="false" selection-start-line="10" selection-start-column="49" selection-end-line="10" selection-end-column="49" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/biodataware/api/users/views.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="405">
+          <caret line="164" column="35" lean-forward="false" selection-start-line="164" selection-start-column="21" selection-end-line="164" selection-end-column="35" />
+          <folding>
+            <element signature="e#729#956#0" expanded="false" />
+            <element signature="e#1012#4131#0" expanded="false" />
+            <element signature="e#4178#4853#0" expanded="false" />
+            <element signature="e#4944#6085#0" expanded="false" />
+            <element signature="e#6446#7852#0" expanded="false" />
+            <element signature="e#7978#9269#0" expanded="false" />
+            <element signature="e#9425#10824#0" expanded="false" />
+            <element signature="e#10898#12011#0" expanded="false" />
+            <element signature="e#12078#13482#0" expanded="false" />
+            <element signature="e#13532#15172#0" expanded="false" />
+            <element signature="e#15202#15610#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/biodataware/api/users/serializers.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="579">
+          <caret line="74" column="90" lean-forward="false" selection-start-line="74" selection-start-column="90" selection-end-line="74" selection-end-column="90" />
+          <folding>
+            <element signature="e#3393#4007#0" expanded="false" />
+            <element signature="e#4066#6095#0" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>

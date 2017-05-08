@@ -68,11 +68,11 @@ class UserSerializer(serializers.ModelSerializer):
     roles = serializers.StringRelatedField(many=True, source='userrole_set') # reverse with set
     #userrole_set = UserRoleSerializer(many=True, read_only=True)
     #groups = serializers.StringRelatedField(many=True, source='groupresearcher_set') # reverse with set
-    groups = GroupResearcherSerializer(many=True, read_only=True, source='groupresearcher_set')
+    #groups = GroupResearcherSerializer(many=True, read_only=True, source='groupresearcher_set')
 
     class Meta:
         model = User
-        fields = ('pk', 'username', 'first_name', 'last_name', 'email', 'profile', 'roles', 'groups')
+        fields = ('pk', 'username', 'first_name', 'last_name', 'email', 'profile', 'roles')
         #fields = ('pk', 'username', 'first_name', 'last_name', 'email', 'profile', 'roles', 'userrole_set', 'groups', 'groupresearcher_set')
 
 
