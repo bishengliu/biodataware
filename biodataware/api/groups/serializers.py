@@ -79,10 +79,10 @@ class GroupResearcherCreateSerializer(serializers.ModelSerializer):
 
 
 class GroupUpdateSerializer(serializers.Serializer):
-    group_name = serializers.RegexField(regex=r'^\w+$', required=True, max_length=100)
+    group_name = serializers.CharField(required=True, max_length=100)
     email = serializers.EmailField(required=True, allow_blank=False)
-    pi = serializers.RegexField(regex=r'^\w+$', required=False, allow_blank=True, max_length=50)
-    pi_fullname = serializers.RegexField(regex=r'^\w+$', required=False, allow_blank=True, max_length=100)
+    pi = serializers.RegexField(regex=r'^\w+$', required=True, allow_blank=True, max_length=50)
+    pi_fullname = serializers.CharField(required=False, allow_blank=True, max_length=100)
     photo = serializers.ImageField(required=False, allow_null=True, allow_empty_file=True, max_length=150)
     telephone = serializers.CharField(required=False, allow_null=True, allow_blank=True, max_length=20)
     department = serializers.CharField(required=False, allow_null=True, allow_blank=True, max_length=150)

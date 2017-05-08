@@ -69,6 +69,7 @@ class MyGroupUpdate(APIView):
     permission_classes = (permissions.IsAuthenticated, IsPI)
 
     def put(self, request, format=None):
+
         try:
             user = request.user
             # group
@@ -85,7 +86,7 @@ class MyGroupUpdate(APIView):
             model = form_data['obj'][0]
             # load into dict
             obj = json.loads(model)
-            serializer = GroupUpdateSerializer(data=obj, partial=False)
+            serializer = GroupUpdateSerializer(data=obj, partial=True)
             serializer.is_valid(raise_exception=True)
             # save data
             data = serializer.data
