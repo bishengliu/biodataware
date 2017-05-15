@@ -29,13 +29,13 @@ class GroupResearcherSerializer(serializers.ModelSerializer):
 
 # get, post, delete
 class GroupSerializer(serializers.ModelSerializer):
-    researchers = GroupResearcherSerializer(many=True, read_only=True, source='groupresearcher_set')
+    members = GroupResearcherSerializer(many=True, read_only=True, source='groupresearcher_set')
     assistants = AssistantSerializer(many=True, read_only=True, source='assistant_set')
 
     class Meta:
         model = Group
         fields = ('pk', 'group_name', 'pi', 'pi_fullname', 'photo', 'photo_tag', 'email', 'telephone', 'department', 'assistants',
-                  'researchers')
+                  'members')
 
 
 # group detail

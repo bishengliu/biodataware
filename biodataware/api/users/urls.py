@@ -1,12 +1,12 @@
 from django.conf.urls import url
-from .views import UserList, UserDetail, GetMyToken, ObtainToken, UserPassword, UserRoleDetail, UserRoleDelete, Register, Logout, AuthUserDetail, UserImage, UserSearch
+from .views import UserList, UserCount, UserDetail, GetMyToken, ObtainToken, UserPassword, UserRoleDetail, UserRoleDelete, Register, Logout, AuthUserDetail, UserImage, UserSearch
 
 
 urlpatterns = [
 
     # all users list
     url(r'^$', UserList.as_view(), name='users'),
-
+    url(r'^count/$', UserCount.as_view(), name='user-count'), #et group count
     # get or post user details
     url(r'^(?P<pk>[0-9]+)/$', UserDetail.as_view(), name='user_detail'),
 

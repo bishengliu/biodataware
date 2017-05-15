@@ -3,9 +3,10 @@ from .views import *
 
 
 urlpatterns = [
-    # ===================================================container list=================================================
+    # ===================================================container list for admin=======================================
     url(r'^$', ContainerList.as_view(), name='containers'),  # container-towers
-
+    # ===================================================container count for admin======================================
+    url(r'^count/$', ContainerCount.as_view(), name='containers-count'),  # container-count
     # ====================================================container detail==============================================
     url(r'^(?P<pk>[0-9]+)/$', ContainerDetail.as_view(), name='container-detail'),
 

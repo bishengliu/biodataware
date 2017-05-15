@@ -103,6 +103,14 @@ class ContainerList(APIView):
                             status=status.HTTP_400_BAD_REQUEST)
 
 
+class ContainerCount(APIView):
+    permission_classes = (permissions.IsAuthenticated, permissions.IsAdminUser,)
+
+    def get(self, request, format=None):
+        container_count = Container.objects.all().count()
+        return Response({'count': container_count}, status=status.HTTP_200_OK)
+
+
 # view, edit and delete container
 class ContainerDetail(APIView):
     permission_classes = (permissions.IsAuthenticated, IsPIorReadOnly, )

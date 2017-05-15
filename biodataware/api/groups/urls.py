@@ -1,10 +1,11 @@
 from django.conf.urls import url
-from .views import GroupList, GroupDetail, GroupResearcherList, GroupResearcherDetail, OneGroupResearcherList, OneGroupResearcherDetail, MyGroupList, OneGroupAssistantList, OneGroupAssistantDetail, MyGroupUpdate, GroupSearch
+from .views import GroupList, GroupCount, GroupDetail, GroupResearcherList, GroupResearcherDetail, OneGroupResearcherList, OneGroupResearcherDetail, MyGroupList, OneGroupAssistantList, OneGroupAssistantDetail, MyGroupUpdate, GroupSearch
 
 urlpatterns = [
 
     # all users list
     url(r'^$', GroupList.as_view(), name='groups'),
+    url(r'^count/$', GroupCount.as_view(), name='group-count'), #et group count
     # group detail
     url(r'^(?P<pk>[0-9]+)/$', GroupDetail.as_view(), name='group-detail'),
 

@@ -26,6 +26,15 @@ class UserList(APIView):
         return Response(serializer.data)
 
 
+# group count
+class UserCount(APIView):
+    permission_classes = (permissions.IsAuthenticated, permissions.IsAdminUser,)
+
+    def get(self, request, format=None):
+        user_count = User.objects.all().count()
+        return Response({'count': user_count}, status=status.HTTP_200_OK)
+
+
 # get and post user info
 class UserDetail(APIView):
     permission_classes = (permissions.IsAuthenticated, IsOwnOrReadOnly)

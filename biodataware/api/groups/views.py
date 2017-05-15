@@ -33,6 +33,16 @@ class GroupList(APIView):
             return Response({'detail': 'group not added!'}, status=status.HTTP_400_BAD_REQUEST)
 
 
+# group count
+class GroupCount(APIView):
+    permission_classes = (permissions.IsAuthenticated, permissions.IsAdminUser,)
+
+    def get(self, request, format=None):
+        group_count = Group.objects.all().count()
+        return Response({'count': group_count}, status=status.HTTP_200_OK)
+
+
+
 class GroupDetail(APIView):
     permission_classes = (permissions.IsAuthenticated, permissions.IsAdminUser,)
 
@@ -376,8 +386,6 @@ class OneGroupAssistantDetail(APIView):
 # search user info
 # {'query': 'group_name', 'value': value, 'group_id': -1 }
 class GroupSearch(APIView):
-
-    permission_classes = (permissions.IsAuthenticated, )
 
     def post(self, request, format=None):
         key = request.data.get('query', '')
