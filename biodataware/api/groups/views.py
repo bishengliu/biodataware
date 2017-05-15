@@ -14,6 +14,7 @@ import json
 # for admin
 # group list
 class GroupList(APIView):
+    parser_classes = (JSONParser, FormParser, MultiPartParser,)
     permission_classes = (permissions.IsAuthenticated, permissions.IsAdminUser,)
 
     def get(self, request, format=None):
@@ -23,12 +24,36 @@ class GroupList(APIView):
 
     def post(self, request, format=None):
         try:
-            serializer = GroupDetailCreateSerializer(data=request.data, partial=True)
+            user = request.user
+            obj = {'user': user}
+            self.check_object_permissions(request, obj)  # check the permission
+
+            # parse data
+            form_data = dict(request.data)
+            # check upload photo
+            has_photo = False
+            if 'file' in form_data.keys():
+                has_photo = True
+            # form model data
+            model = form_data['obj'][0]
+            # load into dict
+            obj = json.loads(model)
+            serializer = GroupUpdateSerializer(data=obj, partial=True)
             serializer.is_valid(raise_exception=True)
+            # save data
             data = serializer.data
-            group = Group(**data)
+            # create group
+            group = Group()
+            group.group_name = data.get('group_name')
+            group.pi = data.get('pi')
+            group.pi_fullname = data.get('pi_fullname')
+            group.email = data.get('email')
+            group.telephone = data.get('telephone', '')
+            group.department = data.get('department', '')
+            if has_photo:
+                    group.photo = form_data['file'][0]
             group.save()
-            return Response({'detail': 'group added!'}, status=status.HTTP_200_OK)
+            return Response({'detail': True}, status=status.HTTP_200_OK)
         except:
             return Response({'detail': 'group not added!'}, status=status.HTTP_400_BAD_REQUEST)
 
