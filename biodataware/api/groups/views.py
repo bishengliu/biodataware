@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 from rest_framework import authentication, permissions, status
 from .serializers import *
-
+from containers.models import GroupContainer
 from groups.models import Group, GroupResearcher, Assistant
 from api.permissions import IsPIorAssistantofUserOrReadOnly, IsPIorReadOnly, IsPI
 from api.users.serializers import UserSerializer
@@ -67,8 +67,8 @@ class GroupCount(APIView):
         return Response({'count': group_count}, status=status.HTTP_200_OK)
 
 
-
 class GroupDetail(APIView):
+    parser_classes = (JSONParser, FormParser, MultiPartParser,)
     permission_classes = (permissions.IsAuthenticated, permissions.IsAdminUser,)
 
     def get(self, request, pk, format=None):
@@ -78,20 +78,54 @@ class GroupDetail(APIView):
 
     def delete(self, request, pk, format=None):
         group = get_object_or_404(Group, pk=pk)
-        if group.groupresearcher_set:
-            return Response({'detail': 'group not deleted! The group contains researcher(s).'}, status=status.HTTP_400_BAD_REQUEST)
-        if group.groupcontainer_set:
-            return Response({'detail': 'group not deleted! The group contains container(s).'},
-                            status=status.HTTP_400_BAD_REQUEST)
-        group.delete()
-        return Response({'detail': 'group deleted!'}, status=status.HTTP_200_OK)
+        try:
+            group_researchers = GroupResearcher.objects.all().filter(group_id=group.pk)
+            if group_researchers:
+                return Response({'detail': 'group not deleted! The group contains researcher(s).'},
+                                status=status.HTTP_400_BAD_REQUEST)
+            group_containers = GroupContainer.objects.all().filter(group_id=group.pk)
+            if group_containers:
+                return Response({'detail': 'group not deleted! The group contains container(s).'},
+                                status=status.HTTP_400_BAD_REQUEST)
+            group.delete()
+            return Response({'detail': 'group deleted!'}, status=status.HTTP_200_OK)
+        except:
+            return Response({'detail': 'Something went wrong, group not deleted!'}, status=status.HTTP_400_BAD_REQUEST)
+
 
     def put(self, request, pk, format=None):
-        group = get_object_or_404(Group, pk=pk)
-        serializer = GroupDetailCreateSerializer(group, data=request.data, partial=True)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response({'detail': 'group details changed!'}, status=status.HTTP_200_OK)
+        try:
+            group = get_object_or_404(Group, pk=pk)
+
+            # parse data
+            form_data = dict(request.data)
+            # check upload photo
+            has_photo = False
+            if 'file' in form_data.keys():
+                has_photo = True
+            # form model data
+            model = form_data['obj'][0]
+            # load into dict
+            obj = json.loads(model)
+            serializer = GroupUpdateSerializer(data=obj, partial=False)
+            serializer.is_valid(raise_exception=True)
+            # save data
+            data = serializer.data
+
+            group.group_name = data.get('group_name')
+            group.pi = data.get('pi')
+            group.pi_fullname = data.get('pi_fullname')
+            group.email = data.get('email')
+            group.telephone = data.get('telephone', '')
+            group.department = data.get('department', '')
+            if has_photo:
+                if group.photo:
+                    group.photo.delete()
+                group.photo = form_data['file'][0]
+            group.save()
+            return Response({'detail': True}, status=status.HTTP_200_OK)
+        except:
+            return Response({'detail': 'group not updated!'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 # for PI
