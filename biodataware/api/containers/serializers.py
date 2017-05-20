@@ -7,13 +7,16 @@ from containers.models import Container, GroupContainer, BoxContainer, BoxResear
 from groups.models import Group, GroupResearcher
 from samples.models import SampleAttachment, SampleResearcher, SampleTissue, Sample
 from django.core.validators import MinValueValidator
+from api.groups.serializers import GroupSerializer, GroupResearcherSerializer
+from api.users.serializers import UserSerializer
 
 
 class BoxResearcherSerializer(serializers.ModelSerializer):
+    researcher = GroupResearcherSerializer()
 
     class Meta:
         model = BoxResearcher
-        fields = ('researcher_id', 'researcher_name', 'researcher_email', )
+        fields = ('pk', 'researcher',)
 
 
 class GroupSerializer(serializers.ModelSerializer):
@@ -23,20 +26,18 @@ class GroupSerializer(serializers.ModelSerializer):
 
 
 class GroupContainerSerializer(serializers.ModelSerializer):
-    group = serializers.StringRelatedField()
-
+    # group = serializers.StringRelatedField()
+    group = GroupSerializer()
     class Meta:
         model = GroupContainer
-        fields = ('group_id', 'group')
+        fields = ('pk', 'group', )
 
 
 class BoxContainerSerializer(serializers.ModelSerializer):
     researchers = BoxResearcherSerializer(many=True, read_only=True, source='boxresearcher_set')
-
     class Meta:
         model = BoxContainer
         fields = ('pk', 'box_position', 'box_vertical', 'box_horizontal', 'tower', 'shelf', 'box', 'code39', 'qrcode', 'researchers')
-
 
 class ConatainerSerializer(serializers.ModelSerializer):
     groups = GroupContainerSerializer(many=True, read_only=True, source='groupcontainer_set')
