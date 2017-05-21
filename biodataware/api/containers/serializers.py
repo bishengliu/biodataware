@@ -19,12 +19,6 @@ class BoxResearcherSerializer(serializers.ModelSerializer):
         fields = ('pk', 'researcher',)
 
 
-class GroupSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Group
-        fields = ('pk', 'group_name', 'pi', 'pi_fullname', 'photo', 'photo_tag', 'email', 'telephone', 'department')
-
-
 class GroupContainerSerializer(serializers.ModelSerializer):
     # group = serializers.StringRelatedField()
     group = GroupSerializer()
@@ -35,15 +29,16 @@ class GroupContainerSerializer(serializers.ModelSerializer):
 
 
 class BoxContainerSerializer(serializers.ModelSerializer):
-    researchers = BoxResearcherSerializer(many=True, read_only=True, source='boxresearcher_set')
-    # researchers = BoxResearcherSerializer(many=True, read_only=True, source='user')
+    # researchers = BoxResearcherSerializer(many=True, read_only=True, source='boxresearcher_set')
+    researchers = UserSerializer(many=True, read_only=True, source='researcher_objs')
     class Meta:
         model = BoxContainer
         fields = ('pk', 'box_position', 'box_vertical', 'box_horizontal', 'tower', 'shelf', 'box', 'code39', 'qrcode', 'researchers')
 
 
 class ConatainerSerializer(serializers.ModelSerializer):
-    groups = GroupContainerSerializer(many=True, read_only=True, source='groupcontainer_set')
+    # groups = GroupContainerSerializer(many=True, read_only=True, source='groupcontainer_set')
+    groups = GroupSerializer(many=True, read_only=True, source='group_objs')
     boxes = BoxContainerSerializer(many=True, read_only=True, source='boxcontainer_set')
 
     class Meta:

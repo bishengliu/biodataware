@@ -3,7 +3,7 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from groups.models import Group, GroupResearcher
 from django.utils.safestring import mark_safe
 from django.conf import settings
-
+from django.contrib.auth import get_user_model
 
 # containers
 class Container(models.Model):
@@ -31,6 +31,17 @@ class Container(models.Model):
     def __str__(self):
         return self.name
 
+    def group_objs(self):
+        gc_set = self.groupcontainer_set
+        if gc_set:
+            group_ids = []
+            for x in gc_set.values('group'):
+                group_ids.append(x['group'])
+            if group_ids:
+                groups = Group.objects.all().filter(pk__in=group_ids)
+                return groups
+        return None
+
 
 # containers to groups
 class GroupContainer(models.Model):
@@ -57,6 +68,18 @@ class BoxContainer(models.Model):
 
     def __str__(self):
         return self.container.name + ' (' + str(self.tower) + '-' + str(self.shelf) + '-' + str(self.box) + ')'
+
+    def researcher_objs(self):
+        br_set = self.boxresearcher_set
+        if br_set:
+            user_ids = []
+            for u in br_set.values('researcher'):
+                user_ids.append(u['researcher'])
+            if user_ids:
+                User = get_user_model()
+                users = User.objects.all().filter(pk__in=user_ids)
+                return users
+        return None
 
 
 # boxes assigned to the group

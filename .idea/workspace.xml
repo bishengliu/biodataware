@@ -2,8 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="e07c48b7-1c00-4eca-bd6a-d182d44a745f" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/biodataware/config/db.sqlite3" afterPath="$PROJECT_DIR$/biodataware/config/db.sqlite3" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/biodataware/api/containers/serializers.py" afterPath="$PROJECT_DIR$/biodataware/api/containers/serializers.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/biodataware/api/containers/views.py" afterPath="$PROJECT_DIR$/biodataware/api/containers/views.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/biodataware/containers/models.py" afterPath="$PROJECT_DIR$/biodataware/containers/models.py" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -19,13 +20,26 @@
       <file leaf-file-name="serializers.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/biodataware/api/containers/serializers.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="120">
-              <caret line="8" column="52" lean-forward="true" selection-start-line="8" selection-start-column="52" selection-end-line="9" selection-end-column="77" />
+            <state relative-caret-position="210">
+              <caret line="31" column="6" lean-forward="false" selection-start-line="31" selection-start-column="6" selection-end-line="31" selection-end-column="6" />
               <folding>
-                <element signature="e#2212#4234#0" expanded="false" />
-                <element signature="e#2460#3023#0" expanded="false" />
-                <element signature="e#3070#3634#0" expanded="false" />
-                <element signature="e#3679#4234#0" expanded="false" />
+                <element signature="e#0#38#0" expanded="true" />
+                <element signature="e#2084#4106#0" expanded="false" />
+                <element signature="e#2332#2895#0" expanded="false" />
+                <element signature="e#2942#3506#0" expanded="false" />
+                <element signature="e#3551#4106#0" expanded="false" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="models.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/biodataware/containers/models.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="261">
+              <caret line="53" column="0" lean-forward="false" selection-start-line="53" selection-start-column="0" selection-end-line="53" selection-end-column="0" />
+              <folding>
+                <element signature="e#0#28#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -49,6 +63,7 @@
       <find>DEBUG</find>
       <find>UserRole</find>
       <find>authenticate</find>
+      <find>BoxResearcherSerializer</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -105,19 +120,18 @@
         <option value="$PROJECT_DIR$/biodataware/api/users/urls.py" />
         <option value="$PROJECT_DIR$/biodataware/api/users/views.py" />
         <option value="$PROJECT_DIR$/biodataware/api/containers/urls.py" />
-        <option value="$PROJECT_DIR$/biodataware/api/containers/views.py" />
         <option value="$PROJECT_DIR$/biodataware/api/groups/views.py" />
         <option value="$PROJECT_DIR$/biodataware/api/groups/serializers.py" />
-        <option value="$PROJECT_DIR$/biodataware/api/containers/serializers.py" />
+        <option value="$PROJECT_DIR$/biodataware/api/containers/views.py" />
         <option value="$PROJECT_DIR$/biodataware/containers/models.py" />
+        <option value="$PROJECT_DIR$/biodataware/api/containers/serializers.py" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="143" />
     <option name="y" value="22" />
-    <option name="width" value="2171" />
-    <option name="height" value="1371" />
+    <option name="width" value="2338" />
+    <option name="height" value="1418" />
   </component>
   <component name="ProjectLevelVcsManager">
     <ConfirmationsSetting value="2" id="Add" />
@@ -236,7 +250,7 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="users" />
+              <option name="myItemId" value="groups" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -426,10 +440,10 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="143" y="22" width="2171" height="1371" extended-state="0" />
+    <frame x="0" y="22" width="2338" height="1418" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.13903241" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.12891985" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24616858" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
@@ -437,7 +451,7 @@
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.53401095" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.34870994" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.13917123" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.24585219" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Data View" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
@@ -481,7 +495,7 @@
           </properties>
         </breakpoint>
       </default-breakpoints>
-      <option name="time" value="1148" />
+      <option name="time" value="1174" />
     </breakpoint-manager>
     <watches-manager />
   </component>
@@ -701,38 +715,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/biodataware/api/groups/urls.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="135">
-          <caret line="9" column="17" lean-forward="false" selection-start-line="9" selection-start-column="15" selection-end-line="9" selection-end-column="17" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/biodataware/api/groups/views.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="296">
-          <caret line="92" column="62" lean-forward="false" selection-start-line="92" selection-start-column="62" selection-end-line="92" selection-end-column="62" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/biodataware/containers/views.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/biodataware/api/containers/urls.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="105">
-          <caret line="8" column="17" lean-forward="false" selection-start-line="8" selection-start-column="17" selection-end-line="8" selection-end-column="17" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/biodataware/api/containers/views.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="120">
-          <caret line="21" column="40" lean-forward="false" selection-start-line="21" selection-start-column="40" selection-end-line="21" selection-end-column="40" />
         </state>
       </provider>
     </entry>
@@ -744,41 +730,130 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/biodataware/groups/models.py">
+    <entry file="file://$PROJECT_DIR$/biodataware/api/containers/urls.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="540">
-          <caret line="40" column="21" lean-forward="false" selection-start-line="40" selection-start-column="6" selection-end-line="40" selection-end-column="21" />
+        <state relative-caret-position="105">
+          <caret line="8" column="17" lean-forward="false" selection-start-line="8" selection-start-column="17" selection-end-line="8" selection-end-column="17" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/biodataware/api/containers/views.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="169">
+          <caret line="27" column="8" lean-forward="false" selection-start-line="27" selection-start-column="8" selection-end-line="39" selection-end-column="40" />
+          <folding>
+            <element signature="e#2055#4752#0" expanded="false" />
+            <element signature="e#5241#6182#0" expanded="false" />
+            <element signature="e#6237#9366#0" expanded="false" />
+            <element signature="e#9424#11799#0" expanded="false" />
+            <element signature="e#11988#12810#0" expanded="false" />
+            <element signature="e#12869#13571#0" expanded="false" />
+            <element signature="e#13773#14091#0" expanded="false" />
+            <element signature="e#14156#15022#0" expanded="false" />
+            <element signature="e#15207#15686#0" expanded="false" />
+            <element signature="e#15921#17025#0" expanded="false" />
+            <element signature="e#17122#19300#0" expanded="false" />
+            <element signature="e#19462#20478#0" expanded="false" />
+            <element signature="e#20565#22877#0" expanded="false" />
+            <element signature="e#23085#24469#0" expanded="false" />
+            <element signature="e#24552#26806#0" expanded="false" />
+            <element signature="e#27247#29156#0" expanded="false" />
+            <element signature="e#29249#31450#0" expanded="false" />
+            <element signature="e#31565#40951#0" expanded="false" />
+            <element signature="e#41154#43175#0" expanded="false" />
+            <element signature="e#43251#45560#0" expanded="false" />
+            <element signature="e#45658#55260#0" expanded="false" />
+            <element signature="e#55501#57931#0" expanded="false" />
+            <element signature="e#58031#60523#0" expanded="false" />
+            <element signature="e#60621#69603#0" expanded="false" />
+            <element signature="e#69819#72360#0" expanded="false" />
+            <element signature="e#72446#75049#0" expanded="false" />
+            <element signature="e#75133#84226#0" expanded="false" />
+            <element signature="e#84467#87066#0" expanded="false" />
+            <element signature="e#87140#90866#0" expanded="false" />
+            <element signature="e#91064#93774#0" expanded="false" />
+            <element signature="e#93834#97438#0" expanded="false" />
+            <element signature="e#97670#100243#0" expanded="false" />
+            <element signature="e#100326#102968#0" expanded="false" />
+            <element signature="e#103048#106220#0" expanded="false" />
+            <element signature="e#106427#109065#0" expanded="false" />
+            <element signature="e#109134#111824#0" expanded="false" />
+            <element signature="e#111890#115176#0" expanded="false" />
+            <element signature="e#115405#118011#0" expanded="false" />
+            <element signature="e#118199#120919#0" expanded="false" />
+            <element signature="e#121147#123751#0" expanded="false" />
+            <element signature="e#123939#126657#0" expanded="false" />
+            <element signature="e#126890#129669#0" expanded="false" />
+            <element signature="e#129858#132748#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/biodataware/api/groups/urls.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="120">
+          <caret line="9" column="17" lean-forward="false" selection-start-line="9" selection-start-column="15" selection-end-line="9" selection-end-column="17" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/biodataware/api/groups/views.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="219">
+          <caret line="21" column="36" lean-forward="false" selection-start-line="21" selection-start-column="21" selection-end-line="21" selection-end-column="36" />
+          <folding>
+            <element signature="e#0#40#0" expanded="false" />
+            <element signature="e#2347#2590#0" expanded="false" />
+            <element signature="e#5405#7032#0" expanded="false" />
+            <element signature="e#7085#8308#0" expanded="false" />
+            <element signature="e#8389#9676#0" expanded="false" />
+            <element signature="e#9756#10698#0" expanded="false" />
+            <element signature="e#10782#13103#0" expanded="false" />
+            <element signature="e#13151#15411#0" expanded="false" />
+            <element signature="e#15456#18093#0" expanded="false" />
+            <element signature="e#18140#20384#0" expanded="false" />
+            <element signature="e#20495#21458#0" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/biodataware/api/groups/serializers.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="34">
-          <caret line="20" column="31" lean-forward="false" selection-start-line="20" selection-start-column="6" selection-end-line="20" selection-end-column="31" />
-          <folding>
-            <element signature="e#0#38#0" expanded="false" />
-          </folding>
+        <state relative-caret-position="330">
+          <caret line="29" column="19" lean-forward="false" selection-start-line="29" selection-start-column="13" selection-end-line="29" selection-end-column="19" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/biodataware/groups/models.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="570">
+          <caret line="42" column="53" lean-forward="false" selection-start-line="42" selection-start-column="29" selection-end-line="42" selection-end-column="53" />
+          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/biodataware/containers/models.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="330">
-          <caret line="26" column="0" lean-forward="true" selection-start-line="26" selection-start-column="0" selection-end-line="26" selection-end-column="0" />
-          <folding />
+        <state relative-caret-position="261">
+          <caret line="53" column="0" lean-forward="false" selection-start-line="53" selection-start-column="0" selection-end-line="53" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#28#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/biodataware/api/containers/serializers.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="120">
-          <caret line="8" column="52" lean-forward="true" selection-start-line="8" selection-start-column="52" selection-end-line="9" selection-end-column="77" />
+        <state relative-caret-position="210">
+          <caret line="31" column="6" lean-forward="false" selection-start-line="31" selection-start-column="6" selection-end-line="31" selection-end-column="6" />
           <folding>
-            <element signature="e#2212#4234#0" expanded="false" />
-            <element signature="e#2460#3023#0" expanded="false" />
-            <element signature="e#3070#3634#0" expanded="false" />
-            <element signature="e#3679#4234#0" expanded="false" />
+            <element signature="e#0#38#0" expanded="true" />
+            <element signature="e#2084#4106#0" expanded="false" />
+            <element signature="e#2332#2895#0" expanded="false" />
+            <element signature="e#2942#3506#0" expanded="false" />
+            <element signature="e#3551#4106#0" expanded="false" />
           </folding>
         </state>
       </provider>

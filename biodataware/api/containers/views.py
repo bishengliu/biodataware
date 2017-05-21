@@ -27,18 +27,19 @@ class ContainerList(APIView):
         self.check_object_permissions(request, obj)  # check the permission
         # filter the containers for the pi or assistant
         # show all the containers if pi or assistant is also the manager
-        try:
-            if user.is_superuser:
-                containers = Container.objects.all()
-                serializer = ConatainerSerializer(containers, many=True)
-                return Response(serializer.data)
-            else:
-                # get the group id of the current user
-                groupresearchers = GroupResearcher.object.all().filter(user_id=user.pk)
-                group_ids = [g.group_id for g in groupresearchers]
-                containers = Container.objects.all().fillter(groupcontainer_set__group_id__in=group_ids)
+        if user.is_superuser:
+            containers = Container.objects.all()
             serializer = ConatainerSerializer(containers, many=True)
             return Response(serializer.data)
+        else:
+            # get the group id of the current user
+            groupresearchers = GroupResearcher.object.all().filter(user_id=user.pk)
+            group_ids = [g.group_id for g in groupresearchers]
+            containers = Container.objects.all().fillter(groupcontainer_set__group_id__in=group_ids)
+        serializer = ConatainerSerializer(containers, many=True)
+        return Response(serializer.data)
+        try:
+            pass
         except:
             return Response({'detail': 'Something went wrong!'},
                             status=status.HTTP_400_BAD_REQUEST)
