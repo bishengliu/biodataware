@@ -7,6 +7,9 @@ urlpatterns = [
     url(r'^$', ContainerList.as_view(), name='containers'),  # container-towers
     # ===================================================container count for admin======================================
     url(r'^count/$', ContainerCount.as_view(), name='containers-count'),  # container-count
+
+    # find container info
+    url(r'^search/$', ContainerSearch.as_view(), name='user_search'),
     # ====================================================container detail==============================================
     url(r'^(?P<pk>[0-9]+)/$', ContainerDetail.as_view(), name='container-detail'),
 

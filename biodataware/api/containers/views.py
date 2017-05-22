@@ -20,26 +20,25 @@ class ContainerList(APIView):
     permission_classes = (permissions.IsAuthenticated, IsPIorReadOnly, )
 
     def get(self, request, format=None):
-        user = request.user
-        obj = {
-            'user': user
-        }
-        self.check_object_permissions(request, obj)  # check the permission
-        # filter the containers for the pi or assistant
-        # show all the containers if pi or assistant is also the manager
-        if user.is_superuser:
-            containers = Container.objects.all()
+        try:
+            user = request.user
+            obj = {
+                'user': user
+            }
+            self.check_object_permissions(request, obj)  # check the permission
+            # filter the containers for the pi or assistant
+            # show all the containers if pi or assistant is also the manager
+            if user.is_superuser:
+                containers = Container.objects.all()
+                serializer = ConatainerSerializer(containers, many=True)
+                return Response(serializer.data)
+            else:
+                # get the group id of the current user
+                groupresearchers = GroupResearcher.object.all().filter(user_id=user.pk)
+                group_ids = [g.group_id for g in groupresearchers]
+                containers = Container.objects.all().fillter(groupcontainer_set__group_id__in=group_ids)
             serializer = ConatainerSerializer(containers, many=True)
             return Response(serializer.data)
-        else:
-            # get the group id of the current user
-            groupresearchers = GroupResearcher.object.all().filter(user_id=user.pk)
-            group_ids = [g.group_id for g in groupresearchers]
-            containers = Container.objects.all().fillter(groupcontainer_set__group_id__in=group_ids)
-        serializer = ConatainerSerializer(containers, many=True)
-        return Response(serializer.data)
-        try:
-            pass
         except:
             return Response({'detail': 'Something went wrong!'},
                             status=status.HTTP_400_BAD_REQUEST)
@@ -110,6 +109,27 @@ class ContainerCount(APIView):
     def get(self, request, format=None):
         container_count = Container.objects.all().count()
         return Response({'count': container_count}, status=status.HTTP_200_OK)
+
+
+# search container info
+# {'query': 'container_name', 'value': value, 'container_pk': -1 }
+class ContainerSearch(APIView):
+
+    def post(self, request, format=None):
+        key = request.data.get('query', '')
+        value = request.data.get('value', '')
+        group_id = int(request.data.get('container_pk', -1))
+        try:
+            containers = Container.objects.all()
+            if group_id >= 0:
+                containers = containers.exclude(pk=group_id)
+            if key == 'name' and value:
+                container = containers.filter(name__iexact=value).first()
+                if container:
+                    return Response({'matched': True, 'container': ConatainerSerializer(container).data})
+            return Response({'matched': False, 'group': ''})
+        except:
+            return Response({'detail': 'Something went wrong!'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 # view, edit and delete container

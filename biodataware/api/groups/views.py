@@ -442,8 +442,8 @@ class OneGroupAssistantDetail(APIView):
             return Response({'detail': 'something went wrong!'}, status=status.HTTP_400_BAD_REQUEST)
 
 
-# search user info
-# {'query': 'group_name', 'value': value, 'group_id': -1 }
+# search GROUP info
+# {'query': 'group_name', 'value': value, 'group_pk': -1 }
 class GroupSearch(APIView):
 
     def post(self, request, format=None):
