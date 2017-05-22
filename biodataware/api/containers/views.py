@@ -12,6 +12,8 @@ from samples.models import Biosystem, Tissue
 from api.permissions import IsInGroupContanier, IsPIorReadOnly, IsPIorAssistantorOwner
 import re
 import datetime
+import json
+
 
 
 # all container list only for manager or admin
@@ -45,47 +47,55 @@ class ContainerList(APIView):
 
     @transaction.atomic
     def post(self, request, format=None):
-        user = request.user
-        obj = {
-            'user': user
-        }
-        self.check_object_permissions(request, obj)  # check the permission
         try:
+            user = request.user
+            obj = {
+                'user': user
+            }
+            self.check_object_permissions(request, obj)  # check the permission
+            # parse data
+            form_data = dict(request.data)
+            # check upload photo
+            has_photo = False
+            if 'file' in form_data.keys():
+                has_photo = True
+            # form model data
+            model = form_data['obj'][0]
+            # load into dict
+            obj = json.loads(model)
+
+            serializer = ContainerCreateSerializer(data=obj, partial=True)
+            serializer.is_valid(raise_exception=True)
+            data = serializer.data
+            container = Container()
             if user.is_superuser:
-                serializer = ContainerCreateSerializer(data=request.data, partial=True)
-                serializer.is_valid(raise_exception=True)
-                data = serializer.data
-                container = Container(**data)
+
+                container.name = data.get('name')
+                container.temperature = data.get('temperature', '')
+                container.tower = data.get('tower')
+                container.shelf = data.get('shelf')
+                container.box = data.get('box')
+                container.description = data.get('description', '')
+                container.room = data.get('room', '')
+                if has_photo:
+                    container.photo = form_data['file'][0]
                 container.save()
                 return Response({'detail': 'container added!'}, status=status.HTTP_200_OK)
             else:
                 # get the group id of the current user
                 groupresearchers = GroupResearcher.object.all().filter(user_id=user.pk)
                 group_ids = [g.group_id for g in groupresearchers]
-                serializer = ContainerCreateSerializer(data=request.data, partial=True)
-                serializer.is_valid(raise_exception=True)
-                data = serializer.data
-                # save the container
-                container = Container()
-                name = data.get("name", "")
-                room = data.get("room", "")
-                temperature = data.get("temperature", "")
-                tower = data.get("tower", 1)
-                shelf = data.get("shelf", 1)
-                box = data.get("box", 1)
-                description = data.get("description", "")
-
                 try:
-                    container = Container.objects.create(
-                        name=name,
-                        room=room,
-                        temperature=temperature,
-                        tower=tower,
-                        shelf=shelf,
-                        box=box,
-                        description=description,
-                        photo=request.FILES['photo'] if request.FILES and request.FILES['photo'] else None
-                    )
+                    container.name = data.get('name')
+                    container.temperature = data.get('temperature', '')
+                    container.tower = data.get('tower')
+                    container.shelf = data.get('shelf')
+                    container.box = data.get('box')
+                    container.description = data.get('description', '')
+                    container.room = data.get('room', '')
+                    if has_photo:
+                        container.photo = form_data['file'][0]
+                    container.save()
                     # add container to groups
                     for group_id in group_ids:
                         GroupContainer.objects.create(
@@ -94,7 +104,7 @@ class ContainerList(APIView):
                         )
                     return Response({'detail': 'container added!'}, status=status.HTTP_200_OK)
                 except:
-                    if request.FILES and request.FILES['photo']:
+                    if has_photo and container.photo:
                         container.photo.delete()
                     return Response({'detail': 'Something went wrong, container not added!'},
                                     status=status.HTTP_400_BAD_REQUEST)
