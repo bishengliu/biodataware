@@ -10,6 +10,7 @@ from groups.models import Group, GroupResearcher
 from users.models import User
 from samples.models import Biosystem, Tissue
 from api.permissions import IsInGroupContanier, IsPIorReadOnly, IsPIorAssistantorOwner
+from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 import re
 import datetime
 import json
@@ -19,6 +20,7 @@ import json
 # all container list only for manager or admin
 # for admin and manager get all the conatiners, otherwise only show current group containers
 class ContainerList(APIView):
+    parser_classes = (JSONParser, FormParser, MultiPartParser,)
     permission_classes = (permissions.IsAuthenticated, IsPIorReadOnly, )
 
     def get(self, request, format=None):
@@ -47,14 +49,15 @@ class ContainerList(APIView):
 
     @transaction.atomic
     def post(self, request, format=None):
+
         try:
             user = request.user
-            obj = {
-                'user': user
-            }
-            self.check_object_permissions(request, obj)  # check the permission
+            obj = {'user': user}
+            if not user.is_superuser:
+                self.check_object_permissions(request, obj)  # check the permission
             # parse data
             form_data = dict(request.data)
+
             # check upload photo
             has_photo = False
             if 'file' in form_data.keys():
