@@ -147,14 +147,14 @@ class ContainerSearch(APIView):
 
 # view, edit and delete container
 class ContainerDetail(APIView):
+    parser_classes = (JSONParser, FormParser, MultiPartParser,)
     permission_classes = (permissions.IsAuthenticated, IsPIorReadOnly, )
 
     def get(self, request, pk, format=None):
         user = request.user
-        obj = {
-            'user': user
-        }
-        self.check_object_permissions(request, obj)  # check the permission
+        obj = { 'user': user }
+        if not user.is_superuser:
+            self.check_object_permissions(request, obj)  # check the permission
         container = get_object_or_404(Container, pk=pk)
         if user.is_superuser:
             serializer = ConatainerSerializer(container)
@@ -173,17 +173,28 @@ class ContainerDetail(APIView):
 
     def put(self, request, pk, format=None):
         user = request.user
-        obj = {
-            'user': user
-        }
-        self.check_object_permissions(request, obj)  # check the permission
+        obj = {'user': user}
+        if not user.is_superuser:
+            self.check_object_permissions(request, obj)  # check the permission
         container = get_object_or_404(Container, pk=pk)
+
+        # parse data
+        form_data = dict(request.data)
+        # check upload photo
+        has_photo = False
+        if 'file' in form_data.keys():
+            has_photo = True
+        # form model data
+        model = form_data['obj'][0]
+        # load into dict
+        obj = json.loads(model)
+
         try:
             if user.is_superuser:
-                serializer = ContainerUpdateSerializer(container, data=request.data, partial=True)
+                serializer = ContainerUpdateSerializer(container, data=obj, partial=True)
                 serializer.is_valid(raise_exception=True)
                 data = serializer.data
-                #serializer.save()
+
                 # save the container
                 container.name = data.get("name", "")
                 container.room = data.get("room", "")
@@ -192,12 +203,12 @@ class ContainerDetail(APIView):
                 container.shelf = data.get("shelf", 1)
                 container.box = data.get("box", 1)
                 container.description = data.get("description", "")
-                if request.FILES and request.FILES['photo'] and container.photo:
-                    container.photo.delete()
-                    container.photo = request.FILES['photo']
+                if has_photo:
+                    if container.photo:
+                        container.photo.delete()
+                    container.photo = form_data['file'][0]
                 container.save()
-                return Response({'detail': 'container info changed!'}, status=status.HTTP_200_OK)
-                #return Response(ConatainerSerializer(container).data)
+                return Response({'detail': True}, status=status.HTTP_200_OK)
             else:
                 # check which group has/have the container
                 group_containers = GroupContainer.objects.all().filter(container_id=container.pk)
@@ -206,10 +217,10 @@ class ContainerDetail(APIView):
                     # is pi/assistant of the group
                     if isPIorAssistantofGroup(user, group_container_ids):
                         # save data
-                        serializer = ContainerUpdateSerializer(container, data=request.data, partial=True)
+                        serializer = ContainerUpdateSerializer(container, data=obj, partial=True)
                         serializer.is_valid(raise_exception=True)
                         data = serializer.data
-                        # serializer.save()
+
                         # save the container
                         container.name = data.get("name", "")
                         container.room = data.get("room", "")
@@ -218,29 +229,29 @@ class ContainerDetail(APIView):
                         container.shelf = data.get("shelf", 1)
                         container.box = data.get("box", 1)
                         container.description = data.get("description", "")
-                        if request.FILES and request.FILES['photo'] and container.photo:
-                            container.photo.delete()
-                            container.photo = request.FILES['photo']
+                        if has_photo:
+                            if container.photo:
+                                container.photo.delete()
+                            container.photo = form_data['file'][0]
                         container.save()
-                        return Response({'detail': 'container info changed!'}, status=status.HTTP_200_OK)
+                        return Response({'detail': True}, status=status.HTTP_200_OK)
                 return Response({'detail': 'container info not changed!'}, status=status.HTTP_400_BAD_REQUEST)
         except:
             return Response({'detail': 'container info not changed!'}, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, pk, format=None):
         user = request.user
-        obj = {
-            'user': user
-        }
-        self.check_object_permissions(request, obj)  # check the permission
+        obj = {'user': user }
+        if not user.is_superuser:
+            self.check_object_permissions(request, obj)  # check the permission
         container = get_object_or_404(Container, pk=pk)
         try:
             if user.is_superuser:
-                if container.groupcontainer_set:
+                if container.groupcontainer_set.exists():
                     return Response(
                         {'detail': 'container not deleted! The container is assigned to researcher group(s).'},
                         status=status.HTTP_400_BAD_REQUEST)
-                if container.boxcontainer_set:
+                if container.boxcontainer_set.exists():
                     return Response({'detail': 'container not deleted! The container contains box(es).'},
                                     status=status.HTTP_400_BAD_REQUEST)
                 container.delete()
@@ -253,12 +264,12 @@ class ContainerDetail(APIView):
                     group_container_ids = [gc.group_id for gc in group_containers]
                     # is pi/assistant of the group
                     if isPIorAssistantofGroup(user, group_container_ids):
-                        if container.groupcontainer_set:
+                        if container.groupcontainer_set.exists():
                             return Response(
                                 {'detail': 'container not deleted! '
                                            '\The container is assigned to researcher group(s).'},
                                 status=status.HTTP_400_BAD_REQUEST)
-                        if container.boxcontainer_set:
+                        if container.boxcontainer_set.exists():
                             return Response({'detail': 'container not deleted! The container contains box(es).'},
                                             status=status.HTTP_400_BAD_REQUEST)
                         container.delete()

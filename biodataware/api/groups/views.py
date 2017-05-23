@@ -92,7 +92,6 @@ class GroupDetail(APIView):
         except:
             return Response({'detail': 'Something went wrong, group not deleted!'}, status=status.HTTP_400_BAD_REQUEST)
 
-
     def put(self, request, pk, format=None):
         try:
             group = get_object_or_404(Group, pk=pk)
