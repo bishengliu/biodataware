@@ -16,7 +16,6 @@ import datetime
 import json
 
 
-
 # all container list only for manager or admin
 # for admin and manager get all the conatiners, otherwise only show current group containers
 class ContainerList(APIView):
@@ -305,10 +304,9 @@ class GroupContainerList(APIView):
 
     def post(self, request, ct_id, format=None):
         user = request.user
-        obj = {
-            'user': user
-        }
-        self.check_object_permissions(request, obj)  # check the permission
+        obj = {'user': user}
+        if not user.is_superuser:
+            self.check_object_permissions(request, obj)  # check the permission
         try:
             serializer = GroupContainerCreateSerializer(data=request.data)
             serializer.is_valid(raise_exception=True)
@@ -325,31 +323,59 @@ class GroupContainerList(APIView):
 class GroupContainerDetail(APIView):
     permission_classes = (permissions.IsAuthenticated, IsPIorReadOnly, )
 
-    def get(self, request, ct_id,  pk, format=None):
+    def get(self, request, ct_id,  gp_id, format=None):
         user = request.user
-        obj = {
-            'user': user
-        }
-        self.check_object_permissions(request, obj)  # check the permission
-        group_container = get_object_or_404(GroupContainer, pk= pk)
-        serializer = GroupContainerSerializer(group_container)
-        return Response(serializer.data)
-
-    def delete(self, request, ct_id, pk, format=None):
-        user = request.user
-        obj = {
-            'user': user
-        }
-        self.check_object_permissions(request, obj)  # check the permission
-        group_container = get_object_or_404(GroupContainer, pk=pk)
+        obj = {'user': user}
+        if not user.is_superuser:
+            self.check_object_permissions(request, obj)  # check the permission
         try:
-            # get the container
-            container = get_object_or_404(Container, pk=group_container.group_id)
-            if container.boxcontainer_set:
-                return Response({'detail': 'the container was not removed from the group! '
-                                           'The container contains box(es) of the group.'},
-                                status=status.HTTP_400_BAD_REQUEST)
-            group_container.delete()
+            group_containers = GroupContainer.objects.all().filter(container_id=ct_id).filter(group_id=gp_id)
+            if group_containers:
+                serializer = GroupContainerSerializer(group_containers.first())
+                return Response(serializer.data)
+            return Response({'detail': 'Something went wrong!'}, status=status.HTTP_400_BAD_REQUEST)
+        except:
+            return Response({'detail': 'Something went wrong!'}, status=status.HTTP_400_BAD_REQUEST)
+
+    def post(self, request, ct_id,  gp_id, format=None):
+        user = request.user
+        obj = {'user': user}
+        if not user.is_superuser:
+            self.check_object_permissions(request, obj)  # check the permission
+        try:
+            group_containers = GroupContainer.objects.all().filter(container_id=ct_id).filter(group_id=gp_id)
+            if group_containers:
+                # get the container
+                boxresearchers = BoxContainer.objects.all() \
+                    .filter(container_id=ct_id) \
+                    .filter(boxresearcher__researcher__group_id=gp_id)
+                if boxresearchers:
+                    return Response({'detail': False}, status=status.HTTP_200_OK)
+                return Response({'detail': True}, status=status.HTTP_200_OK)
+            return Response({'detail': False}, status=status.HTTP_200_OK)
+        except:
+            return Response({'detail': 'Something went wrong!'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, ct_id, gp_id, format=None):
+        user = request.user
+        obj = {'user': user}
+        if not user.is_superuser:
+            self.check_object_permissions(request, obj)  # check the permission
+        try:
+            group_containers = GroupContainer.objects.all().filter(container_id=ct_id).filter(group_id=gp_id)
+            if group_containers:
+                boxresearchers = BoxContainer.objects.all() \
+                    .filter(container_id=ct_id) \
+                    .filter(boxresearcher__researcher__group_id=gp_id)
+                if boxresearchers:
+                    return Response({'detail': 'the container was not removed from the group! '
+                                               'The container contains box(es) of the group.'},
+                                    status=status.HTTP_400_BAD_REQUEST)
+                group_containers.first().delete()
+                return Response({'detail': 'Container was removed from the group.'}, status=status.HTTP_200_OK)
+            return Response({'detail': 'Something went wrong, the container was not removed from the group!'},
+                            status=status.HTTP_400_BAD_REQUEST)
         except:
             return Response({'detail': 'Something went wrong, the container was not removed from the group!'},
                             status=status.HTTP_400_BAD_REQUEST)

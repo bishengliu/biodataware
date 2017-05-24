@@ -17,7 +17,7 @@ urlpatterns = [
     url(r'^(?P<ct_id>[0-9]+)/groups/$', GroupContainerList.as_view(), name='groupcontainers'),
 
     # ====================================================group container detail========================================
-    url(r'^(?P<ct_id>[0-9]+)/groups/(?P<pk>[0-9]+)/$', GroupContainerDetail.as_view(), name='groupcontainers-detail'),
+    url(r'^(?P<ct_id>[0-9]+)/groups/(?P<gp_id>[0-9]+)/$', GroupContainerDetail.as_view(), name='groupcontainers-detail'),
 
     # ====================================================tower details=================================================
     # shelf list, number of shelves
