@@ -62,6 +62,9 @@ class BoxContainer(models.Model):
     box = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(100)], default=1)
     box_vertical = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(12)], default=8)   # A-H
     box_horizontal = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(12)], default=8)  # 1-8
+    color = models.CharField(max_length=20, null=True, blank=True)  # color of the position
+    rate = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(5)], null=True, blank=True)
+    description = models.TextField(null=True, blank=True)
 
     def box_position(self):
         return str(self.tower) + '-' + str(self.shelf) + '-' + str(self.box)

@@ -34,7 +34,7 @@ class BoxContainerSerializer(serializers.ModelSerializer):
     researchers = UserSerializer(many=True, read_only=True, source='researcher_objs')
     class Meta:
         model = BoxContainer
-        fields = ('pk', 'box_position', 'box_vertical', 'box_horizontal', 'tower', 'shelf', 'box', 'code39', 'qrcode', 'researchers')
+        fields = ('pk', 'box_position', 'box_vertical', 'box_horizontal', 'tower', 'shelf', 'box', 'code39', 'qrcode', 'color', 'rate', 'description', 'researchers')
 
 
 class ConatainerSerializer(serializers.ModelSerializer):
