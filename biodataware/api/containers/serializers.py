@@ -28,24 +28,14 @@ class GroupContainerSerializer(serializers.ModelSerializer):
         model = GroupContainer
         fields = ('pk', 'group', )
 
-
+# load boxes without loading the samples
 class BoxContainerSerializer(serializers.ModelSerializer):
     # researchers = BoxResearcherSerializer(many=True, read_only=True, source='boxresearcher_set')
     researchers = UserSerializer(many=True, read_only=True, source='researcher_objs')
+
     class Meta:
         model = BoxContainer
         fields = ('pk', 'box_position', 'box_vertical', 'box_horizontal', 'tower', 'shelf', 'box', 'code39', 'qrcode', 'color', 'rate', 'description', 'researchers')
-
-
-class ConatainerSerializer(serializers.ModelSerializer):
-    # groups = GroupContainerSerializer(many=True, read_only=True, source='groupcontainer_set')
-    groups = GroupSerializer(many=True, read_only=True, source='group_objs')
-    boxes = BoxContainerSerializer(many=True, read_only=True, source='boxcontainer_set')
-
-    class Meta:
-        model = Container
-        fields = ('pk', 'name', 'room', 'photo', 'photo_tag', 'temperature', 'code39', 'qrcode', 'tower', 'shelf',
-                  'box', 'description', 'groups', 'boxes')
 
 
 class ContainerUpdateSerializer(serializers.ModelSerializer):
@@ -139,13 +129,13 @@ class BoxContainerCreateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = BoxContainer
-        fields = ('box_vertical', 'box_horizontal', 'box')
+        fields = ('box_vertical', 'box_horizontal', 'box', 'color', 'description')
 
 
 class ContainerBoxCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = BoxContainer
-        fields = ('tower', 'shelf', 'box_vertical', 'box_horizontal', 'box')
+        fields = ('tower', 'shelf', 'box_vertical', 'box_horizontal', 'box', 'color', 'description')
 
 
 # ======for sample =====================
@@ -160,11 +150,11 @@ class SampleAttachmentSerializer(serializers.ModelSerializer):
 class SampleTissueSerializer(serializers.ModelSerializer):
     system = serializers.StringRelatedField()
     tissue = serializers.StringRelatedField()
-    sample = serializers.StringRelatedField()
+    # sample = serializers.StringRelatedField()
 
     class Meta:
-        model = SampleAttachment
-        fields = ('pk', 'system', 'tissue', 'sample')
+        model = SampleTissue
+        fields = ('pk', 'system', 'tissue', 'sample_id')
 
 
 class SampleResearcherSerializer(serializers.ModelSerializer):
@@ -180,7 +170,8 @@ class SampleSerializer(serializers.ModelSerializer):
     box = serializers.StringRelatedField()
     attachments = SampleAttachmentSerializer(many=True, read_only=True, source='sampleattachment_set')
     tissues = SampleTissueSerializer(many=True, read_only=True, source='sampletissue_set')
-    researchers = SampleResearcherSerializer(many=True, read_only=True, source='sampleresearcher_set')
+    # researchers = SampleResearcherSerializer(many=True, read_only=True, source='sampleresearcher_set')
+    researchers = UserSerializer(many=True, read_only=True, source='researcher_objs')
 
     class Meta:
         model = Sample
@@ -188,18 +179,49 @@ class SampleSerializer(serializers.ModelSerializer):
 
 
 class BoxSamplesSerializer(serializers.ModelSerializer):
-    researchers = BoxResearcherSerializer(many=True, read_only=True, source='boxresearcher_set')
+    researchers = UserSerializer(many=True, read_only=True, source='researcher_objs')
+    # researchers = BoxResearcherSerializer(many=True, read_only=True, source='boxresearcher_set')
     samples = SampleSerializer(many=True, read_only=True, source='sample_set')
 
     class Meta:
         model = BoxContainer
-        fields = ('pk', 'box_position', 'box_vertical', 'box_horizontal', 'tower', 'shelf', 'box', 'code39', 'qrcode', 'samples', 'researchers')
+        fields = ('pk', 'box_position', 'box_vertical', 'box_horizontal', 'tower', 'shelf', 'box', 'code39', 'qrcode', 'color', 'rate', 'description', 'samples', 'researchers')
+
+
+class ConatainerSerializer(serializers.ModelSerializer):
+    # groups = GroupContainerSerializer(many=True, read_only=True, source='groupcontainer_set')
+    groups = GroupSerializer(many=True, read_only=True, source='group_objs')
+
+    # boxes no samples
+    # boxes = BoxContainerSerializer(many=True, read_only=True, source='boxcontainer_set')
+
+    # boxes with samples
+    boxes = BoxSamplesSerializer(many=True, read_only=True, source='boxcontainer_set')
+
+    class Meta:
+        model = Container
+        fields = ('pk', 'name', 'room', 'photo', 'photo_tag', 'temperature', 'code39', 'qrcode', 'tower', 'shelf',
+                      'box', 'description', 'groups', 'boxes')
 
 
 # sample color
 class SampleColorSerializer(serializers.Serializer):
     color = serializers.RegexField(regex=r'^#[0-9a-fA-F]{6}$', required=True)
 
+
+# box color
+class BoxColorSerializer(serializers.Serializer):
+    color = serializers.RegexField(regex=r'^#[0-9a-fA-F]{6}$', required=True)
+
+
+# box rate
+class BoxRateSerializer(serializers.Serializer):
+    rate = serializers.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(5)], required=True)
+
+
+# update description
+class BoxDescriptionSerializer(serializers.Serializer):
+    description = serializers.CharField(required=False)
 
 # add a new sample
 class SampleCreateSerializer(serializers.Serializer):

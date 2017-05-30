@@ -33,7 +33,7 @@ urlpatterns = [
     # /12(tower_id)/3(shelf_id)/
     url(r'^(?P<ct_id>[0-9]+)/(?P<tw_id>[0-9]+)/(?P<sf_id>[0-9]+)/$',
         ShelfAlternative.as_view(),
-        name='container-tower-shelf-boxes'),
+        name='container-tower-shelf-boxes-alternative'),
     # /12-3-/ or /12-3/
     url(r'^(?P<ct_id>[0-9]+)/(?P<id>[0-9]+\-[0-9]+(\-)*)/$',
         Shelf.as_view(),
@@ -41,9 +41,7 @@ urlpatterns = [
 
     # quick get the box list
     # boxes in on container
-    url(r'^(?P<ct_id>[0-9]+)/boxes/$',
-        ContainerBoxList.as_view(),
-        name='container-boxes'),
+    url(r'^(?P<ct_id>[0-9]+)/boxes/$',  ContainerBoxList.as_view(), name='container-boxes'),
 
 
     # =======================================================sample list================================================
@@ -51,7 +49,7 @@ urlpatterns = [
     # /12/3/4(box_id)/
     url(r'^(?P<ct_id>[0-9]+)/(?P<tw_id>[0-9]+)/(?P<sf_id>[0-9]+)/(?P<bx_id>[0-9]+)/$',
         BoxAlternative.as_view(),
-        name='container-tower-shelf-box-samples'),
+        name='container-tower-shelf-box-samples-alternative'),
     # /12-3-4(box)/
     url(r'^(?P<ct_id>[0-9]+)/(?P<id>[0-9]+\-[0-9]+\-[0-9]+)/$',
         Box.as_view(),
@@ -62,6 +60,21 @@ urlpatterns = [
     url(r'^(?P<ct_id>[0-9]+)/boxes/(?P<id>[0-9]+\-[0-9]+\-[0-9]+)/$',
         Box.as_view(),
         name='container-boxes-samples'),
+
+    # update box rate
+    url(r'^(?P<ct_id>[0-9]+)/(?P<id>[0-9]+\-[0-9]+\-[0-9]+)/rate/$',
+        BoxRate.as_view(),
+        name='container-box-rate'),
+
+    # update box color
+    url(r'^(?P<ct_id>[0-9]+)/(?P<id>[0-9]+\-[0-9]+\-[0-9]+)/color/$',
+        BoxColor.as_view(),
+        name='container-box-color'),
+
+    # update box description
+    url(r'^(?P<ct_id>[0-9]+)/(?P<id>[0-9]+\-[0-9]+\-[0-9]+)/description/$',
+        BoxDescription.as_view(),
+        name='container-box-description'),
 
     # =====================================================sample detail================================================
     # edit sample

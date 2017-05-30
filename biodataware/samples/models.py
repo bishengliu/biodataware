@@ -6,6 +6,7 @@ from django.core.validators import MinValueValidator
 # Receive the pre_delete signal and delete the file associated with the model instance.
 from django.db.models.signals import pre_delete
 from django.dispatch.dispatcher import receiver
+from django.contrib.auth import get_user_model
 
 
 # bio-system model
@@ -53,6 +54,18 @@ class Sample(models.Model):
 
     def __str__(self):
         return self.name + ' (Box: ' + str(self.box.tower) + '-' + str(self.box.shelf) + '-' + str(self.box.box) + ', Position: ' + self.vposition + self.hposition + ')'
+
+    def researcher_objs(self):
+        sr_set = self.sampleresearcher_set
+        if sr_set:
+            user_ids = []
+            for u in sr_set.values('researcher'):
+                user_ids.append(u['researcher'])
+            if user_ids:
+                User = get_user_model()
+                users = User.objects.all().filter(pk__in=user_ids)
+                return users
+        return None
 
 
 # sample attachment

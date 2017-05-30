@@ -25,10 +25,9 @@ class ContainerList(APIView):
     def get(self, request, format=None):
         try:
             user = request.user
-            obj = {
-                'user': user
-            }
-            self.check_object_permissions(request, obj)  # check the permission
+            obj = {'user': user}
+            if not user.is_superuser:
+                self.check_object_permissions(request, obj)  # check the permission
             # filter the containers for the pi or assistant
             # show all the containers if pi or assistant is also the manager
             if user.is_superuser:
@@ -285,10 +284,9 @@ class GroupContainerList(APIView):
 
     def get(self, request, ct_id, format=None):
         user = request.user
-        obj = {
-            'user': user
-        }
-        self.check_object_permissions(request, obj)  # check the permission
+        obj = {'user': user}
+        if not user.is_superuser:
+            self.check_object_permissions(request, obj)  # check the permission
         try:
             if user.is_superuser:
                 group_containers = GroupContainer.objects.all()
@@ -405,10 +403,9 @@ class ShelfAlternative(APIView):
 
     def get(self, request, ct_id, tw_id, sf_id, format=None):
         user = request.user
-        obj = {
-            'user': user
-        }
-        self.check_object_permissions(request, obj)  # check the permission
+        obj = {'user': user}
+        if not user.is_superuser:
+            self.check_object_permissions(request, obj)  # check the permission
         # get the container
         container = get_object_or_404(Container, pk=int(ct_id))
         try:
@@ -422,7 +419,7 @@ class ShelfAlternative(APIView):
             # get the box of the shelf
             boxes = BoxContainer.objects.all().filter(container_id=int(ct_id)).filter(tower=int(tw_id)).filter(
                 shelf=int(sf_id))
-            serializer = BoxContainerSerializer(boxes, many=True)
+            serializer = BoxSamplesSerializer(boxes, many=True)
             return Response(serializer.data)
         except:
             return Response({'detail': 'Something went wrong!!'},
@@ -431,10 +428,9 @@ class ShelfAlternative(APIView):
     @transaction.atomic
     def post(self, request, ct_id, tw_id, sf_id, format=None):
         user = request.user
-        obj = {
-            'user': user
-        }
-        self.check_object_permissions(request, obj)  # check the permission
+        obj = { 'user': user }
+        if not user.is_superuser:
+            self.check_object_permissions(request, obj)  # check the permission
         # get the container
         container = get_object_or_404(Container, pk=int(ct_id))
         if int(tw_id) > int(container.tower) or int(tw_id) < 0:
@@ -468,7 +464,9 @@ class ShelfAlternative(APIView):
                 box_horizontal=data['box_horizontal'],
                 tower=int(tw_id),
                 shelf=int(sf_id),
-                box=data['box']
+                box=data['box'],
+                color=getattr(data, 'color', '#ffffff'),
+                description=getattr(data, 'description', '')
             )
             box_researcher = BoxResearcher.objects.create(
                 box_id=box_container.pk,
@@ -480,15 +478,15 @@ class ShelfAlternative(APIView):
                             status=status.HTTP_400_BAD_REQUEST)
 
 
+# return the current shelf, with the list of boxes: 1-1-
 class Shelf(APIView):
     permission_classes = (permissions.IsAuthenticated, IsInGroupContanier,)
 
     def get(self, request, ct_id, id, format=None):
         user = request.user
-        obj = {
-            'user': user
-        }
-        self.check_object_permissions(request, obj)  # check the permission
+        obj = {'user': user}
+        if not user.is_superuser:
+            self.check_object_permissions(request, obj)  # check the permission
         # get the container
         container = get_object_or_404(Container, pk=int(ct_id))
         # parse tw_id and sf_id
@@ -504,16 +502,15 @@ class Shelf(APIView):
                             status=status.HTTP_400_BAD_REQUEST)
         # get the box of the shelf
         boxes = BoxContainer.objects.all().filter(container_id=int(ct_id)).filter(tower=int(tw_id)).filter(shelf=int(sf_id))
-        serializer = BoxContainerSerializer(boxes, many=True)
+        serializer = BoxSamplesSerializer(boxes, many=True)
         return Response(serializer.data)
 
     @transaction.atomic
     def post(self, request, ct_id, id, format=None):
         user = request.user
-        obj = {
-            'user': user
-        }
-        self.check_object_permissions(request, obj)  # check the permission
+        obj = {'user': user}
+        if not user.is_superuser:
+            self.check_object_permissions(request, obj)  # check the permission
         # get the container
         container = get_object_or_404(Container, pk=int(ct_id))
         # parse tw_id and sf_id
@@ -551,7 +548,9 @@ class Shelf(APIView):
                 box_horizontal=data['box_horizontal'],
                 tower=int(tw_id),
                 shelf=int(sf_id),
-                box=data['box']
+                box=data['box'],
+                color=getattr(data, 'color', '#ffffff'),
+                description=getattr(data, 'description', '')
             )
             box_researcher = BoxResearcher.objects.create(
                 box_id=box_container.pk,
@@ -575,13 +574,14 @@ class ContainerBoxList(APIView):
             'user': user,
             'container': container
         }
-        self.check_object_permissions(request, obj)  # check the permission
+        if not user.is_superuser:
+            self.check_object_permissions(request, obj)  # check the permission
         try:
             # get the boxes
             if user.is_superuser:
                 container = get_object_or_404(Container, pk=int(ct_id))
                 boxes = BoxContainer.objects.all().filter(container_id=container.pk)
-                serializer = BoxContainerSerializer(boxes, many=True)
+                serializer = BoxSamplesSerializer(boxes, many=True)
                 return Response(serializer.data)
             else:
                 # get only the boxes of the group(s)
@@ -600,10 +600,9 @@ class ContainerBoxList(APIView):
     @transaction.atomic
     def post(self, request, ct_id, format=None):
         user = request.user
-        obj = {
-            'user': user
-        }
-        self.check_object_permissions(request, obj)  # check the permission
+        obj = {'user': user}
+        if not user.is_superuser:
+            self.check_object_permissions(request, obj)  # check the permission
         # get the container
         container = get_object_or_404(Container, pk=int(ct_id))
         # add box
@@ -640,7 +639,9 @@ class ContainerBoxList(APIView):
                 box_horizontal=data['box_horizontal'],
                 tower=int(tw_id),
                 shelf=int(sf_id),
-                box=data['box']
+                box=data['box'],
+                color=getattr(data, 'color', '#ffffff'),
+                description=getattr(data, 'description', '')
             )
 
             box_researcher = BoxResearcher.objects.create(
@@ -915,6 +916,7 @@ class Box(APIView):
 
     def get(self, request, ct_id, id, format=None):
         try:
+            authUser = request.user
             container = get_object_or_404(Container, pk=int(ct_id))
             id_list = id.split("-")
             tw_id = int(id_list[0])
@@ -942,12 +944,11 @@ class Box(APIView):
                                 status=status.HTTP_400_BAD_REQUEST)
             # get box researcher
             box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
-            if box_researcher:
+            if authUser.is_superuser or box_researcher:
                 user = get_object_or_404(User, pk=box_researcher.researcher_id)
-                obj = {
-                    'user': user
-                }
-                self.check_object_permissions(request, obj)  # check the permission
+                obj = {'user': user}
+                if not authUser.is_superuser:
+                    self.check_object_permissions(request, obj)  # check the permission
                 serializer = BoxSamplesSerializer(box)
                 return Response(serializer.data)
             return Response({'detail': 'Permission denied!'},
@@ -959,6 +960,7 @@ class Box(APIView):
     # delete box
     def delete(self, request, ct_id, id, format=None):
         try:
+            authUser = request.user
             container = get_object_or_404(Container, pk=int(ct_id))
             id_list = id.split("-")
             tw_id = int(id_list[0])
@@ -986,12 +988,11 @@ class Box(APIView):
                                 status=status.HTTP_400_BAD_REQUEST)
             # get box researcher
             box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
-            if box_researcher:
+            if authUser.is_superuser or box_researcher:
                 user = get_object_or_404(User, pk=box_researcher.researcher_id)
-                obj = {
-                    'user': user
-                }
-                self.check_object_permissions(request, obj)  # check the permission
+                obj = {'user': user}
+                if not authUser.is_superuser:
+                    self.check_object_permissions(request, obj)  # check the permission
                 # check samples
                 if box.sample_set:
                     return Response({'detail': 'Cannot delete this box, there are samples in the box!'},
@@ -1009,6 +1010,7 @@ class Box(APIView):
     @transaction.atomic
     def post(self, request, ct_id, id, format=None):
         try:
+            authUser = request.user
             container = get_object_or_404(Container, pk=int(ct_id))
             id_list = id.split("-")
             tw_id = int(id_list[0])
@@ -1036,12 +1038,11 @@ class Box(APIView):
                                 status=status.HTTP_400_BAD_REQUEST)
             # get box researcher
             box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
-            if box_researcher:
+            if authUser.is_superuser or box_researcher:
                 user = get_object_or_404(User, pk=box_researcher.researcher_id)
-                obj = {
-                    'user': user
-                }
-                self.check_object_permissions(request, obj)  # check the permission
+                obj = {'user': user}
+                if not authUser.is_superuser:
+                    self.check_object_permissions(request, obj)  # check the permission
                 serializer = SampleCreateSerializer(data=request.data)
                 serializer.is_valid(raise_exception=True)
                 data = serializer.data
@@ -1174,6 +1175,171 @@ class Box(APIView):
                             status=status.HTTP_400_BAD_REQUEST)
 
 
+# update box rate
+class BoxRate(APIView):
+    permission_classes = (permissions.IsAuthenticated, IsInGroupContanier,)
+
+    def put(self, request, ct_id, id, format=None):
+        try:
+            auth_user = request.user
+            container = get_object_or_404(Container, pk=int(ct_id))
+            id_list = id.split("-")
+            tw_id = int(id_list[0])
+            sf_id = int(id_list[1])
+            bx_id = int(id_list[2])
+            if int(tw_id) > int(container.tower) or int(tw_id) < 0:
+                return Response({'detail': 'tower does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+
+            if int(sf_id) > int(container.shelf) or int(sf_id) < 0:
+                return Response({'detail': 'shelf does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+            if int(bx_id) > int(container.box) or int(bx_id) < 0:
+                return Response({'detail': 'Box does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+            # box
+            box = BoxContainer.objects.all() \
+                .filter(container_id=int(ct_id)) \
+                .filter(tower=int(tw_id)) \
+                .filter(shelf=int(sf_id)) \
+                .filter(box=int(bx_id)) \
+                .first()
+            if not box:
+                return Response({'detail': 'box does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+            # get box researcher
+            box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
+            if auth_user.is_superuser or box_researcher:
+                user = get_object_or_404(User, pk=box_researcher.researcher_id)
+                obj = {'user': user}
+                if not auth_user.is_superuser:
+                    self.check_object_permissions(request, obj)  # check the permission
+
+                serializer = BoxRateSerializer(data=request.data)
+                serializer.is_valid(raise_exception=True)
+                data = serializer.data
+                box.rate = data['rate']
+                box.save()
+                return Response({'detail': 'rate is updated!'},
+                                status=status.HTTP_200_OK)
+
+            return Response({'detail': 'Permission denied!'},
+                            status=status.HTTP_400_BAD_REQUEST)
+        except:
+            return Response({'detail': 'Something went wrong!'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+
+# update box color
+class BoxColor(APIView):
+    permission_classes = (permissions.IsAuthenticated, IsInGroupContanier,)
+
+    def put(self, request, ct_id, id, format=None):
+        try:
+            auth_user = request.user
+            container = get_object_or_404(Container, pk=int(ct_id))
+            id_list = id.split("-")
+            tw_id = int(id_list[0])
+            sf_id = int(id_list[1])
+            bx_id = int(id_list[2])
+            if int(tw_id) > int(container.tower) or int(tw_id) < 0:
+                return Response({'detail': 'tower does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+
+            if int(sf_id) > int(container.shelf) or int(sf_id) < 0:
+                return Response({'detail': 'shelf does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+            if int(bx_id) > int(container.box) or int(bx_id) < 0:
+                return Response({'detail': 'Box does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+            # box
+            box = BoxContainer.objects.all() \
+                .filter(container_id=int(ct_id)) \
+                .filter(tower=int(tw_id)) \
+                .filter(shelf=int(sf_id)) \
+                .filter(box=int(bx_id)) \
+                .first()
+            if not box:
+                return Response({'detail': 'box does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+            # get box researcher
+            box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
+            if auth_user.is_superuser or box_researcher:
+                user = get_object_or_404(User, pk=box_researcher.researcher_id)
+                obj = {'user': user}
+                if not auth_user.is_superuser:
+                    self.check_object_permissions(request, obj)  # check the permission
+
+                serializer = BoxColorSerializer(data=request.data)
+                serializer.is_valid(raise_exception=True)
+                data = serializer.data
+                box.color = data['color']
+                box.save()
+                return Response({'detail': 'color is updated!'},
+                                status=status.HTTP_200_OK)
+
+            return Response({'detail': 'Permission denied!'},
+                            status=status.HTTP_400_BAD_REQUEST)
+        except:
+            return Response({'detail': 'Something went wrong!'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+
+# update box description
+class BoxDescription(APIView):
+    permission_classes = (permissions.IsAuthenticated, IsInGroupContanier,)
+
+    def put(self, request, ct_id, id, format=None):
+        try:
+            auth_user = request.user
+            container = get_object_or_404(Container, pk=int(ct_id))
+            id_list = id.split("-")
+            tw_id = int(id_list[0])
+            sf_id = int(id_list[1])
+            bx_id = int(id_list[2])
+            if int(tw_id) > int(container.tower) or int(tw_id) < 0:
+                return Response({'detail': 'tower does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+
+            if int(sf_id) > int(container.shelf) or int(sf_id) < 0:
+                return Response({'detail': 'shelf does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+            if int(bx_id) > int(container.box) or int(bx_id) < 0:
+                return Response({'detail': 'Box does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+            # box
+            box = BoxContainer.objects.all() \
+                .filter(container_id=int(ct_id)) \
+                .filter(tower=int(tw_id)) \
+                .filter(shelf=int(sf_id)) \
+                .filter(box=int(bx_id)) \
+                .first()
+            if not box:
+                return Response({'detail': 'box does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+            # get box researcher
+            box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
+            if auth_user.is_superuser or box_researcher:
+                user = get_object_or_404(User, pk=box_researcher.researcher_id)
+                obj = {'user': user}
+                if not auth_user.is_superuser:
+                    self.check_object_permissions(request, obj)  # check the permission
+
+                serializer = BoxDescriptionSerializer(data=request.data)
+                serializer.is_valid(raise_exception=True)
+                data = serializer.data
+                box.description = data['description']
+                box.save()
+                return Response({'detail': 'color is updated!'},
+                                status=status.HTTP_200_OK)
+
+            return Response({'detail': 'Permission denied!'},
+                            status=status.HTTP_400_BAD_REQUEST)
+        except:
+            return Response({'detail': 'Something went wrong!'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+########################################################################################################################
 # get, put and delete sample
 class SampleDetailAlternative(APIView):
     permission_classes = (permissions.IsAuthenticated, IsInGroupContanier, IsPIorAssistantorOwner,)
