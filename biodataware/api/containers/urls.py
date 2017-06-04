@@ -86,6 +86,10 @@ urlpatterns = [
     url(r'^(?P<ct_id>[0-9]+)/(?P<bx_id>[0-9]+\-[0-9]+\-[0-9]+)/(?P<sp_id>[a-zA-Z][0-9]+)/$',
         SampleDetail.as_view(),
         name='container-tower-shelf-box-sample-detail'),
+    # 12-3-4/A12/update
+    url(r'^(?P<ct_id>[0-9]+)/(?P<bx_id>[0-9]+\-[0-9]+\-[0-9]+)/(?P<sp_id>[a-zA-Z][0-9]+)/update$',
+        SampleDetailUpdate.as_view(),
+        name='container-tower-shelf-box-sample-detail-update'),
 
     # /boxes/12-3-4/A12/
     url(r'^(?P<ct_id>[0-9]+)/boxes/(?P<bx_id>[0-9]+\-[0-9]+\-[0-9]+)/(?P<sp_id>[a-zA-Z][0-9]+)/$',

@@ -193,10 +193,10 @@ class ConatainerSerializer(serializers.ModelSerializer):
     groups = GroupSerializer(many=True, read_only=True, source='group_objs')
 
     # boxes no samples
-    # boxes = BoxContainerSerializer(many=True, read_only=True, source='boxcontainer_set')
+    boxes = BoxContainerSerializer(many=True, read_only=True, source='boxcontainer_set')
 
     # boxes with samples
-    boxes = BoxSamplesSerializer(many=True, read_only=True, source='boxcontainer_set')
+    # boxes = BoxSamplesSerializer(many=True, read_only=True, source='boxcontainer_set')
 
     class Meta:
         model = Container

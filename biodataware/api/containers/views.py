@@ -1731,9 +1731,7 @@ class SampleDetail(APIView):
             box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
             if box_researcher:
                 user = get_object_or_404(User, pk=box_researcher.researcher_id)
-                obj = {
-                    'user': user
-                }
+                obj = { 'user': user }
                 self.check_object_permissions(request, obj)  # check the permission
                 # find the sample
                 match = re.match(r"([a-z]+)([0-9]+)", sp_id, re.I)
@@ -1840,6 +1838,65 @@ class SampleDetail(APIView):
 
                         return Response({'detail': 'sample saved!'},
                                         status=status.HTTP_200_OK)
+            return Response({'detail': 'Permission denied!'},
+                            status=status.HTTP_400_BAD_REQUEST)
+        except:
+            return Response({'detail': 'Something went wrong!'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+
+# update single data attr
+class SampleDetailUpdate(APIView):
+    permission_classes = (permissions.IsAuthenticated, IsInGroupContanier, IsPIorAssistantorOwner,)
+
+    def put(self, request, ct_id, bx_id, sp_id):
+        try:
+            container = get_object_or_404(Container, pk=int(ct_id))
+            id_list = bx_id.split("-")
+            tw_id = int(id_list[0])
+            sf_id = int(id_list[1])
+            bx_id = int(id_list[2])
+            if int(tw_id) > int(container.tower) or int(tw_id) < 0:
+                return Response({'detail': 'tower does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+
+            if int(sf_id) > int(container.shelf) or int(sf_id) < 0:
+                return Response({'detail': 'shelf does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+            if int(bx_id) > int(container.box) or int(bx_id) < 0:
+                return Response({'detail': 'Box does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+            # box
+            box = BoxContainer.objects.all() \
+                .filter(container_id=int(ct_id)) \
+                .filter(tower=int(tw_id)) \
+                .filter(shelf=int(sf_id)) \
+                .filter(box=int(bx_id)) \
+                .first()
+            if not box:
+                return Response({'detail': 'box does not exist!'},
+                                    status=status.HTTP_400_BAD_REQUEST)
+            # get box researcher
+            box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
+            if box_researcher:
+                user = get_object_or_404(User, pk=box_researcher.researcher_id)
+                obj = {'user': user}
+                self.check_object_permissions(request, obj)  # check the permission
+                # find the sample
+                match = re.match(r"([a-z]+)([0-9]+)", sp_id, re.I)
+                if match:
+                    pos = match.groups()
+                    sample = Sample.objects.all().filter(box_id=box.pk).filter(vposition__iexact=pos[0]).filter(
+                        hposition=pos[1]).first()
+                    if sample:
+                        data = request.data
+                        key = data.get('key', '')
+                        value = data.get('value', '')
+                        setattr(sample, key, value);
+                        sample.save()
+                        return Response({'detail': 'sample ' + key + ' saved!'},
+                                        status=status.HTTP_200_OK)
+
             return Response({'detail': 'Permission denied!'},
                             status=status.HTTP_400_BAD_REQUEST)
         except:
