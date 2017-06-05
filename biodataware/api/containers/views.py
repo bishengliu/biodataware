@@ -1339,6 +1339,7 @@ class BoxDescription(APIView):
             return Response({'detail': 'Something went wrong!'},
                             status=status.HTTP_400_BAD_REQUEST)
 
+
 ########################################################################################################################
 # get, put and delete sample
 class SampleDetailAlternative(APIView):
@@ -1896,13 +1897,77 @@ class SampleDetailUpdate(APIView):
                         sample.save()
                         return Response({'detail': 'sample ' + key + ' saved!'},
                                         status=status.HTTP_200_OK)
-
             return Response({'detail': 'Permission denied!'},
                             status=status.HTTP_400_BAD_REQUEST)
         except:
             return Response({'detail': 'Something went wrong!'},
                             status=status.HTTP_400_BAD_REQUEST)
 
+
+# single sample switch position
+class SampleSwitchPosition(APIView):
+    permission_classes = (permissions.IsAuthenticated, IsInGroupContanier, IsPIorAssistantorOwner,)
+
+    @transaction.atomic
+    def put(self, request, ct_id, bx_id, sp_id):
+        try:
+            container = get_object_or_404(Container, pk=int(ct_id))
+            id_list = bx_id.split("-")
+            tw_id = int(id_list[0])
+            sf_id = int(id_list[1])
+            bx_id = int(id_list[2])
+            if int(tw_id) > int(container.tower) or int(tw_id) < 0:
+                return Response({'detail': 'tower does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+
+            if int(sf_id) > int(container.shelf) or int(sf_id) < 0:
+                return Response({'detail': 'shelf does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+            if int(bx_id) > int(container.box) or int(bx_id) < 0:
+                return Response({'detail': 'Box does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+            # box
+            box = BoxContainer.objects.all() \
+                .filter(container_id=int(ct_id)) \
+                .filter(tower=int(tw_id)) \
+                .filter(shelf=int(sf_id)) \
+                .filter(box=int(bx_id)) \
+                .first()
+            if not box:
+                return Response({'detail': 'box does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+            # get box researcher
+            box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
+            if box_researcher:
+                user = get_object_or_404(User, pk=box_researcher.researcher_id)
+                obj = {'user': user}
+                self.check_object_permissions(request, obj)  # check the permission
+                # find the sample
+                match = re.match(r"([a-z]+)([0-9]+)", sp_id, re.I)
+                if match:
+                    pos = match.groups()
+                    # current sample
+                    sample = Sample.objects.all().filter(box_id=box.pk).filter(vposition__iexact=pos[0]).filter(hposition=pos[1]).first()
+                    if sample:
+                        data = request.data
+                        new_vposition = data.get('new_vposition', '')
+                        new_hposition = data.get('new_hposition', '')
+                        sample.vposition = new_vposition
+                        sample.hposition = new_hposition
+                        sample.save()
+                        # possible sample to switch with
+                        switch_sample = Sample.objects.all().filter(box_id=box.pk).exclude(pk=sample.pk).filter(vposition__iexact=new_vposition).filter(hposition=new_hposition).first()
+                        if switch_sample:
+                            switch_sample.vposition = pos[0]
+                            switch_sample.hposition = pos[1]
+                            switch_sample.save()
+                        return Response({'detail': 'sample position saved!'},
+                                        status=status.HTTP_200_OK)
+            return Response({'detail': 'Permission denied!'},
+                            status=status.HTTP_400_BAD_REQUEST)
+        except:
+            return Response({'detail': 'Something went wrong!'},
+                            status=status.HTTP_400_BAD_REQUEST)
 
 # sample attachments
 class SampleAttachmentListAlternative(APIView):
