@@ -2562,7 +2562,7 @@ class SampleAttachmentDetail(APIView):
 class SampleTakeAlternative(APIView):
     permission_classes = (permissions.IsAuthenticated, IsInGroupContanier, IsPIorAssistantorOwner,)
 
-    def get(self, request, ct_id, tw_id, sf_id, bx_id, sp_id):
+    def put(self, request, ct_id, tw_id, sf_id, bx_id, sp_id):
         try:
             # get the container
             container = get_object_or_404(Container, pk=int(ct_id))
@@ -2618,7 +2618,7 @@ class SampleTakeAlternative(APIView):
 class SampleTake(APIView):
     permission_classes = (permissions.IsAuthenticated, IsInGroupContanier, IsPIorAssistantorOwner,)
 
-    def get(self, request, ct_id, bx_id, sp_id):
+    def put(self, request, ct_id, bx_id, sp_id):
         try:
             container = get_object_or_404(Container, pk=int(ct_id))
             id_list = bx_id.split("-")
@@ -2678,7 +2678,7 @@ class SampleTake(APIView):
 class SampleBackAlternative(APIView):
     permission_classes = (permissions.IsAuthenticated, IsInGroupContanier, IsPIorAssistantorOwner,)
 
-    def get(self, request, ct_id, tw_id, sf_id, bx_id, sp_id):
+    def put(self, request, ct_id, tw_id, sf_id, bx_id, sp_id):
         try:
             # get the container
             container = get_object_or_404(Container, pk=int(ct_id))
@@ -2718,7 +2718,7 @@ class SampleBackAlternative(APIView):
                         hposition=pos[1]).first()
                     if sample:
                         sample.occupied = True
-                        sample.date_out = datetime.datetime.now()
+                        sample.date_out = None
                         sample.save()
                         return Response({'detail': 'sample is put back!'},
                                         status=status.HTTP_200_OK)
@@ -2734,7 +2734,7 @@ class SampleBackAlternative(APIView):
 class SampleBack(APIView):
     permission_classes = (permissions.IsAuthenticated, IsInGroupContanier, IsPIorAssistantorOwner,)
 
-    def get(self, request, ct_id, bx_id, sp_id):
+    def put(self, request, ct_id, bx_id, sp_id):
         try:
             container = get_object_or_404(Container, pk=int(ct_id))
             id_list = bx_id.split("-")
@@ -2777,7 +2777,7 @@ class SampleBack(APIView):
                         hposition=pos[1]).first()
                     if sample:
                         sample.occupied = True
-                        sample.date_out = datetime.datetime.now()
+                        sample.date_out = None
                         sample.save()
                         return Response({'detail': 'sample is put back!'},
                                         status=status.HTTP_200_OK)
