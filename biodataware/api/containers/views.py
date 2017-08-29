@@ -1969,6 +1969,7 @@ class SampleSwitchPosition(APIView):
             return Response({'detail': 'Something went wrong!'},
                             status=status.HTTP_400_BAD_REQUEST)
 
+
 # sample attachments
 class SampleAttachmentListAlternative(APIView):
     permission_classes = (permissions.IsAuthenticated, IsInGroupContanier, IsPIorAssistantorOwner,)

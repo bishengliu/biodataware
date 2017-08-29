@@ -181,9 +181,7 @@ class UserRoleDetail(APIView):
 
     def get(self, request, pk, format=None):
         user = get_object_or_404(User, pk=pk)
-        obj = {
-            'user': user
-        }
+        obj = {'user': user}
         self.check_object_permissions(request, obj)  # check the permission
         roles = UserRole.objects.all().filter(user_id=pk)
         serializer = UserRoleSerializer(roles, many=True).data
