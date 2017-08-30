@@ -562,7 +562,7 @@ class Shelf(APIView):
                                 status=status.HTTP_400_BAD_REQUEST)
 
 
-# boxes list of a container, quick access
+# group boxes list of a container, quick access
 class ContainerBoxList(APIView):
     permission_classes = (permissions.IsAuthenticated, IsInGroupContanier,)
 
@@ -653,6 +653,22 @@ class ContainerBoxList(APIView):
             return Response({'detail': 'Box not added!'},
                             status=status.HTTP_400_BAD_REQUEST)
 
+
+# get all the boxes in a container, including the boxes of othe groups
+class ContainerAllBoxList(APIView):
+    permission_classes = (permissions.IsAuthenticated, )
+
+
+    def get(self, request, ct_id, format=None):
+
+        try:
+            container = get_object_or_404(Container, pk=int(ct_id))
+            boxes = BoxContainer.objects.all().filter(container_id=container.pk)
+            serializer = BoxSamplesSerializer(boxes, many=True)
+            return Response(serializer.data)
+        except:
+            return Response({'detail': 'Something went wrong!'},
+                            status=status.HTTP_400_BAD_REQUEST)
 
 # ==============================================================
 # allow view and add samples

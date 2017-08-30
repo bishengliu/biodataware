@@ -40,9 +40,10 @@ urlpatterns = [
         name='container-tower-shelf-boxes'),
 
     # quick get the box list
-    # boxes in on container
+    # group boxes in on container
     url(r'^(?P<ct_id>[0-9]+)/boxes/$',  ContainerBoxList.as_view(), name='container-boxes'),
-
+    # all the boxes in a container, including boxes of other groups
+    url(r'^(?P<ct_id>[0-9]+)/all_boxes/$',  ContainerAllBoxList.as_view(), name='container-all_boxes'),
 
     # =======================================================sample list================================================
     # add new sample
