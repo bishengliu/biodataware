@@ -960,15 +960,18 @@ class Box(APIView):
                                 status=status.HTTP_400_BAD_REQUEST)
             # get box researcher
             box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
-            if authUser.is_superuser or box_researcher:
-                user = get_object_or_404(User, pk=box_researcher.researcher_id)
-                obj = {'user': user}
-                if not authUser.is_superuser:
+            if not authUser.is_superuser:
+                if box_researcher is not None:
+                    user = get_object_or_404(User, pk=box_researcher.researcher_id)
+                    obj = {'user': user}
                     self.check_object_permissions(request, obj)  # check the permission
-                serializer = BoxSamplesSerializer(box)
-                return Response(serializer.data)
-            return Response({'detail': 'Permission denied!'},
-                            status=status.HTTP_400_BAD_REQUEST)
+                    serializer = BoxSamplesSerializer(box)
+                    return Response(serializer.data)
+                return Response({'detail': 'Permission denied!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+            serializer = BoxSamplesSerializer(box)
+            return Response(serializer.data)
+
         except:
             return Response({'detail': 'Something went wrong!'},
                     status=status.HTTP_400_BAD_REQUEST)
