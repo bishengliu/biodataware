@@ -1355,6 +1355,7 @@ class BoxDescription(APIView):
             return Response({'detail': 'Something went wrong!'},
                             status=status.HTTP_400_BAD_REQUEST)
 
+
 # move containe rbox
 class MoveBox(APIView):
     permission_classes = (permissions.IsAuthenticated, IsInGroupContanier,)

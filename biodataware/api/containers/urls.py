@@ -5,6 +5,9 @@ from .views import *
 urlpatterns = [
     # ===================================================container list for admin=======================================
     url(r'^$', ContainerList.as_view(), name='containers'),  # container-towers
+    # move boxes
+    url(r'^move_box/$', MoveBox.as_view(), name='container-move_boxes'),
+
     # ===================================================container count for admin======================================
     url(r'^count/$', ContainerCount.as_view(), name='containers-count'),  # container-count
 
