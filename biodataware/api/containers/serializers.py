@@ -28,6 +28,7 @@ class GroupContainerSerializer(serializers.ModelSerializer):
         model = GroupContainer
         fields = ('pk', 'group', )
 
+
 # load boxes without loading the samples
 class BoxContainerSerializer(serializers.ModelSerializer):
     # researchers = BoxResearcherSerializer(many=True, read_only=True, source='boxresearcher_set')
@@ -223,6 +224,7 @@ class BoxRateSerializer(serializers.Serializer):
 class BoxDescriptionSerializer(serializers.Serializer):
     description = serializers.CharField(required=False)
 
+
 # add a new sample
 class SampleCreateSerializer(serializers.Serializer):
     hposition = serializers.RegexField(regex=r'^[0-9]{1,2}$', required=True)  # h position
@@ -281,3 +283,10 @@ class SampleAttachmentEditSerializer(serializers.ModelSerializer):
         model = SampleAttachment
         fields = ('label', 'attachment', 'description')
 
+
+# move boxes
+class MoveSampleSerializer(serializers.Serializer):
+    original_container = serializers.IntegerField(required=True)  # original_container pk
+    box_full_position = serializers.CharField(required=True)  # box_full_position
+    target_container = serializers.IntegerField(required=True)  # target_container pk
+    target_box_full_position = serializers.CharField(required=True)  # target_container box_full_position

@@ -1355,6 +1355,102 @@ class BoxDescription(APIView):
             return Response({'detail': 'Something went wrong!'},
                             status=status.HTTP_400_BAD_REQUEST)
 
+# move containe rbox
+class MoveBox(APIView):
+    permission_classes = (permissions.IsAuthenticated, IsInGroupContanier,)
+
+    @transaction.atomic
+    def post(self, request, format=None):
+        try:
+            auth_user = request.user
+
+            serializer = SampleEditSerializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            data = serializer.data
+
+            #ori_box_full_position
+            ori_box_full_position = data.get('box_full_position', '')
+            ori_box_match = re.match(r"^([0-9]+)-([0-9]+)-([0-9]+)$", ori_box_full_position, re.I)
+
+            # target_box_full_position
+            target_box_full_position = data.get('target_box_full_position', '')
+            target_box_match = re.match(r"^([0-9]+)-([0-9]+)-([0-9]+)$", target_box_full_position, re.I)
+
+            if(ori_box_match and target_box_match):
+                ori_box_position_list = ori_box_full_position.split("-")
+                ori_tw_id = int(ori_box_position_list[0])
+                ori_sf_id = int(ori_box_position_list[1])
+                ori_bx_id = int(ori_box_position_list[2])
+
+                target_box_position_list = target_box_match.split("-")
+                target_tw_id = int(target_box_position_list[0])
+                target_sf_id = int(target_box_position_list[1])
+                target_bx_id = int(target_box_position_list[2])
+
+                # original container
+                original_container_pk = data.get('original_container', -9999)
+                original_container = get_object_or_404(Container, pk=int(original_container_pk))
+
+                # target_container
+                target_container_pk = data.get('target_container', -9999)
+                target_container = get_object_or_404(Container, pk=int(target_container_pk))
+
+                # ori box
+                ori_box = BoxContainer.objects.all() \
+                    .filter(container_id=int(original_container_pk)) \
+                    .filter(tower=int(ori_tw_id)) \
+                    .filter(shelf=int(ori_sf_id)) \
+                    .filter(box=int(ori_bx_id)) \
+                    .first()
+
+                if ori_box:
+                    # get box researcher
+                    ori_box_researcher = BoxResearcher.objects.all().filter(box_id=ori_box.pk).first()
+                    if ori_box_researcher:
+                        ori_box_user = get_object_or_404(User, pk=ori_box_researcher.researcher_id)
+                        obj = {'user': ori_box_user}
+                        self.check_object_permissions(request, obj)  # check the permission
+                        # check the target box
+                        target_box = BoxContainer.objects.all() \
+                            .filter(container_id=int(target_container_pk)) \
+                            .filter(tower=int(target_tw_id)) \
+                            .filter(shelf=int(target_sf_id)) \
+                            .filter(box=int(target_bx_id)) \
+                            .first()
+                        if target_box:
+                            # get box researcher
+                            target_box_researcher = BoxResearcher.objects.all().filter(box_id=target_box.pk).first()
+                            if target_box_researcher:
+                                target_box_user = get_object_or_404(User, pk=target_box_researcher.researcher_id)
+                                obj = {'user': target_box_user}
+                                self.check_object_permissions(request, obj)  # check the permission
+
+                                # target box is empty and move the box
+                                ori_box.container = target_container
+                                ori_box.tower = target_tw_id
+                                ori_box.shelf = target_sf_id
+                                ori_box.box = target_bx_id
+                                ori_box.save()
+                                return Response({'detail': 'box moved!'}, status=status.HTTP_200_OK)
+                        else:
+                            # target is not empty and move the box
+                            ori_box.container = target_container
+                            ori_box.tower = target_tw_id
+                            ori_box.shelf = target_sf_id
+                            ori_box.box = target_bx_id
+                            ori_box.save()
+                            target_box.container = original_container
+                            target_box.tower = ori_tw_id
+                            target_box.shelf = ori_sf_id
+                            target_box.box = ori_bx_id
+                            target_box.save()
+                            return Response({'detail': 'box moved!'}, status=status.HTTP_200_OK)
+            return Response({'detail': 'Something went wrong, box not moved!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+        except:
+            return Response({'detail': 'Something went wrong, box not moved!'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
 
 ########################################################################################################################
 # get, put and delete sample
@@ -1490,9 +1586,7 @@ class SampleDetailAlternative(APIView):
             box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
             if box_researcher:
                 user = get_object_or_404(User, pk=box_researcher.researcher_id)
-                obj = {
-                    'user': user
-                }
+                obj = {'user': user}
                 self.check_object_permissions(request, obj)  # check the permission
                 # find the sample
                 match = re.match(r"([a-z]+)([0-9]+)", sp_id, re.I)
