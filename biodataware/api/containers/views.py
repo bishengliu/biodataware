@@ -1430,21 +1430,30 @@ class MoveBox(APIView):
                                 target_box_user = get_object_or_404(User, pk=target_box_researcher.researcher_id)
                                 obj = {'user': target_box_user}
                                 self.check_object_permissions(request, obj)  # check the permission
-
-                        # target box is not empty and switch the boexes the box
-                        ori_box.container = target_container
-                        ori_box.tower = target_tw_id
-                        ori_box.shelf = target_sf_id
-                        ori_box.box = target_bx_id
-                        ori_box.save()
-                        target_box.container = original_container
-                        target_box.tower = ori_tw_id
-                        target_box.shelf = ori_sf_id
-                        target_box.box = ori_bx_id
-                        target_box.save()
-                        return Response({'detail': 'box moved!'}, status=status.HTTP_200_OK)
+                        # check whether the boxes matches
+                        if(ori_box.box_horizontal == target_box.box_horizontal and ori_box.box_vertical == target_box.box_vertical):
+                            # target box is not empty and switch the boexes the box
+                            ori_box.container = target_container
+                            ori_box.tower = target_tw_id
+                            ori_box.shelf = target_sf_id
+                            ori_box.box = target_bx_id
+                            ori_box.save()
+                            target_box.container = original_container
+                            target_box.tower = ori_tw_id
+                            target_box.shelf = ori_sf_id
+                            target_box.box = ori_bx_id
+                            target_box.save()
+                            return Response({'detail': 'box moved!'}, status=status.HTTP_200_OK)
+                        else:
+                            return Response({'detail': 'box layouts do not match, box not moved!'}, status=status.HTTP_400_BAD_REQUEST)
                     else:
                         # target is empty and move the box
+                        # find the first box record
+                        target_container_first_box = BoxContainer.objects.all().filter(container_id=int(target_container_pk)).first()
+                        if target_container_first_box is not None:
+                            if (ori_box.box_horizontal != target_container_first_box.box_horizontal or ori_box.box_vertical != target_container_first_box.box_vertical):
+                                return Response({'detail': 'box layouts do not match, box not moved!'},
+                                                status=status.HTTP_400_BAD_REQUEST)
                         ori_box.container = target_container
                         ori_box.tower = target_tw_id
                         ori_box.shelf = target_sf_id
