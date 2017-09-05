@@ -16,6 +16,9 @@ urlpatterns = [
     # ====================================================container detail==============================================
     url(r'^(?P<pk>[0-9]+)/$', ContainerDetail.as_view(), name='container-detail'),
 
+    # ====================================================add a box a container=========================================
+    url(r'^(?P<pk>[0-9]+)/add_box/$', AddBox.as_view(), name='container-add-box'),
+
     # ======================================================group container list========================================
     url(r'^(?P<ct_id>[0-9]+)/groups/$', GroupContainerList.as_view(), name='groupcontainers'),
 

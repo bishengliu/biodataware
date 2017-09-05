@@ -674,6 +674,8 @@ class ContainerAllBoxList(APIView):
 # allow view and add samples
 # box and sample list
 # =====================================
+
+
 # need to apply permissions to only allow view the box details in the group
 class BoxAlternative(APIView):
     permission_classes = (permissions.IsAuthenticated, IsInGroupContanier, IsPIorAssistantorOwner,)
@@ -1278,27 +1280,32 @@ class BoxColor(APIView):
                 .filter(shelf=int(sf_id)) \
                 .filter(box=int(bx_id)) \
                 .first()
-            if not box:
+            if box is None:
                 return Response({'detail': 'box does not exist!'},
                                 status=status.HTTP_400_BAD_REQUEST)
+            serializer = BoxColorSerializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            data = serializer.data
+            box.color = data['color']
             # get box researcher
             box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
-            if auth_user.is_superuser or box_researcher:
-                user = get_object_or_404(User, pk=box_researcher.researcher_id)
-                obj = {'user': user}
+            if box_researcher is not None:
                 if not auth_user.is_superuser:
+                    user = get_object_or_404(User, pk=box_researcher.researcher_id)
+                    obj = {'user': user}
                     self.check_object_permissions(request, obj)  # check the permission
+                    box.save()
+                    return Response({'detail': 'color is updated!'},
+                                   status=status.HTTP_200_OK)
+                return Response({'detail': 'Permission denied!'},
+                                status=status.HTTP_400_BAD_REQUEST)
 
-                serializer = BoxColorSerializer(data=request.data)
-                serializer.is_valid(raise_exception=True)
-                data = serializer.data
-                box.color = data['color']
+            else:
                 box.save()
                 return Response({'detail': 'color is updated!'},
-                                status=status.HTTP_200_OK)
+                                    status=status.HTTP_200_OK)
 
-            return Response({'detail': 'Permission denied!'},
-                            status=status.HTTP_400_BAD_REQUEST)
+
         except:
             return Response({'detail': 'Something went wrong!'},
                             status=status.HTTP_400_BAD_REQUEST)
@@ -1359,7 +1366,7 @@ class BoxDescription(APIView):
                             status=status.HTTP_400_BAD_REQUEST)
 
 
-# move containe rbox
+# move container box
 class MoveBox(APIView):
     permission_classes = (permissions.IsAuthenticated, IsInGroupContanier,)
 
@@ -1368,7 +1375,7 @@ class MoveBox(APIView):
         try:
             auth_user = request.user
 
-            serializer = MoveSampleSerializer(data=request.data)
+            serializer = MoveBoxSerializer(data=request.data)
             serializer.is_valid(raise_exception=True)
             data = serializer.data
 
@@ -1465,6 +1472,62 @@ class MoveBox(APIView):
         except:
             return Response({'detail': 'Something went wrong, box not moved!'},
                             status=status.HTTP_400_BAD_REQUEST)
+
+
+# add a box to container
+class AddBox(APIView):
+    permission_classes = (permissions.IsAuthenticated, IsInGroupContanier,)
+
+    @transaction.atomic
+    def put(self, request, pk, format=None):
+        try:
+            user = request.user
+            obj = {'user': user}
+            if not user.is_superuser:
+                self.check_object_permissions(request, obj)  # check the permission
+            container = get_object_or_404(Container, pk=pk)
+            serializer = AddBoxSerializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            data = serializer.data
+
+            # box position
+            box_full_position = data.get('box_full_position', '')
+            box_match = re.match(r"^([0-9]+)-([0-9]+)-([0-9]+)$", box_full_position, re.I)
+            if box_match:
+                # parse tower, shelf and box
+                box_position_list = box_full_position.split("-")
+                tw_id = int(box_position_list[0])
+                sf_id = int(box_position_list[1])
+                bx_id = int(box_position_list[2])
+                box_found = BoxContainer.objects.all() \
+                        .filter(container_id=int(container.pk)) \
+                        .filter(tower=int(tw_id)) \
+                        .filter(shelf=int(sf_id)) \
+                        .filter(box=int(bx_id)) \
+                        .first()
+                if box_found is None:
+                    box = BoxContainer.objects.create(
+                        container=container,
+                        tower=tw_id,
+                        shelf=sf_id,
+                        box=bx_id,
+                        box_horizontal=data.get('box_horizontal', 1),
+                        box_vertical=data.get('box_vertical', 1)
+                    )
+                    box.save()
+                    # add box researcher
+                    box_researcher = BoxResearcher.objects.create(
+                        box_id=box.pk,
+                        researcher_id=user.pk
+                    )
+                    box_researcher.save()
+                    return Response({'detail': 'box added!'}, status=status.HTTP_200_OK)
+                return Response({'detail': 'Something went wrong, failed to add the box!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+        except:
+            return Response({'detail': 'Something went wrong, failed to add the box!'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
 
 
 ########################################################################################################################

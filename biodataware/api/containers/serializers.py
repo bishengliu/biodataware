@@ -285,8 +285,16 @@ class SampleAttachmentEditSerializer(serializers.ModelSerializer):
 
 
 # move boxes
-class MoveSampleSerializer(serializers.Serializer):
+class MoveBoxSerializer(serializers.Serializer):
     original_container = serializers.IntegerField(required=True)  # original_container pk
     box_full_position = serializers.CharField(required=True)  # box_full_position
     target_container = serializers.IntegerField(required=True)  # target_container pk
     target_box_full_position = serializers.CharField(required=True)  # target_container box_full_position
+
+
+# add a box to a container
+class AddBoxSerializer(serializers.Serializer):
+    container_pk = serializers.IntegerField(required=True)  # container pk
+    box_full_position = serializers.CharField(required=True)  # box_full_position
+    box_horizontal = serializers.IntegerField(validators=[MinValueValidator(1)], required=True)  # box_horizontal
+    box_vertical = serializers.IntegerField(validators=[MinValueValidator(1)], required=True)  # box_vertical
