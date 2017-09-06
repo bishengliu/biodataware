@@ -1370,7 +1370,7 @@ class BoxDescription(APIView):
 class MoveBox(APIView):
     permission_classes = (permissions.IsAuthenticated, IsInGroupContanier,)
 
-    @transaction.atomic
+    #@transaction.atomic
     def post(self, request, format=None):
         try:
             auth_user = request.user
@@ -1478,7 +1478,7 @@ class MoveBox(APIView):
 class AddBox(APIView):
     permission_classes = (permissions.IsAuthenticated, IsInGroupContanier,)
 
-    @transaction.atomic
+    #@transaction.atomic
     def put(self, request, pk, format=None):
         try:
             user = request.user
