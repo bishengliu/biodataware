@@ -2772,12 +2772,12 @@ class SampleTakeAlternative(APIView):
                 .filter(shelf=int(sf_id)) \
                 .filter(box=int(bx_id)) \
                 .first()
-            if not box:
+            if box is None:
                 return Response({'detail': 'box does not exist!'},
                                 status=status.HTTP_400_BAD_REQUEST)
             # get box researcher
             box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
-            if box_researcher:
+            if box_researcher is not None:
                 user = get_object_or_404(User, pk=box_researcher.researcher_id)
                 obj = {
                     'user': user
@@ -2789,7 +2789,7 @@ class SampleTakeAlternative(APIView):
                     pos = match.groups()
                     sample = Sample.objects.all().filter(box_id=box.pk).filter(vposition__iexact=pos[0]).filter(
                         hposition=pos[1]).first()
-                    if sample:
+                    if sample is not None:
                         sample.occupied = False
                         sample.date_out = datetime.datetime.now()
                         sample.save()
@@ -2831,16 +2831,14 @@ class SampleTake(APIView):
                 .filter(shelf=int(sf_id)) \
                 .filter(box=int(bx_id)) \
                 .first()
-            if not box:
+            if box is None:
                 return Response({'detail': 'box does not exist!'},
                                 status=status.HTTP_400_BAD_REQUEST)
             # get box researcher
             box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
-            if box_researcher:
+            if box_researcher is not None:
                 user = get_object_or_404(User, pk=box_researcher.researcher_id)
-                obj = {
-                    'user': user
-                }
+                obj = {'user': user}
                 self.check_object_permissions(request, obj)  # check the permission
                 # find the sample
                 match = re.match(r"([a-z]+)([0-9]+)", sp_id, re.I)
@@ -2848,7 +2846,7 @@ class SampleTake(APIView):
                     pos = match.groups()
                     sample = Sample.objects.all().filter(box_id=box.pk).filter(vposition__iexact=pos[0]).filter(
                         hposition=pos[1]).first()
-                    if sample:
+                    if sample is not None:
                         sample.occupied = False
                         sample.date_out = datetime.datetime.now()
                         sample.save()
@@ -2888,16 +2886,14 @@ class SampleBackAlternative(APIView):
                 .filter(shelf=int(sf_id)) \
                 .filter(box=int(bx_id)) \
                 .first()
-            if not box:
+            if box is None:
                 return Response({'detail': 'box does not exist!'},
                                 status=status.HTTP_400_BAD_REQUEST)
             # get box researcher
             box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
-            if box_researcher:
+            if box_researcher is not None:
                 user = get_object_or_404(User, pk=box_researcher.researcher_id)
-                obj = {
-                    'user': user
-                }
+                obj = {'user': user}
                 self.check_object_permissions(request, obj)  # check the permission
                 # find the sample
                 match = re.match(r"([a-z]+)([0-9]+)", sp_id, re.I)
@@ -2905,7 +2901,7 @@ class SampleBackAlternative(APIView):
                     pos = match.groups()
                     sample = Sample.objects.all().filter(box_id=box.pk).filter(vposition__iexact=pos[0]).filter(
                         hposition=pos[1]).first()
-                    if sample:
+                    if sample is not None:
                         sample.occupied = True
                         sample.date_out = None
                         sample.save()
@@ -2947,16 +2943,14 @@ class SampleBack(APIView):
                 .filter(shelf=int(sf_id)) \
                 .filter(box=int(bx_id)) \
                 .first()
-            if not box:
+            if box is None:
                 return Response({'detail': 'box does not exist!'},
                                 status=status.HTTP_400_BAD_REQUEST)
             # get box researcher
             box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
-            if box_researcher:
+            if box_researcher is not None:
                 user = get_object_or_404(User, pk=box_researcher.researcher_id)
-                obj = {
-                    'user': user
-                }
+                obj = {'user': user}
                 self.check_object_permissions(request, obj)  # check the permission
                 # find the sample
                 match = re.match(r"([a-z]+)([0-9]+)", sp_id, re.I)
@@ -2964,7 +2958,7 @@ class SampleBack(APIView):
                     pos = match.groups()
                     sample = Sample.objects.all().filter(box_id=box.pk).filter(vposition__iexact=pos[0]).filter(
                         hposition=pos[1]).first()
-                    if sample:
+                    if sample is not None:
                         sample.occupied = True
                         sample.date_out = None
                         sample.save()
@@ -3004,16 +2998,14 @@ class SampleColorAlternative(APIView):
                 .filter(shelf=int(sf_id)) \
                 .filter(box=int(bx_id)) \
                 .first()
-            if not box:
+            if box is None:
                 return Response({'detail': 'box does not exist!'},
                                 status=status.HTTP_400_BAD_REQUEST)
             # get box researcher
             box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
-            if box_researcher:
+            if box_researcher is not None:
                 user = get_object_or_404(User, pk=box_researcher.researcher_id)
-                obj = {
-                    'user': user
-                }
+                obj = {'user': user}
                 self.check_object_permissions(request, obj)  # check the permission
                 # find the sample
                 match = re.match(r"([a-z]+)([0-9]+)", sp_id, re.I)
@@ -3021,7 +3013,7 @@ class SampleColorAlternative(APIView):
                     pos = match.groups()
                     sample = Sample.objects.all().filter(box_id=box.pk).filter(vposition__iexact=pos[0]).filter(
                         hposition=pos[1]).first()
-                    if sample:
+                    if sample is not None:
                         # validate serializer
                         serializer = SampleColorSerializer(data=request.data)
                         serializer.is_valid(raise_exception=True)
@@ -3066,16 +3058,14 @@ class SampleColor(APIView):
                 .filter(shelf=int(sf_id)) \
                 .filter(box=int(bx_id)) \
                 .first()
-            if not box:
+            if box is None:
                 return Response({'detail': 'box does not exist!'},
                                 status=status.HTTP_400_BAD_REQUEST)
             # get box researcher
             box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
-            if box_researcher:
+            if box_researcher is not None:
                 user = get_object_or_404(User, pk=box_researcher.researcher_id)
-                obj = {
-                    'user': user
-                }
+                obj = {'user': user}
                 self.check_object_permissions(request, obj)  # check the permission
                 # find the sample
                 match = re.match(r"([a-z]+)([0-9]+)", sp_id, re.I)
@@ -3083,7 +3073,7 @@ class SampleColor(APIView):
                     pos = match.groups()
                     sample = Sample.objects.all().filter(box_id=box.pk).filter(vposition__iexact=pos[0]).filter(
                         hposition=pos[1]).first()
-                    if sample:
+                    if sample is not None:
                         # validate serializer
                         serializer = SampleColorSerializer(data=request.data)
                         serializer.is_valid(raise_exception=True)
