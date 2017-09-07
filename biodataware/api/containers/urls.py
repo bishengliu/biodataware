@@ -98,9 +98,13 @@ urlpatterns = [
         SampleDetailUpdate.as_view(),
         name='container-tower-shelf-box-sample-detail-update'),
     # 12-3-4/A12/switch_position/
-    url(r'^(?P<ct_id>[0-9]+)/(?P<bx_id>[0-9]+\-[0-9]+\-[0-9]+)/(?P<sp_id>[a-zA-Z][0-9]+)/switch_position/$',
+    url(r'^(?P<ct_id>[0-9]+)/(?P<bx_id>[0-9]+\-[0-9]+\-[0-9]+)/(?P<sp_id>[a-zA-Z][0-9]+)/update_position/$',
+        UpdateSamplePosition.as_view(),
+        name='container-tower-shelf-box-sample-update-position'),
+    # 12-3-4/switch_positions/
+    url(r'^(?P<ct_id>[0-9]+)/(?P<bx_id>[0-9]+\-[0-9]+\-[0-9]+)/switch_positions/$',
         SampleSwitchPosition.as_view(),
-        name='container-tower-shelf-box-sample-switch-position'),
+        name='container-tower-shelf-box-sample-switch-positions'),
 
     # /boxes/12-3-4/A12/
     url(r'^(?P<ct_id>[0-9]+)/boxes/(?P<bx_id>[0-9]+\-[0-9]+\-[0-9]+)/(?P<sp_id>[a-zA-Z][0-9]+)/$',

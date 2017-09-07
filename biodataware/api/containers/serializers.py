@@ -298,3 +298,10 @@ class AddBoxSerializer(serializers.Serializer):
     box_full_position = serializers.CharField(required=True)  # box_full_position
     box_horizontal = serializers.IntegerField(validators=[MinValueValidator(1)], required=True)  # box_horizontal
     box_vertical = serializers.IntegerField(validators=[MinValueValidator(1)], required=True)  # box_vertical
+
+
+# switch sample position
+class SwitchSampleSerializer(serializers.Serializer):
+    box_full_position = serializers.CharField(required=True)  # box_full_position
+    first_sample = serializers.CharField(required=True)  # box_full_position
+    second_sample = serializers.CharField(required=True)  # box_full_position

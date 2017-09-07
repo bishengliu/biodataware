@@ -1529,7 +1529,6 @@ class AddBox(APIView):
                             status=status.HTTP_400_BAD_REQUEST)
 
 
-
 ########################################################################################################################
 # get, put and delete sample
 class SampleDetailAlternative(APIView):
@@ -2092,13 +2091,14 @@ class SampleDetailUpdate(APIView):
                             status=status.HTTP_400_BAD_REQUEST)
 
 
-# single sample switch position
-class SampleSwitchPosition(APIView):
+# update single sample position
+class UpdateSamplePosition(APIView):
     permission_classes = (permissions.IsAuthenticated, IsInGroupContanier, IsPIorAssistantorOwner,)
 
     @transaction.atomic
     def put(self, request, ct_id, bx_id, sp_id):
         try:
+            auth_user = request.user
             container = get_object_or_404(Container, pk=int(ct_id))
             id_list = bx_id.split("-")
             tw_id = int(id_list[0])
@@ -2121,38 +2121,133 @@ class SampleSwitchPosition(APIView):
                 .filter(shelf=int(sf_id)) \
                 .filter(box=int(bx_id)) \
                 .first()
-            if not box:
+            if box is None:
                 return Response({'detail': 'box does not exist!'},
                                 status=status.HTTP_400_BAD_REQUEST)
-            # get box researcher
-            box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
-            if box_researcher:
-                user = get_object_or_404(User, pk=box_researcher.researcher_id)
-                obj = {'user': user}
-                self.check_object_permissions(request, obj)  # check the permission
-                # find the sample
-                match = re.match(r"([a-z]+)([0-9]+)", sp_id, re.I)
-                if match:
-                    pos = match.groups()
-                    # current sample
-                    sample = Sample.objects.all().filter(box_id=box.pk).filter(vposition__iexact=pos[0]).filter(hposition=pos[1]).first()
-                    if sample:
-                        data = request.data
-                        new_vposition = data.get('new_vposition', '')
-                        new_hposition = data.get('new_hposition', '')
-                        sample.vposition = new_vposition
-                        sample.hposition = new_hposition
+            # find the sample
+            match = re.match(r"([a-z]+)([0-9]+)", sp_id, re.I)
+            data = request.data
+            new_vposition = data.get('new_vposition', '')
+            new_hposition = data.get('new_hposition', '')
+            if match:
+                pos = match.groups()
+                sample = Sample.objects.all().filter(box_id=box.pk).filter(vposition__iexact=pos[0]).filter(
+                    hposition=pos[1]).first()
+                switch_sample = Sample.objects.all().filter(box_id=box.pk).exclude(pk=sample.pk).filter(
+                    vposition__iexact=new_vposition).filter(hposition=new_hposition).first()
+                if sample is not None and switch_sample is not None:
+                    sample.vposition = new_vposition
+                    sample.hposition = new_hposition
+                    switch_sample.vposition = pos[0]
+                    switch_sample.hposition = pos[1]
+
+                    if not auth_user.is_superuser:
+                        box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
+                        user = get_object_or_404(User, pk=box_researcher.researcher_id)
+                        obj = {'user': user}
+                        self.check_object_permissions(request, obj)  # check the permission
                         sample.save()
-                        # possible sample to switch with
-                        switch_sample = Sample.objects.all().filter(box_id=box.pk).exclude(pk=sample.pk).filter(vposition__iexact=new_vposition).filter(hposition=new_hposition).first()
-                        if switch_sample:
-                            switch_sample.vposition = pos[0]
-                            switch_sample.hposition = pos[1]
-                            switch_sample.save()
+                        switch_sample.save()
                         return Response({'detail': 'sample position saved!'},
                                         status=status.HTTP_200_OK)
-            return Response({'detail': 'Permission denied!'},
+                    else:
+                        sample.save()
+                        switch_sample.save()
+                        return Response({'detail': 'sample position saved!'},
+                                        status=status.HTTP_200_OK)
+            else:
+                return Response({'detail': 'Something went wrong, sample not found!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+        except:
+            return Response({'detail': 'Something went wrong!'},
                             status=status.HTTP_400_BAD_REQUEST)
+
+
+# 2 samples, switch positions
+class SampleSwitchPosition(APIView):
+    permission_classes = (permissions.IsAuthenticated, IsInGroupContanier, IsPIorAssistantorOwner,)
+
+    @transaction.atomic
+    def put(self, request, ct_id, bx_id):
+        try:
+            auth_user = request.user
+            container = get_object_or_404(Container, pk=int(ct_id))
+            # data
+            serializer = SwitchSampleSerializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            data = serializer.data
+            # the 2 samples
+            first_sample = data.get('first_sample', '')
+            second_sample = data.get('second_sample', '')
+            first_match= re.match(r"([a-z]+)([0-9]+)", first_sample, re.I)
+            second_match = re.match(r"([a-z]+)([0-9]+)", second_sample, re.I)
+            # box position
+            id_list = bx_id.split("-")
+            tw_id = int(id_list[0])
+            sf_id = int(id_list[1])
+            bx_id = int(id_list[2])
+            if int(tw_id) > int(container.tower) or int(tw_id) < 0:
+                return Response({'detail': 'tower does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+
+            if int(sf_id) > int(container.shelf) or int(sf_id) < 0:
+                return Response({'detail': 'shelf does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+            if int(bx_id) > int(container.box) or int(bx_id) < 0:
+                return Response({'detail': 'Box does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+            # box
+            box = BoxContainer.objects.all() \
+                .filter(container_id=int(ct_id)) \
+                .filter(tower=int(tw_id)) \
+                .filter(shelf=int(sf_id)) \
+                .filter(box=int(bx_id)) \
+                .first()
+            if box is None:
+                return Response({'detail': 'box does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+            if first_match and second_match:
+                first_pos = first_match.groups()
+                # current sample
+                sample1 = Sample.objects.all().filter(box_id=box.pk).filter(vposition__iexact=first_pos[0]).filter(
+                    hposition=first_pos[1]).first()
+                second_pos = second_match.groups()
+                # current sample
+                sample2 = Sample.objects.all().filter(box_id=box.pk).filter(
+                    vposition__iexact=second_pos[0]).filter(
+                    hposition=second_pos[1]).first()
+                if sample1 is not None and sample2 is not None:
+                    if not auth_user.is_superuser:
+                        # get box researcher
+                        box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
+                        if box_researcher is not None:
+                            user = get_object_or_404(User, pk=box_researcher.researcher_id)
+                            obj = {'user': user}
+                            self.check_object_permissions(request, obj)  # check the permission
+                            # switch position
+                            sample1.vposition = second_pos[0]
+                            sample1.hposition = second_pos[1]
+                            sample2.vposition = first_pos[0]
+                            sample2.hposition = first_pos[1]
+                            sample1.save()
+                            sample2.save()
+                            return Response({'detail': 'sample position switched!'},
+                                            status=status.HTTP_200_OK)
+                        return Response({'detail': 'Permission denied!'},
+                                        status=status.HTTP_400_BAD_REQUEST)
+                    else:
+                        # switch position
+                        sample1.vposition = second_pos[0]
+                        sample1.hposition = second_pos[1]
+                        sample2.vposition = first_pos[0]
+                        sample2.hposition = first_pos[1]
+                        sample1.save()
+                        sample2.save()
+                        return Response({'detail': 'sample position switched!'},
+                                        status=status.HTTP_200_OK)
+                else:
+                    return Response({'detail': 'at least one sample is not found, cannot switch the samples!'},
+                                    status=status.HTTP_400_BAD_REQUEST)
         except:
             return Response({'detail': 'Something went wrong!'},
                             status=status.HTTP_400_BAD_REQUEST)
