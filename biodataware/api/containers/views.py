@@ -47,7 +47,6 @@ class ContainerList(APIView):
 
     @transaction.atomic
     def post(self, request, format=None):
-
         try:
             user = request.user
             obj = {'user': user}
@@ -455,7 +454,7 @@ class ShelfAlternative(APIView):
                 .filter(tower=int(tw_id)) \
                 .filter(shelf=int(sf_id)) \
                 .filter(box=data['box'])
-            if bc:
+            if bc is None:
                 return Response({'detail': 'box already exists!'},
                                 status=status.HTTP_400_BAD_REQUEST)
             box_container = BoxContainer.objects.create(
@@ -539,7 +538,7 @@ class Shelf(APIView):
                 .filter(tower=int(tw_id)) \
                 .filter(shelf=int(sf_id)) \
                 .filter(box=data['box'])
-            if bc:
+            if bc is None:
                 return Response({'detail': 'box already exists!'},
                                 status=status.HTTP_400_BAD_REQUEST)
             box_container = BoxContainer.objects.create(
@@ -630,7 +629,7 @@ class ContainerBoxList(APIView):
                 .filter(tower=int(tw_id)) \
                 .filter(shelf=int(sf_id)) \
                 .filter(box=data['box'])
-            if bc:
+            if bc is None:
                 return Response({'detail': 'box already exists!'},
                                 status=status.HTTP_400_BAD_REQUEST)
             box_container = BoxContainer.objects.create(
@@ -742,7 +741,7 @@ class BoxAlternative(APIView):
                 .filter(shelf=int(sf_id)) \
                 .filter(box=int(bx_id)) \
                 .first()
-            if not box:
+            if box is None:
                 return Response({'detail': 'box does not exist!'},
                                 status=status.HTTP_400_BAD_REQUEST)
             # get box researcher
@@ -796,9 +795,7 @@ class BoxAlternative(APIView):
             box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
             if box_researcher:
                 user = get_object_or_404(User, pk=box_researcher.researcher_id)
-                obj = {
-                    'user': user
-                }
+                obj = { 'user': user}
                 self.check_object_permissions(request, obj)  # check the permission
                 serializer = SampleCreateSerializer(data=request.data)
                 serializer.is_valid(raise_exception=True)
@@ -1330,27 +1327,24 @@ class BoxDescription(APIView):
                 .filter(shelf=int(sf_id)) \
                 .filter(box=int(bx_id)) \
                 .first()
-            if not box:
+            if box is None:
                 return Response({'detail': 'box does not exist!'},
                                 status=status.HTTP_400_BAD_REQUEST)
+            serializer = BoxDescriptionSerializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            data = serializer.data
+            box.description = data['description']
+
             # get box researcher
             box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
-            if auth_user.is_superuser or box_researcher:
+            if auth_user.is_superuser or box_researcher is not None:
                 user = get_object_or_404(User, pk=box_researcher.researcher_id)
                 obj = {'user': user}
                 if not auth_user.is_superuser:
                     self.check_object_permissions(request, obj)  # check the permission
-
-                serializer = BoxDescriptionSerializer(data=request.data)
-                serializer.is_valid(raise_exception=True)
-                data = serializer.data
-                box.description = data['description']
-                box.save()
-                return Response({'detail': 'color is updated!'},
+            box.save()
+            return Response({'detail': 'color is updated!'},
                                 status=status.HTTP_200_OK)
-
-            return Response({'detail': 'Permission denied!'},
-                            status=status.HTTP_400_BAD_REQUEST)
         except:
             return Response({'detail': 'Something went wrong!'},
                             status=status.HTTP_400_BAD_REQUEST)
