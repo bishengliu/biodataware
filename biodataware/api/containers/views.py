@@ -1289,23 +1289,13 @@ class BoxColor(APIView):
             box.color = data['color']
             # get box researcher
             box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
-            if box_researcher is not None:
-                if not auth_user.is_superuser:
-                    user = get_object_or_404(User, pk=box_researcher.researcher_id)
-                    obj = {'user': user}
-                    self.check_object_permissions(request, obj)  # check the permission
-                    box.save()
-                    return Response({'detail': 'color is updated!'},
-                                   status=status.HTTP_200_OK)
-                return Response({'detail': 'Permission denied!'},
-                                status=status.HTTP_400_BAD_REQUEST)
-
-            else:
-                box.save()
-                return Response({'detail': 'color is updated!'},
-                                    status=status.HTTP_200_OK)
-
-
+            if box_researcher is not None and not auth_user.is_superuser:
+                user = get_object_or_404(User, pk=box_researcher.researcher_id)
+                obj = {'user': user}
+                self.check_object_permissions(request, obj)  # check the permission
+            box.save()
+            return Response({'detail': 'color is updated!'},
+                                status=status.HTTP_200_OK)
         except:
             return Response({'detail': 'Something went wrong!'},
                             status=status.HTTP_400_BAD_REQUEST)
