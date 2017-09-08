@@ -2115,30 +2115,36 @@ class UpdateSamplePosition(APIView):
             new_hposition = data.get('new_hposition', '')
             if match:
                 pos = match.groups()
-                sample = Sample.objects.all().filter(box_id=box.pk).filter(vposition__iexact=pos[0]).filter(
-                    hposition=pos[1]).first()
+                sample_vposition = pos[0]
+                sample_hposition = pos[1]
+                sample = Sample.objects.all().filter(box_id=box.pk).filter(vposition__iexact=sample_vposition).filter(
+                    hposition=sample_hposition).filter(occupied__iexact=1).first()
                 switch_sample = Sample.objects.all().filter(box_id=box.pk).exclude(pk=sample.pk).filter(
-                    vposition__iexact=new_vposition).filter(hposition=new_hposition).first()
-                if sample is not None and switch_sample is not None:
-                    sample.vposition = new_vposition
-                    sample.hposition = new_hposition
-                    switch_sample.vposition = pos[0]
-                    switch_sample.hposition = pos[1]
+                    vposition__iexact=new_vposition).filter(hposition=new_hposition).filter(occupied__iexact=1).first()
+                if sample is None:
+                    return Response({'detail': 'Something went wrong, sample not found!'},
+                                    status=status.HTTP_400_BAD_REQUEST)
+                sample.vposition = new_vposition
+                sample.hposition = new_hposition
 
-                    if not auth_user.is_superuser:
-                        box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
+                if not auth_user.is_superuser:
+                    box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
+                    if box_researcher is not None:
                         user = get_object_or_404(User, pk=box_researcher.researcher_id)
                         obj = {'user': user}
                         self.check_object_permissions(request, obj)  # check the permission
-                        sample.save()
-                        switch_sample.save()
-                        return Response({'detail': 'sample position saved!'},
-                                        status=status.HTTP_200_OK)
-                    else:
-                        sample.save()
-                        switch_sample.save()
-                        return Response({'detail': 'sample position saved!'},
-                                        status=status.HTTP_200_OK)
+
+                if switch_sample is not None:
+                    sample.save()
+                    switch_sample.vposition = sample_vposition
+                    switch_sample.hposition = sample_hposition
+                    switch_sample.save()
+                    return Response({'detail': 'sample position saved!'},
+                                    status=status.HTTP_200_OK)
+                else:
+                    sample.save()
+                    return Response({'detail': 'sample position saved!'},
+                                    status=status.HTTP_200_OK)
             else:
                 return Response({'detail': 'Something went wrong, sample not found!'},
                                 status=status.HTTP_400_BAD_REQUEST)
@@ -2194,12 +2200,12 @@ class SampleSwitchPosition(APIView):
                 first_pos = first_match.groups()
                 # current sample
                 sample1 = Sample.objects.all().filter(box_id=box.pk).filter(vposition__iexact=first_pos[0]).filter(
-                    hposition=first_pos[1]).first()
+                    hposition=first_pos[1]).filter(occupied__iexact=1).first()
                 second_pos = second_match.groups()
                 # current sample
                 sample2 = Sample.objects.all().filter(box_id=box.pk).filter(
                     vposition__iexact=second_pos[0]).filter(
-                    hposition=second_pos[1]).first()
+                    hposition=second_pos[1]).filter(occupied__iexact=1).first()
                 if sample1 is not None and sample2 is not None:
                     if not auth_user.is_superuser:
                         # get box researcher
@@ -2858,16 +2864,14 @@ class SampleTakeAlternative(APIView):
             box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
             if box_researcher is not None:
                 user = get_object_or_404(User, pk=box_researcher.researcher_id)
-                obj = {
-                    'user': user
-                }
+                obj = {'user': user}
                 self.check_object_permissions(request, obj)  # check the permission
                 # find the sample
                 match = re.match(r"([a-z]+)([0-9]+)", sp_id, re.I)
                 if match:
                     pos = match.groups()
                     sample = Sample.objects.all().filter(box_id=box.pk).filter(vposition__iexact=pos[0]).filter(
-                        hposition=pos[1]).first()
+                        hposition=pos[1]).filter(occupied__iexact=1).first()
                     if sample is not None:
                         sample.occupied = False
                         sample.date_out = datetime.datetime.now()
@@ -2924,7 +2928,7 @@ class SampleTake(APIView):
                 if match:
                     pos = match.groups()
                     sample = Sample.objects.all().filter(box_id=box.pk).filter(vposition__iexact=pos[0]).filter(
-                        hposition=pos[1]).first()
+                        hposition=pos[1]).filter(occupied__iexact=1).first()
                     if sample is not None:
                         sample.occupied = False
                         sample.date_out = datetime.datetime.now()
@@ -2979,7 +2983,12 @@ class SampleBackAlternative(APIView):
                 if match:
                     pos = match.groups()
                     sample = Sample.objects.all().filter(box_id=box.pk).filter(vposition__iexact=pos[0]).filter(
-                        hposition=pos[1]).first()
+                        hposition=pos[1]).filter(occupied__iexact=0).first()
+                    occuped_sample = Sample.objects.all().filter(box_id=box.pk).filter(vposition__iexact=pos[0]).filter(
+                        hposition=pos[1]).filter(occupied__iexact=1).first()
+                    if occuped_sample is not None:
+                        return Response({'detail': 'slot has been occupied, failed to put sample back!'},
+                                        status=status.HTTP_400_BAD_REQUEST)
                     if sample is not None:
                         sample.occupied = True
                         sample.date_out = None
@@ -3036,7 +3045,12 @@ class SampleBack(APIView):
                 if match:
                     pos = match.groups()
                     sample = Sample.objects.all().filter(box_id=box.pk).filter(vposition__iexact=pos[0]).filter(
-                        hposition=pos[1]).first()
+                        hposition=pos[1]).filter(occupied__iexact=0).first()
+                    occuped_sample = Sample.objects.all().filter(box_id=box.pk).filter(vposition__iexact=pos[0]).filter(
+                        hposition=pos[1]).filter(occupied__iexact=1).first()
+                    if occuped_sample is not None:
+                        return Response({'detail': 'slot has been occupied, failed to put sample back!'},
+                                        status=status.HTTP_400_BAD_REQUEST)
                     if sample is not None:
                         sample.occupied = True
                         sample.date_out = None
