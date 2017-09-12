@@ -1222,21 +1222,27 @@ class BoxRate(APIView):
                 .filter(shelf=int(sf_id)) \
                 .filter(box=int(bx_id)) \
                 .first()
-            if not box:
+            if box is None:
                 return Response({'detail': 'box does not exist!'},
                                 status=status.HTTP_400_BAD_REQUEST)
+            serializer = BoxRateSerializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            data = serializer.data
+            box.rate = data['rate']
+            if auth_user.is_superuser:
+                box.save()
+                return Response({'detail': 'rate is updated!'},
+                            status=status.HTTP_200_OK)
             # get box researcher
             box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
-            if auth_user.is_superuser or box_researcher:
+            if box_researcher is None:
+                box.save()
+                return Response({'detail': 'rate is updated!'},
+                                status=status.HTTP_200_OK)
+            if box_researcher is not None:
                 user = get_object_or_404(User, pk=box_researcher.researcher_id)
                 obj = {'user': user}
-                if not auth_user.is_superuser:
-                    self.check_object_permissions(request, obj)  # check the permission
-
-                serializer = BoxRateSerializer(data=request.data)
-                serializer.is_valid(raise_exception=True)
-                data = serializer.data
-                box.rate = data['rate']
+                self.check_object_permissions(request, obj)  # check the permission
                 box.save()
                 return Response({'detail': 'rate is updated!'},
                                 status=status.HTTP_200_OK)
