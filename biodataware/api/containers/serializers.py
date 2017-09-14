@@ -36,7 +36,7 @@ class BoxContainerSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = BoxContainer
-        fields = ('pk', 'box_position', 'box_vertical', 'box_horizontal', 'tower', 'shelf', 'box', 'code39', 'qrcode', 'color', 'rate', 'description', 'researchers')
+        fields = ('pk', 'label', 'box_position', 'box_vertical', 'box_horizontal', 'tower', 'shelf', 'box', 'code39', 'qrcode', 'color', 'rate', 'description', 'researchers')
 
 
 class ContainerUpdateSerializer(serializers.ModelSerializer):
@@ -186,7 +186,7 @@ class BoxSamplesSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = BoxContainer
-        fields = ('pk', 'box_position', 'box_vertical', 'box_horizontal', 'tower', 'shelf', 'box', 'code39', 'qrcode', 'color', 'rate', 'description', 'samples', 'researchers')
+        fields = ('pk', 'label', 'box_position', 'box_vertical', 'box_horizontal', 'tower', 'shelf', 'box', 'code39', 'qrcode', 'color', 'rate', 'description', 'samples', 'researchers')
 
 
 class ConatainerSerializer(serializers.ModelSerializer):
@@ -223,6 +223,11 @@ class BoxRateSerializer(serializers.Serializer):
 # update description
 class BoxDescriptionSerializer(serializers.Serializer):
     description = serializers.CharField(required=False)
+
+
+# box label
+class BoxLabelSerializer(serializers.Serializer):
+    label = serializers.CharField(required=False)
 
 
 # add a new sample

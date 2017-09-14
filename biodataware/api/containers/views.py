@@ -1343,10 +1343,10 @@ class BoxDescription(APIView):
 
             # get box researcher
             box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
-            if auth_user.is_superuser or box_researcher is not None:
-                user = get_object_or_404(User, pk=box_researcher.researcher_id)
-                obj = {'user': user}
-                if not auth_user.is_superuser:
+            if not auth_user.is_superuser:
+                if box_researcher is not None:
+                    user = get_object_or_404(User, pk=box_researcher.researcher_id)
+                    obj = {'user': user}
                     self.check_object_permissions(request, obj)  # check the permission
             box.save()
             return Response({'detail': 'color is updated!'},
@@ -1355,6 +1355,56 @@ class BoxDescription(APIView):
             return Response({'detail': 'Something went wrong!'},
                             status=status.HTTP_400_BAD_REQUEST)
 
+
+# update box label
+class BoxLabel(APIView):
+    permission_classes = (permissions.IsAuthenticated, IsInGroupContanier,)
+
+    def put(self, request, ct_id, id, format=None):
+        try:
+            auth_user = request.user
+            serializer = BoxLabelSerializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            data = serializer.data
+            container = get_object_or_404(Container, pk=int(ct_id))
+            id_list = id.split("-")
+            tw_id = int(id_list[0])
+            sf_id = int(id_list[1])
+            bx_id = int(id_list[2])
+            if int(tw_id) > int(container.tower) or int(tw_id) < 0:
+                return Response({'detail': 'tower does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+
+            if int(sf_id) > int(container.shelf) or int(sf_id) < 0:
+                return Response({'detail': 'shelf does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+            if int(bx_id) > int(container.box) or int(bx_id) < 0:
+                return Response({'detail': 'Box does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+            # box
+            box = BoxContainer.objects.all() \
+                .filter(container_id=int(ct_id)) \
+                .filter(tower=int(tw_id)) \
+                .filter(shelf=int(sf_id)) \
+                .filter(box=int(bx_id)) \
+                .first()
+            if box is None:
+                return Response({'detail': 'box does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+            box.label = data['label']
+            # get box researcher
+            box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
+            if not auth_user.is_superuser:
+                if box_researcher is not None:
+                    user = get_object_or_404(User, pk=box_researcher.researcher_id)
+                    obj = {'user': user}
+                    self.check_object_permissions(request, obj)  # check the permission
+            box.save()
+            return Response({'detail': 'color is updated!'},
+                            status=status.HTTP_200_OK)
+        except:
+            return Response({'detail': 'Something went wrong!'},
+                            status=status.HTTP_400_BAD_REQUEST)
 
 # move container box
 class MoveBox(APIView):

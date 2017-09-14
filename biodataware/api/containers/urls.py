@@ -87,6 +87,11 @@ urlpatterns = [
         BoxDescription.as_view(),
         name='container-box-description'),
 
+    # update box label
+    url(r'^(?P<ct_id>[0-9]+)/(?P<id>[0-9]+\-[0-9]+\-[0-9]+)/label/$',
+        BoxLabel.as_view(),
+        name='container-box-label'),
+
     # =====================================================sample detail================================================
     # edit sample
     # /12/3/4/A12/
