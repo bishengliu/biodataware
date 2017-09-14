@@ -55,6 +55,7 @@ class GroupContainer(models.Model):
 # boxes in containers
 class BoxContainer(models.Model):
     container = models.ForeignKey(Container, on_delete=models.CASCADE)
+    label = models.CharField(max_length=50, null=True, blank=True)  # user defined position or label
     code39 = models.CharField(max_length=50, null=True, blank=True)
     qrcode = models.CharField(max_length=50, null=True, blank=True)
     tower = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(100)], default=1)
