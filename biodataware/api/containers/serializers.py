@@ -305,3 +305,19 @@ class SwitchSampleSerializer(serializers.Serializer):
     box_full_position = serializers.CharField(required=True)  # box_full_position
     first_sample = serializers.CharField(required=True)  # box_full_position
     second_sample = serializers.CharField(required=True)  # box_full_position
+
+
+# switch samples between 2 boxes
+class SwitchSampleBoxesSerializer(serializers.Serializer):
+    first_container_pk = serializers.IntegerField(required=True)  # first container pk
+    first_box_tower = serializers.IntegerField(required=True)
+    first_box_shelf = serializers.IntegerField(required=True)
+    first_box_box = serializers.IntegerField(required=True)
+    first_sample_vposition = serializers.CharField(required=True)
+    first_sample_hposition = serializers.IntegerField(required=True)
+    second_container_pk = serializers.IntegerField(required=True)  # second container pk
+    second_box_tower = serializers.IntegerField(required=True)
+    second_box_shelf = serializers.IntegerField(required=True)
+    second_box_box = serializers.IntegerField(required=True)
+    second_sample_vposition = serializers.CharField(required=True)
+    second_sample_hposition = serializers.IntegerField(required=True)

@@ -2249,6 +2249,107 @@ class SampleSwitchPosition(APIView):
                             status=status.HTTP_400_BAD_REQUEST)
 
 
+# switch samples between 2 boxes
+class SwitchSample(APIView):
+    permission_classes = (permissions.IsAuthenticated, IsInGroupContanier, IsPIorAssistantorOwner,)
+
+    @transaction.atomic
+    def put(self, request):
+        try:
+            serializer = SwitchSampleBoxesSerializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            data = serializer.data
+
+            auth_user = request.user
+            #first container
+            first_container_pk = data.get('first_container_pk', '')
+            first_box_tower = data.get('first_box_tower', '')
+            first_box_shelf = data.get('first_box_shelf', '')
+            first_box_box = data.get('first_box_box', '')
+            first_sample_vposition = data.get('first_sample_vposition', '')
+            first_sample_hposition = data.get('first_sample_hposition', '')
+
+            get_object_or_404(Container, pk=int(first_container_pk))
+            first_box = BoxContainer.objects.all() \
+                .filter(container_id=int(first_container_pk)) \
+                .filter(tower=int(first_box_tower)) \
+                .filter(shelf=int(first_box_shelf)) \
+                .filter(box=int(first_box_box)) \
+                .first()
+            if first_box is None:
+                return Response({'detail': 'first box does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+            # box researcher
+            if not auth_user.is_superuser:
+                first_box_researcher = BoxResearcher.objects.all().filter(box_id=first_box.pk).first()
+                if first_box_researcher is not None:
+                    user = get_object_or_404(User, pk=first_box_researcher.researcher_id)
+                    obj = {'user': user}
+                    self.check_object_permissions(request, obj)  # check the permission
+
+            # second container
+            second_container_pk = data.get('second_container_pk', '')
+            second_box_tower = data.get('second_box_tower', '')
+            second_box_shelf = data.get('second_box_shelf', '')
+            second_box_box = data.get('second_box_box', '')
+            second_sample_vposition = data.get('second_sample_vposition', '')
+            second_sample_hposition = data.get('second_sample_hposition', '')
+
+            get_object_or_404(Container, pk=int(second_container_pk))
+            second_box = BoxContainer.objects.all() \
+                .filter(container_id=int(second_container_pk)) \
+                .filter(tower=int(second_box_tower)) \
+                .filter(shelf=int(second_box_shelf)) \
+                .filter(box=int(second_box_box)) \
+                .first()
+            if second_box is None:
+                return Response({'detail': 'second box does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+
+            # box researcher
+            if not auth_user.is_superuser:
+                second_box_researcher = BoxResearcher.objects.all().filter(box_id=second_box.pk).first()
+                if second_box_researcher is not None:
+                    user = get_object_or_404(User, pk=second_box_researcher.researcher_id)
+                    obj = {'user': user}
+                    self.check_object_permissions(request, obj)  # check the permission
+
+
+            # first sample
+            first_sample = Sample.objects.all().filter(box_id=first_box.pk).filter(
+                        vposition__iexact=first_sample_vposition).filter(
+                        hposition=int(first_sample_hposition)).filter(occupied__iexact=1).first()
+            # second sample
+            second_sample = Sample.objects.all().filter(box_id=second_box.pk).filter(
+                vposition__iexact=second_sample_vposition).filter(
+                hposition=int(second_sample_hposition)).filter(occupied__iexact=1).first()
+            if first_sample is None and second_sample is None:
+                return Response({'detail': 'both samples are not found!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+            # switch box container pk
+            first_box.container_id = second_container_pk
+            first_box.save()
+            second_box.container_id = first_container_pk
+            second_box.save()
+
+            if first_sample is not None:
+                # switch sample box pk
+                first_sample.box_id = second_box.pk
+                first_sample.vposition = second_sample_vposition
+                first_sample.hposition = second_sample_hposition
+                first_sample.save()
+            if second_sample is not None:
+                second_sample.box_id = first_box.pk
+                second_sample.vposition = first_sample_vposition
+                second_sample.hposition = first_sample_hposition
+                second_sample.save()
+            return Response({'detail': 'sample positions switched!'},
+                            status=status.HTTP_200_OK)
+        except:
+            return Response({'detail': 'Something went wrong!'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+
 # sample attachments
 class SampleAttachmentListAlternative(APIView):
     permission_classes = (permissions.IsAuthenticated, IsInGroupContanier, IsPIorAssistantorOwner,)
@@ -2341,7 +2442,7 @@ class SampleAttachmentListAlternative(APIView):
                 if match:
                     pos = match.groups()
                     sample = Sample.objects.all().filter(box_id=box.pk).filter(vposition__iexact=pos[0]).filter(
-                        hposition=pos[1]).first()
+                        hposition=pos[1]).filter(occupied__iexact=1).first()
                     if sample:
                         # need to add attachment
                         serializer = SampleAttachmentSerializer(data=request.data)

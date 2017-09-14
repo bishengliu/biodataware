@@ -5,8 +5,12 @@ from .views import *
 urlpatterns = [
     # ===================================================container list for admin=======================================
     url(r'^$', ContainerList.as_view(), name='containers'),  # container-towers
+
     # move boxes
     url(r'^move_box/$', MoveBox.as_view(), name='container-move_boxes'),
+
+    # swtich samples between 2 boxes
+    url(r'^switch_samples/$', SwitchSample.as_view(), name='container-switch-samples'),
 
     # ===================================================container count for admin======================================
     url(r'^count/$', ContainerCount.as_view(), name='containers-count'),  # container-count
