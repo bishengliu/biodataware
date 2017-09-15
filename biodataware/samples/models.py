@@ -49,6 +49,45 @@ class Sample(models.Model):
     code39 = models.CharField(max_length=50, null=True, blank=True)  # sample
     qrcode = models.CharField(max_length=50, null=True, blank=True)  # sample
 
+    # extra attrs for molecular lab
+    label = models.CharField(max_length=50, null=True, blank=True)
+    tag = models.CharField(max_length=50, null=True, blank=True)
+    official_name = models.CharField(max_length=100, null=True, blank=True)
+    quantity_unit = models.CharField(max_length=20, null=True, blank=True)
+    reference_code = models.CharField(max_length=50, null=True, blank=True)
+
+    # (gRNA) Oligo only
+    oligo_name = models.CharField(max_length=100, null=True, blank=True)
+    s_or_as = models.BooleanField()  # sense or antisense
+    oligo_sequence = models.CharField(max_length=100, null=True, blank=True)
+    oligo_length = models.IntegerField(validators=[MinValueValidator(100)], default=1)  # sample quantity
+    oligo_GC = models.DecimalField(null=True, blank=True)
+    target_sequence = models.CharField(max_length=100, null=True, blank=True)
+
+    # construct only
+    clone_number = models.CharField(max_length=20, null=True, blank=True)
+    against_260_280 = models.DecimalField(null=True, blank=True)
+    feature = models.CharField(max_length=150, null=True, blank=True)
+    r_e_analysis = models.CharField(max_length=50, null=True, blank=True)
+    backbone = models.CharField(max_length=50, null=True, blank=True)
+    insert = models.CharField(max_length=50, null=True, blank=True)
+    first_max = models.CharField(max_length=20, null=True, blank=True)
+    marker = models.CharField(max_length=100, null=True, blank=True)
+    has_glycerol_stock = models.BooleanField()
+    strain = models.CharField(max_length=20, null=True, blank=True)
+
+    # cell line
+    passage_number = models.CharField(max_length=10, null=True, blank=True)
+    project = models.CharField(max_length=10, null=True, blank=True)
+    creator = models.CharField(max_length=10, null=True, blank=True)
+
+    # virus
+    plasmid = models.CharField(max_length=20, null=True, blank=True)
+    titration_titer = models.CharField(max_length=20, null=True, blank=True)
+    titration_unit = models.CharField(max_length=20, null=True, blank=True)
+    titration_cell_type = models.CharField(max_length=20, null=True, blank=True)
+    titration_code = models.CharField(max_length=20, null=True, blank=True)
+
     def position(self):
         return self.vposition + self.hposition
 
@@ -103,3 +142,15 @@ class SampleResearcher(models.Model):
 
     def __str__(self):
         return self.sample.name + ' (' + self.researcher.username + ')'
+
+
+# sample tags
+class SampleTag(models.Model):
+    name = models.CharField(max_length=50)  # attachment label
+    category = models.CharField(max_length=50)  # attachment label
+
+
+# sample drop downs
+class SampleDropdown(models.Model):
+    name = models.CharField(max_length=50)  # attachment label
+    category = models.CharField(max_length=50)  # attachment label
