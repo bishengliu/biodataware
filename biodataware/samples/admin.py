@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Biosystem, Tissue, Sample, SampleAttachment, SampleTissue, SampleResearcher
+from .models import Biosystem, Tissue, Sample, SampleAttachment, SampleTissue, SampleResearcher, SampleTag, SampleDropdown
 from django.utils.safestring import mark_safe
 
 
@@ -208,3 +208,17 @@ class SampleResearcherAdmin(admin.ModelAdmin):
     researcher.short_description = 'Researcher'
 
 admin.site.register(SampleResearcher, SampleResearcherAdmin)
+
+
+# sample tag
+class SampleTagAdmin(admin.ModelAdmin):
+    list_display = ['name', 'category']
+
+admin.site.register(SampleTag, SampleTagAdmin)
+
+
+# sample drop down
+class SampleDropdownAdmin(admin.ModelAdmin):
+    list_display = ['name', 'category']
+
+admin.site.register(SampleDropdown, SampleDropdownAdmin)
