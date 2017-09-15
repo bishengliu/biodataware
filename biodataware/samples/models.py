@@ -58,22 +58,22 @@ class Sample(models.Model):
 
     # (gRNA) Oligo only
     oligo_name = models.CharField(max_length=100, null=True, blank=True)
-    s_or_as = models.BooleanField()  # sense or antisense
+    s_or_as = models.NullBooleanField()  # sense or antisense
     oligo_sequence = models.CharField(max_length=100, null=True, blank=True)
     oligo_length = models.IntegerField(validators=[MinValueValidator(100)], default=1)  # sample quantity
-    oligo_GC = models.DecimalField(null=True, blank=True)
+    oligo_GC = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
     target_sequence = models.CharField(max_length=100, null=True, blank=True)
 
     # construct only
     clone_number = models.CharField(max_length=20, null=True, blank=True)
-    against_260_280 = models.DecimalField(null=True, blank=True)
+    against_260_280 = models.DecimalField(max_digits=3, decimal_places=2, null=True, blank=True)
     feature = models.CharField(max_length=150, null=True, blank=True)
-    r_e_analysis = models.CharField(max_length=50, null=True, blank=True)
+    r_e_analysis = models.CharField(max_length=50, blank=True)
     backbone = models.CharField(max_length=50, null=True, blank=True)
     insert = models.CharField(max_length=50, null=True, blank=True)
     first_max = models.CharField(max_length=20, null=True, blank=True)
     marker = models.CharField(max_length=100, null=True, blank=True)
-    has_glycerol_stock = models.BooleanField()
+    has_glycerol_stock = models.NullBooleanField()
     strain = models.CharField(max_length=20, null=True, blank=True)
 
     # cell line
