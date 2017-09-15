@@ -41,13 +41,16 @@ class Sample(models.Model):
     name = models.CharField(max_length=150)  # sample
     freezing_date = models.DateField()  # sample freezing date
     registration_code = models.CharField(max_length=50, null=True, blank=True)  # sample registration code, such as promas barcode
-    pathology_code = models.CharField(max_length=50, null=True, blank=True)  # sample pathology code
     freezing_code = models.CharField(max_length=50, null=True, blank=True)  # sample freezing code
-    quantity = models.IntegerField(validators=[MinValueValidator(1)], default=1)  # sample quantity
+    # quantity = models.IntegerField(validators=[MinValueValidator(1)], default=1)  # sample quantity
+    quantity = models.DecimalField(max_digits=8, decimal_places=3, null=True, blank=True)  # sample quantity
     type = models.CharField(max_length=200, null=True, blank=True)  # sample type, such as tumor
     description = models.TextField(null=True, blank=True)
     code39 = models.CharField(max_length=50, null=True, blank=True)  # sample
     qrcode = models.CharField(max_length=50, null=True, blank=True)  # sample
+
+    # tissue only
+    pathology_code = models.CharField(max_length=50, null=True, blank=True)  # sample pathology code
 
     # extra attrs for molecular lab
     label = models.CharField(max_length=50, null=True, blank=True)
@@ -78,6 +81,7 @@ class Sample(models.Model):
 
     # cell line
     passage_number = models.CharField(max_length=10, null=True, blank=True)
+    cell_amount = models.CharField(max_length=10, null=True, blank=True)
     project = models.CharField(max_length=10, null=True, blank=True)
     creator = models.CharField(max_length=10, null=True, blank=True)
 
