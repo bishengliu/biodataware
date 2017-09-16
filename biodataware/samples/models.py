@@ -63,7 +63,7 @@ class Sample(models.Model):
     oligo_name = models.CharField(max_length=100, null=True, blank=True)
     s_or_as = models.NullBooleanField()  # sense or antisense
     oligo_sequence = models.CharField(max_length=100, null=True, blank=True)
-    oligo_length = models.IntegerField(validators=[MinValueValidator(100)], default=1)  # sample quantity
+    oligo_length = models.IntegerField(validators=[MinValueValidator(100)], null=True, blank=True)  # sample quantity
     oligo_GC = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
     target_sequence = models.CharField(max_length=100, null=True, blank=True)
 
