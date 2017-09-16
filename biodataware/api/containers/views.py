@@ -1406,6 +1406,7 @@ class BoxLabel(APIView):
             return Response({'detail': 'Something went wrong!'},
                             status=status.HTTP_400_BAD_REQUEST)
 
+
 # move container box
 class MoveBox(APIView):
     permission_classes = (permissions.IsAuthenticated, IsInGroupContanier,)
@@ -3340,3 +3341,13 @@ class SampleColor(APIView):
             return Response({'detail': 'Something went wrong!'},
                             status=status.HTTP_400_BAD_REQUEST)
 
+
+# tags
+class Tags(APIView):
+    permission_classes = (permissions.IsAuthenticated, )
+
+    def get(self, request):
+        pass
+
+    def post(self, request):
+        pass

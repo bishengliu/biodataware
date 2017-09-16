@@ -5,7 +5,7 @@ from django.db.models import Max
 from django.utils.translation import ugettext_lazy as _
 from containers.models import Container, GroupContainer, BoxContainer, BoxResearcher
 from groups.models import Group, GroupResearcher
-from samples.models import SampleAttachment, SampleResearcher, SampleTissue, Sample
+from samples.models import SampleAttachment, SampleResearcher, SampleTissue, Sample, SampleTag
 from django.core.validators import MinValueValidator
 from api.groups.serializers import GroupSerializer, GroupResearcherSerializer
 from api.users.serializers import UserSerializer
@@ -334,3 +334,11 @@ class SwitchSampleBoxesSerializer(serializers.Serializer):
     second_box_box = serializers.IntegerField(required=True)
     second_sample_vposition = serializers.CharField(required=True)
     second_sample_hposition = serializers.IntegerField(required=True)
+
+
+# sample tags
+class SampleTagSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = SampleTag
+        fields = ('name', 'category', 'group_id')
