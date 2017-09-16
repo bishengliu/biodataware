@@ -196,6 +196,8 @@ class BoxSamplesSerializer(serializers.ModelSerializer):
         model = BoxContainer
         fields = ('pk', 'label', 'box_position', 'box_vertical', 'box_horizontal', 'tower', 'shelf', 'box', 'code39', 'qrcode', 'color', 'rate', 'description', 'samples', 'researchers')
 
+# ======for sample =====================
+
 
 class ConatainerSerializer(serializers.ModelSerializer):
     # groups = GroupContainerSerializer(many=True, read_only=True, source='groupcontainer_set')
@@ -238,6 +240,7 @@ class BoxLabelSerializer(serializers.Serializer):
     label = serializers.CharField(required=False)
 
 
+# ######################################################## sample create and edit serializer ##########################################
 # add a new sample
 class SampleCreateSerializer(serializers.Serializer):
     hposition = serializers.RegexField(regex=r'^[0-9]{1,2}$', required=True)  # h position
@@ -295,6 +298,9 @@ class SampleAttachmentEditSerializer(serializers.ModelSerializer):
     class Meta:
         model = SampleAttachment
         fields = ('label', 'attachment', 'description')
+
+
+# ######################################################## sample create and edit serializer ##########################################
 
 
 # move boxes
