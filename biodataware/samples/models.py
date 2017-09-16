@@ -152,6 +152,7 @@ class SampleResearcher(models.Model):
 class SampleTag(models.Model):
     name = models.CharField(max_length=50)  # attachment label
     category = models.CharField(max_length=50)  # attachment label
+    group_id = models.IntegerField(null=True, blank=True) # point to groups
 
 
 # sample drop downs

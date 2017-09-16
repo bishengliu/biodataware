@@ -3347,7 +3347,42 @@ class Tags(APIView):
     permission_classes = (permissions.IsAuthenticated, )
 
     def get(self, request):
-        pass
+        try:
+            user = request.user
+            # super user
+            if user.is_superuser:
+                serializer = SampleTagSerializer(SampleTag.objects.all(), many=True)
+                return Response(serializer.data)
+            # not the super user
+            group_ids = []
+            # I am a PI
+            pi_groups = Group.objects.all().filter(email__iexact=user.email).distinct()
+            if pi_groups is not None:
+                group_ids = [g.pk for g in pi_groups]
+            # get my groups
+            my_groups = GroupResearcher.objects.all().filter(user_id=user.pk)
+            if my_groups:
+                my_group_ids = [g.group_id for g in my_groups]
+                # combine 2 arrays
+                group_ids = list(set(group_ids + my_group_ids))
+            if group_ids:
+                # get tags
+                tags = SampleTag.objects.all().filter(group_id__in=group_ids).distinct()
+                serializer = SampleTagSerializer(tags, many=True)
+                return Response(serializer.data)
+            else:
+                serializer = SampleTagSerializer(SampleTag())
+                return Response(serializer.data)
+        except:
+            return Response({'detail': 'something went wrong!'}, status=status.HTTP_400_BAD_REQUEST)
 
     def post(self, request):
-        pass
+        try:
+            serializer = SampleTagSerializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            data = serializer.data
+            tag = SampleTag(**data)
+            tag.save()
+            return Response({'detail': 'tag saved!'}, status=status.HTTP_200_OK)
+        except:
+            return Response({'detail': 'something went wrong!'}, status=status.HTTP_400_BAD_REQUEST)

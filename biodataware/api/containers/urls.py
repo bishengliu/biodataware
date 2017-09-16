@@ -38,9 +38,7 @@ urlpatterns = [
     # shelf list, number of shelves
     # containers/container_id/12-(tower_id)/ or containers/container_id/12(tower_id)/
     # list all the possible towers in the containers
-    url(r'^(?P<ct_id>[0-9]+)/(?P<id>[0-9]+(\-)*)/$',
-        Tower.as_view(),
-        name='container-tower-shelves'),
+    url(r'^(?P<ct_id>[0-9]+)/(?P<id>[0-9]+(\-)*)/$', Tower.as_view(), name='container-tower-shelves'),
 
 
     # =======================================================shelf details==============================================
