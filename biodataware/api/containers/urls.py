@@ -21,6 +21,8 @@ urlpatterns = [
     # sample tags
     url(r'^tags/$', Tags.as_view(), name='sample_tags'),
 
+    # remove sample attachment
+    url(r'^samples/(?P<sp_id>[0-9]+)/(?P<at_id>[0-9]+)/$', DeleteAttachment.as_view(), name='remove-sample-attachment'),
 
     # ====================================================container detail==============================================
     url(r'^(?P<pk>[0-9]+)/$', ContainerDetail.as_view(), name='container-detail'),

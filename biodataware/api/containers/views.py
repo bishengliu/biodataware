@@ -3386,3 +3386,37 @@ class Tags(APIView):
             return Response({'detail': 'tag saved!'}, status=status.HTTP_200_OK)
         except:
             return Response({'detail': 'something went wrong!'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+# remove sample attachment
+class DeleteAttachment(APIView):
+    permission_classes = (permissions.IsAuthenticated, IsInGroupContanier, IsPIorAssistantorOwner,)
+
+    def put(self, request, sp_id, at_id):
+        try:
+            auth_user = request.user
+            sample = Sample.objects.all().filter(id=int(sp_id)).first()
+            if sample is None:
+                return Response({'detail': 'Sample not found!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+
+            attachment = SampleAttachment.objects.all().filter(id=int(at_id)).first()
+            if attachment is None:
+                return Response({'detail': 'Attachment not found!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+            if auth_user.is_superuser:
+                attachment.delete()
+                return Response({'detail': 'attachment deleted!'},
+                                status=status.HTTP_200_OK)
+            else:
+                # sample researchers
+                sample_researcher = SampleResearcher.objects.all().filter(sample_id=auth_user.pk).first()
+                if sample_researcher is not None:
+                    attachment.delete()
+                    return Response({'detail': 'attachment deleted!'},
+                                    status=status.HTTP_200_OK)
+                return Response({'detail': 'Permission denied!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+        except:
+            return Response({'detail': 'Something went wrong!'},
+                            status=status.HTTP_400_BAD_REQUEST)
