@@ -348,3 +348,10 @@ class SampleTagSerializer(serializers.ModelSerializer):
     class Meta:
         model = SampleTag
         fields = ('name', 'category', 'group_id')
+
+
+# class to upload sample attachment
+class UploadAttacgmentSerializer(serializers.Serializer):
+    # sample_pk = serializers.IntegerField(required=True)  # first container pk
+    label = serializers.CharField(required=False, allow_null=True, allow_blank=True)
+    description = serializers.CharField(required=False, allow_null=True, allow_blank=True)
