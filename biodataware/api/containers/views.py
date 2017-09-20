@@ -1569,7 +1569,6 @@ class AddBox(APIView):
                             status=status.HTTP_400_BAD_REQUEST)
 
 
-########################################################################################################################
 # get, put and delete sample
 class SampleDetailAlternative(APIView):
     permission_classes = (permissions.IsAuthenticated, IsInGroupContanier, IsPIorAssistantorOwner,)
@@ -1595,16 +1594,14 @@ class SampleDetailAlternative(APIView):
                 .filter(shelf=int(sf_id)) \
                 .filter(box=int(bx_id)) \
                 .first()
-            if not box:
+            if box is None:
                 return Response({'detail': 'box does not exist!'},
                                 status=status.HTTP_400_BAD_REQUEST)
             # get box researcher
             box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
-            if box_researcher:
+            if box_researcher is not None:
                 user = get_object_or_404(User, pk=box_researcher.researcher_id)
-                obj = {
-                    'user': user
-                }
+                obj = {'user': user}
                 self.check_object_permissions(request, obj)  # check the permission
                 # find the sample
                 match = re.match(r"([a-z]+)([0-9]+)", sp_id, re.I)
@@ -1612,7 +1609,7 @@ class SampleDetailAlternative(APIView):
                     pos = match.groups()
                     sample = Sample.objects.all().filter(box_id=box.pk).filter(vposition__iexact=pos[0]).filter(
                         hposition=pos[1]).first()
-                    if sample:
+                    if sample is not None:
                         serializer = SampleSerializer(sample)
                         return Response(serializer.data)
                 return Response({'detail': 'sample does not exist!'},
@@ -1645,63 +1642,12 @@ class SampleDetailAlternative(APIView):
                 .filter(shelf=int(sf_id)) \
                 .filter(box=int(bx_id)) \
                 .first()
-            if not box:
+            if box is None:
                 return Response({'detail': 'box does not exist!'},
                                 status=status.HTTP_400_BAD_REQUEST)
             # get box researcher
             box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
-            if box_researcher:
-                user = get_object_or_404(User, pk=box_researcher.researcher_id)
-                obj = {
-                    'user': user
-                }
-                self.check_object_permissions(request, obj)  # check the permission
-                # find the sample
-                match = re.match(r"([a-z]+)([0-9]+)", sp_id, re.I)
-                if match:
-                    pos = match.groups()
-                    sample = Sample.objects.all().filter(box_id=box.pk).filter(vposition__iexact=pos[0]).filter(
-                        hposition=pos[1]).first()
-                    if sample:
-                        sample.delete()
-                        return Response({'detail': 'sample is removed!'},
-                                        status=status.HTTP_200_OK)
-                return Response({'detail': 'sample does not exist!'},
-                                status=status.HTTP_400_BAD_REQUEST)
-            return Response({'detail': 'Permission denied!'},
-                            status=status.HTTP_400_BAD_REQUEST)
-        except:
-            return Response({'detail': 'Something went wrong!'},
-                            status=status.HTTP_400_BAD_REQUEST)
-
-    @transaction.atomic
-    def post(self, request, ct_id, tw_id, sf_id, bx_id, sp_id):
-        try:
-            # get the container
-            container = get_object_or_404(Container, pk=int(ct_id))
-            if int(tw_id) > int(container.tower) or int(tw_id) < 0:
-                return Response({'detail': 'tower does not exist!'},
-                                status=status.HTTP_400_BAD_REQUEST)
-
-            if int(sf_id) > int(container.shelf) or int(sf_id) < 0:
-                return Response({'detail': 'shelf does not exist!'},
-                                status=status.HTTP_400_BAD_REQUEST)
-            if int(bx_id) > int(container.box) or int(bx_id) < 0:
-                return Response({'detail': 'Box does not exist!'},
-                                status=status.HTTP_400_BAD_REQUEST)
-                # box
-            box = BoxContainer.objects.all() \
-                .filter(container_id=int(ct_id)) \
-                .filter(tower=int(tw_id)) \
-                .filter(shelf=int(sf_id)) \
-                .filter(box=int(bx_id)) \
-                .first()
-            if not box:
-                return Response({'detail': 'box does not exist!'},
-                                status=status.HTTP_400_BAD_REQUEST)
-            # get box researcher
-            box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
-            if box_researcher:
+            if box_researcher is not None:
                 user = get_object_or_404(User, pk=box_researcher.researcher_id)
                 obj = {'user': user}
                 self.check_object_permissions(request, obj)  # check the permission
@@ -1711,105 +1657,12 @@ class SampleDetailAlternative(APIView):
                     pos = match.groups()
                     sample = Sample.objects.all().filter(box_id=box.pk).filter(vposition__iexact=pos[0]).filter(
                         hposition=pos[1]).first()
-                    if sample:
-                        serializer = SampleEditSerializer(data=request.data)
-                        serializer.is_valid(raise_exception=True)
-                        data = serializer.data
-                        # sample info
-                        sample.color = data.get('color', '#EEEEEE')
-                        sample.name = data['name']
-                        sample.freezing_date = data.get('freezing_date', datetime.datetime.now())
-                        sample.registration_code = data.get('registration_code', '')
-                        sample.pathology_code = data.get('pathology_code', '')
-                        sample.freezing_code = data.get('freezing_code', '')
-                        sample.quantity = data['quantity']
-                        sample.type = data.get('type', '')
-                        sample.description = data.get('description', '')
-                        sample.save()
-                        # save sample tissue
-                        # separated by '-'
-                        if data.get('system', "") != "" and data.get('tissue', "") != "":
-                            # delete old tissue
-                            old_tissues = SampleTissue.objects.all().filter(sample_id=sample.pk)
-                            if old_tissues:
-                                for t in old_tissues:
-                                    t.delete()
-                            # parse system
-                            if "-" in data.get('system', ""):
-                                system_list = data.get('system', "").split("-")
-                                if "-" in data.get('tissue', ""):
-                                    tissue_list = data.get('tissue', "").split("-")
-                                    if len(system_list) == len(tissue_list):
-                                        # create object
-                                        for s in list(range(len(system_list))):
-                                            # validate the system
-                                            if get_object_or_404(Biosystem, pk=int(system_list[s])):
-                                                if "," in tissue_list[s]:
-                                                    tissue_ids = tissue_list[s].split(",")
-                                                    for t in list(range(len(tissue_ids))):
-                                                        # validate tissue
-                                                        if get_object_or_404(Tissue, pk=int(tissue_ids[t])):
-                                                            SampleTissue.objects.create(
-                                                                sample_id=sample.pk,
-                                                                system_id=int(system_list[s]),
-                                                                tissue_id=int(tissue_ids[t])
-                                                            )
-                                                else:
-                                                    # validate tissue
-                                                    if get_object_or_404(Tissue, pk=int(tissue_list[s])):
-                                                        SampleTissue.objects.create(
-                                                            sample_id=sample.pk,
-                                                            system_id=int(system_list[s]),
-                                                            tissue_id=int(tissue_list[s])
-                                                        )
-                            else:
-                                system_id = int(data.get('system', ""))
-                                if get_object_or_404(Biosystem, pk=system_id):
-                                    if "-" not in data.get('tissue', ""):
-                                        tissue_id = data.get('tissue', "")
-                                        if "," in tissue_id:
-                                            tissue_ids = tissue_id.split(",")
-                                            for t in list(range(len(tissue_ids))):
-                                                # validate tissue
-                                                if get_object_or_404(Tissue, pk=int(tissue_ids[t])):
-                                                    SampleTissue.objects.create(
-                                                        sample_id=sample.pk,
-                                                        system_id=system_id,
-                                                        tissue_id=int(tissue_ids[t])
-                                                    )
-                                        else:
-                                            # validate tissue
-                                            if get_object_or_404(Tissue, pk=int(tissue_id)):
-                                                SampleTissue.objects.create(
-                                                    sample_id=sample.pk,
-                                                    system_id=system_id,
-                                                    tissue_id=int(tissue_id)
-                                                )
-                        # save sample researcher
-                        if data.get('researcher', "") != "":
-                            # delete old_researchers
-                            old_researchers = SampleResearcher.objects.all().filter(sample_id=sample.pk)
-                            if old_researchers:
-                                for r in old_researchers:
-                                    r.delete()
-                            if "," in data.get('researcher', ""):
-                                researchers = data.get('researcher', "").split(",")
-                                for r in list(range(len(researchers))):
-                                    # validate suer
-                                    if get_object_or_404(User, pk=int(researchers[r])):
-                                        SampleResearcher.objects.create(
-                                            sample_id=sample.pk,
-                                            researcher_id=int(researchers[r])
-                                        )
-                            else:
-                                if get_object_or_404(User, pk=int(data.get('researcher', ""))):
-                                    SampleResearcher.objects.create(
-                                        sample_id=sample.pk,
-                                        researcher_id=int(data.get('researcher', ""))
-                                    )
-
-                        return Response({'detail': 'sample saved!'},
+                    if sample is not None:
+                        sample.delete()
+                        return Response({'detail': 'sample is removed!'},
                                         status=status.HTTP_200_OK)
+                return Response({'detail': 'sample does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
             return Response({'detail': 'Permission denied!'},
                             status=status.HTTP_400_BAD_REQUEST)
         except:
@@ -1845,16 +1698,14 @@ class SampleDetail(APIView):
                 .filter(shelf=int(sf_id)) \
                 .filter(box=int(bx_id)) \
                 .first()
-            if not box:
+            if box is None:
                 return Response({'detail': 'box does not exist!'},
                                 status=status.HTTP_400_BAD_REQUEST)
             # get box researcher
             box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
-            if box_researcher:
+            if box_researcher is not None:
                 user = get_object_or_404(User, pk=box_researcher.researcher_id)
-                obj = {
-                    'user': user
-                }
+                obj = {'user': user}
                 self.check_object_permissions(request, obj)  # check the permission
                 # find the sample
                 match = re.match(r"([a-z]+)([0-9]+)", sp_id, re.I)
@@ -1862,7 +1713,7 @@ class SampleDetail(APIView):
                     pos = match.groups()
                     sample = Sample.objects.all().filter(box_id=box.pk).filter(vposition__iexact=pos[0]).filter(
                         hposition=pos[1]).first()
-                    if sample:
+                    if sample is not None:
                         serializer = SampleSerializer(sample)
                         return Response(serializer.data)
                 return Response({'detail': 'sample does not exist!'},
@@ -1898,16 +1749,14 @@ class SampleDetail(APIView):
                 .filter(shelf=int(sf_id)) \
                 .filter(box=int(bx_id)) \
                 .first()
-            if not box:
+            if box is None:
                 return Response({'detail': 'box does not exist!'},
                                 status=status.HTTP_400_BAD_REQUEST)
             # get box researcher
             box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
-            if box_researcher:
+            if box_researcher is not None:
                 user = get_object_or_404(User, pk=box_researcher.researcher_id)
-                obj = {
-                    'user': user
-                }
+                obj = {'user': user}
                 self.check_object_permissions(request, obj)  # check the permission
                 # find the sample
                 match = re.match(r"([a-z]+)([0-9]+)", sp_id, re.I)
@@ -1915,157 +1764,12 @@ class SampleDetail(APIView):
                     pos = match.groups()
                     sample = Sample.objects.all().filter(box_id=box.pk).filter(vposition__iexact=pos[0]).filter(
                         hposition=pos[1]).first()
-                    if sample:
+                    if sample is not None:
                         sample.delete()
                         return Response({'detail': 'sample is removed!'},
                                         status=status.HTTP_200_OK)
                 return Response({'detail': 'sample does not exist!'},
                                 status=status.HTTP_400_BAD_REQUEST)
-            return Response({'detail': 'Permission denied!'},
-                            status=status.HTTP_400_BAD_REQUEST)
-        except:
-            return Response({'detail': 'Something went wrong!'},
-                            status=status.HTTP_400_BAD_REQUEST)
-
-    @transaction.atomic
-    def post(self, request, ct_id, bx_id, sp_id):
-        try:
-            container = get_object_or_404(Container, pk=int(ct_id))
-            id_list = bx_id.split("-")
-            tw_id = int(id_list[0])
-            sf_id = int(id_list[1])
-            bx_id = int(id_list[2])
-            if int(tw_id) > int(container.tower) or int(tw_id) < 0:
-                return Response({'detail': 'tower does not exist!'},
-                                status=status.HTTP_400_BAD_REQUEST)
-
-            if int(sf_id) > int(container.shelf) or int(sf_id) < 0:
-                return Response({'detail': 'shelf does not exist!'},
-                                status=status.HTTP_400_BAD_REQUEST)
-            if int(bx_id) > int(container.box) or int(bx_id) < 0:
-                return Response({'detail': 'Box does not exist!'},
-                                status=status.HTTP_400_BAD_REQUEST)
-            # box
-            box = BoxContainer.objects.all() \
-                .filter(container_id=int(ct_id)) \
-                .filter(tower=int(tw_id)) \
-                .filter(shelf=int(sf_id)) \
-                .filter(box=int(bx_id)) \
-                .first()
-            if not box:
-                return Response({'detail': 'box does not exist!'},
-                                status=status.HTTP_400_BAD_REQUEST)
-            # get box researcher
-            box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
-            if box_researcher:
-                user = get_object_or_404(User, pk=box_researcher.researcher_id)
-                obj = { 'user': user }
-                self.check_object_permissions(request, obj)  # check the permission
-                # find the sample
-                match = re.match(r"([a-z]+)([0-9]+)", sp_id, re.I)
-                if match:
-                    pos = match.groups()
-                    sample = Sample.objects.all().filter(box_id=box.pk).filter(vposition__iexact=pos[0]).filter(
-                        hposition=pos[1]).first()
-                    if sample:
-                        serializer = SampleEditSerializer(data=request.data)
-                        serializer.is_valid(raise_exception=True)
-                        data = serializer.data
-                        # sample info
-                        sample.color = data.get('color', '#EEEEEE')
-                        sample.name = data['name']
-                        sample.freezing_date = data.get('freezing_date', datetime.datetime.now())
-                        sample.registration_code = data.get('registration_code', '')
-                        sample.pathology_code = data.get('pathology_code', '')
-                        sample.freezing_code = data.get('freezing_code', '')
-                        sample.quantity = data['quantity']
-                        sample.type = data.get('type', '')
-                        sample.description = data.get('description', '')
-                        sample.save()
-                        # save sample tissue
-                        # separated by '-'
-                        if data.get('system', "") != "" and data.get('tissue', "") != "":
-                            # delete old tissue
-                            old_tissues = SampleTissue.objects.all().filter(sample_id=sample.pk)
-                            if old_tissues:
-                                for t in old_tissues:
-                                    t.delete()
-                            # parse system
-                            if "-" in data.get('system', ""):
-                                system_list = data.get('system', "").split("-")
-                                if "-" in data.get('tissue', ""):
-                                    tissue_list = data.get('tissue', "").split("-")
-                                    if len(system_list) == len(tissue_list):
-                                        # create object
-                                        for s in list(range(len(system_list))):
-                                            # validate the system
-                                            if get_object_or_404(Biosystem, pk=int(system_list[s])):
-                                                if "," in tissue_list[s]:
-                                                    tissue_ids = tissue_list[s].split(",")
-                                                    for t in list(range(len(tissue_ids))):
-                                                        # validate tissue
-                                                        if get_object_or_404(Tissue, pk=int(tissue_ids[t])):
-                                                            SampleTissue.objects.create(
-                                                                sample_id=sample.pk,
-                                                                system_id=int(system_list[s]),
-                                                                tissue_id=int(tissue_ids[t])
-                                                            )
-                                                else:
-                                                    # validate tissue
-                                                    if get_object_or_404(Tissue, pk=int(tissue_list[s])):
-                                                        SampleTissue.objects.create(
-                                                            sample_id=sample.pk,
-                                                            system_id=int(system_list[s]),
-                                                            tissue_id=int(tissue_list[s])
-                                                        )
-                            else:
-                                system_id = int(data.get('system', ""))
-                                if get_object_or_404(Biosystem, pk=system_id):
-                                    if "-" not in data.get('tissue', ""):
-                                        tissue_id = data.get('tissue', "")
-                                        if "," in tissue_id:
-                                            tissue_ids = tissue_id.split(",")
-                                            for t in list(range(len(tissue_ids))):
-                                                # validate tissue
-                                                if get_object_or_404(Tissue, pk=int(tissue_ids[t])):
-                                                    SampleTissue.objects.create(
-                                                        sample_id=sample.pk,
-                                                        system_id=system_id,
-                                                        tissue_id=int(tissue_ids[t])
-                                                    )
-                                        else:
-                                            # validate tissue
-                                            if get_object_or_404(Tissue, pk=int(tissue_id)):
-                                                SampleTissue.objects.create(
-                                                    sample_id=sample.pk,
-                                                    system_id=system_id,
-                                                    tissue_id=int(tissue_id)
-                                                )
-                        # save sample researcher
-                        if data.get('researcher', "") != "":
-                            # delete old_researchers
-                            old_researchers = SampleResearcher.objects.all().filter(sample_id=sample.pk)
-                            if old_researchers:
-                                for r in old_researchers:
-                                    r.delete()
-                            if "," in data.get('researcher', ""):
-                                researchers = data.get('researcher', "").split(",")
-                                for r in list(range(len(researchers))):
-                                    # validate suer
-                                    if get_object_or_404(User, pk=int(researchers[r])):
-                                        SampleResearcher.objects.create(
-                                            sample_id=sample.pk,
-                                            researcher_id=int(researchers[r])
-                                        )
-                            else:
-                                if get_object_or_404(User, pk=int(data.get('researcher', ""))):
-                                    SampleResearcher.objects.create(
-                                        sample_id=sample.pk,
-                                        researcher_id=int(data.get('researcher', ""))
-                                    )
-
-                        return Response({'detail': 'sample saved!'},
-                                        status=status.HTTP_200_OK)
             return Response({'detail': 'Permission denied!'},
                             status=status.HTTP_400_BAD_REQUEST)
         except:
@@ -2101,7 +1805,7 @@ class SampleDetailUpdate(APIView):
                 .filter(shelf=int(sf_id)) \
                 .filter(box=int(bx_id)) \
                 .first()
-            if not box:
+            if box is None:
                 return Response({'detail': 'box does not exist!'},
                                     status=status.HTTP_400_BAD_REQUEST)
             # get box researcher
@@ -2116,7 +1820,7 @@ class SampleDetailUpdate(APIView):
                     pos = match.groups()
                     sample = Sample.objects.all().filter(box_id=box.pk).filter(vposition__iexact=pos[0]).filter(
                         hposition=pos[1]).first()
-                    if sample:
+                    if sample is not None:
                         data = request.data
                         key = data.get('key', '')
                         value = data.get('value', '')
@@ -2129,9 +1833,6 @@ class SampleDetailUpdate(APIView):
         except:
             return Response({'detail': 'Something went wrong!'},
                             status=status.HTTP_400_BAD_REQUEST)
-
-
-########################################################################################################################
 
 
 # update single sample position
@@ -2428,12 +2129,12 @@ class SampleAttachmentListAlternative(APIView):
                 .filter(shelf=int(sf_id)) \
                 .filter(box=int(bx_id)) \
                 .first()
-            if not box:
+            if box is None:
                 return Response({'detail': 'box does not exist!'},
                                 status=status.HTTP_400_BAD_REQUEST)
             # get box researcher
             box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
-            if box_researcher:
+            if box_researcher is not None:
                 user = get_object_or_404(User, pk=box_researcher.researcher_id)
                 obj = {'user': user }
                 self.check_object_permissions(request, obj)  # check the permission
@@ -2443,7 +2144,7 @@ class SampleAttachmentListAlternative(APIView):
                     pos = match.groups()
                     sample = Sample.objects.all().filter(box_id=box.pk).filter(vposition__iexact=pos[0]).filter(
                         hposition=pos[1]).first()
-                    if sample:
+                    if sample is not None:
                         # get the attachments
                         attachments = SampleAttachment.objects.all().filter(sample_id=sample.pk)
                         serializer = SampleAttachmentSerializer(attachments, many=True)
@@ -2477,12 +2178,12 @@ class SampleAttachmentListAlternative(APIView):
                 .filter(shelf=int(sf_id)) \
                 .filter(box=int(bx_id)) \
                 .first()
-            if not box:
+            if box is not None:
                 return Response({'detail': 'box does not exist!'},
                                 status=status.HTTP_400_BAD_REQUEST)
             # get box researcher
             box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
-            if box_researcher:
+            if box_researcher is not None:
                 user = get_object_or_404(User, pk=box_researcher.researcher_id)
                 obj = {'user': user}
                 self.check_object_permissions(request, obj)  # check the permission
@@ -2492,7 +2193,7 @@ class SampleAttachmentListAlternative(APIView):
                     pos = match.groups()
                     sample = Sample.objects.all().filter(box_id=box.pk).filter(vposition__iexact=pos[0]).filter(
                         hposition=pos[1]).filter(occupied__iexact=1).first()
-                    if sample:
+                    if sample is not None:
                         # need to add attachment
                         serializer = SampleAttachmentSerializer(data=request.data)
                         serializer.is_valid(raise_exception=True)
@@ -2550,12 +2251,12 @@ class SampleAttachmentList(APIView):
                 .filter(shelf=int(sf_id)) \
                 .filter(box=int(bx_id)) \
                 .first()
-            if not box:
+            if box is None:
                 return Response({'detail': 'box does not exist!'},
                                 status=status.HTTP_400_BAD_REQUEST)
             # get box researcher
             box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
-            if box_researcher:
+            if box_researcher is not None:
                 user = get_object_or_404(User, pk=box_researcher.researcher_id)
                 obj = {'user': user}
                 self.check_object_permissions(request, obj)  # check the permission
@@ -2602,12 +2303,12 @@ class SampleAttachmentList(APIView):
                 .filter(shelf=int(sf_id)) \
                 .filter(box=int(bx_id)) \
                 .first()
-            if not box:
+            if box is None:
                 return Response({'detail': 'box does not exist!'},
                                 status=status.HTTP_400_BAD_REQUEST)
             # get box researcher
             box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
-            if box_researcher:
+            if box_researcher is not None:
                 user = get_object_or_404(User, pk=box_researcher.researcher_id)
                 obj = {'user': user}
                 self.check_object_permissions(request, obj)  # check the permission
@@ -2617,7 +2318,7 @@ class SampleAttachmentList(APIView):
                     pos = match.groups()
                     sample = Sample.objects.all().filter(box_id=box.pk).filter(vposition__iexact=pos[0]).filter(
                         hposition=pos[1]).first()
-                    if sample:
+                    if sample is not None:
                         # need to add attachment
                         serializer = SampleAttachmentSerializer(data=request.data)
                         serializer.is_valid(raise_exception=True)
@@ -2669,14 +2370,14 @@ class SampleAttachmentDetailAlternative(APIView):
                 .filter(shelf=int(sf_id)) \
                 .filter(box=int(bx_id)) \
                 .first()
-            if not box:
+            if box is None:
                 return Response({'detail': 'box does not exist!'},
                                 status=status.HTTP_400_BAD_REQUEST)
             # get box researcher
             box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
-            if box_researcher:
+            if box_researcher is not None:
                 user = get_object_or_404(User, pk=box_researcher.researcher_id)
-                obj = { 'user': user}
+                obj = {'user': user}
                 self.check_object_permissions(request, obj)  # check the permission
                 # find the sample
                 match = re.match(r"([a-z]+)([0-9]+)", sp_id, re.I)
@@ -2684,7 +2385,7 @@ class SampleAttachmentDetailAlternative(APIView):
                     pos = match.groups()
                     sample = Sample.objects.all().filter(box_id=box.pk).filter(vposition__iexact=pos[0]).filter(
                         hposition=pos[1]).first()
-                    if sample:
+                    if sample is not None:
                         # get the attachments
                         attachment = get_object_or_404(SampleAttachment, pk=at_id)
                         serializer = SampleAttachmentSerializer(attachment)
@@ -2718,12 +2419,12 @@ class SampleAttachmentDetailAlternative(APIView):
                 .filter(shelf=int(sf_id)) \
                 .filter(box=int(bx_id)) \
                 .first()
-            if not box:
+            if box is None:
                 return Response({'detail': 'box does not exist!'},
                                 status=status.HTTP_400_BAD_REQUEST)
             # get box researcher
             box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
-            if box_researcher:
+            if box_researcher is not None:
                 user = get_object_or_404(User, pk=box_researcher.researcher_id)
                 obj = {'user': user}
                 self.check_object_permissions(request, obj)  # check the permission
@@ -2733,7 +2434,7 @@ class SampleAttachmentDetailAlternative(APIView):
                     pos = match.groups()
                     sample = Sample.objects.all().filter(box_id=box.pk).filter(vposition__iexact=pos[0]).filter(
                         hposition=pos[1]).first()
-                    if sample:
+                    if sample is not None:
                         # get the attachments
                         attachment = get_object_or_404(SampleAttachment, pk=at_id)
                         attachment.delete()
@@ -2768,12 +2469,12 @@ class SampleAttachmentDetailAlternative(APIView):
                 .filter(shelf=int(sf_id)) \
                 .filter(box=int(bx_id)) \
                 .first()
-            if not box:
+            if box is None:
                 return Response({'detail': 'box does not exist!'},
                                 status=status.HTTP_400_BAD_REQUEST)
             # get box researcher
             box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
-            if box_researcher:
+            if box_researcher is not None:
                 user = get_object_or_404(User, pk=box_researcher.researcher_id)
                 obj = {'user': user}
                 self.check_object_permissions(request, obj)  # check the permission
@@ -2783,7 +2484,7 @@ class SampleAttachmentDetailAlternative(APIView):
                     pos = match.groups()
                     sample = Sample.objects.all().filter(box_id=box.pk).filter(vposition__iexact=pos[0]).filter(
                         hposition=pos[1]).first()
-                    if sample:
+                    if sample is not None:
                         # get the attachments
                         attachment = get_object_or_404(SampleAttachment, pk=at_id)
                         serializer = SampleAttachmentEditSerializer(data=request.data)
@@ -2832,16 +2533,14 @@ class SampleAttachmentDetail(APIView):
                 .filter(shelf=int(sf_id)) \
                 .filter(box=int(bx_id)) \
                 .first()
-            if not box:
+            if box is None:
                 return Response({'detail': 'box does not exist!'},
                                 status=status.HTTP_400_BAD_REQUEST)
             # get box researcher
             box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
-            if box_researcher:
+            if box_researcher is not None:
                 user = get_object_or_404(User, pk=box_researcher.researcher_id)
-                obj = {
-                    'user': user
-                }
+                obj = {'user': user}
                 self.check_object_permissions(request, obj)  # check the permission
                 # find the sample
                 match = re.match(r"([a-z]+)([0-9]+)", sp_id, re.I)
@@ -2849,7 +2548,7 @@ class SampleAttachmentDetail(APIView):
                     pos = match.groups()
                     sample = Sample.objects.all().filter(box_id=box.pk).filter(vposition__iexact=pos[0]).filter(
                         hposition=pos[1]).first()
-                    if sample:
+                    if sample is not None:
                         attachment = get_object_or_404(SampleAttachment, pk=at_id)
                         serializer = SampleAttachmentSerializer(attachment)
                         return Response(serializer.data)
@@ -2885,16 +2584,14 @@ class SampleAttachmentDetail(APIView):
                 .filter(shelf=int(sf_id)) \
                 .filter(box=int(bx_id)) \
                 .first()
-            if not box:
+            if box is None:
                 return Response({'detail': 'box does not exist!'},
                                 status=status.HTTP_400_BAD_REQUEST)
             # get box researcher
             box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
-            if box_researcher:
+            if box_researcher is not None:
                 user = get_object_or_404(User, pk=box_researcher.researcher_id)
-                obj = {
-                    'user': user
-                }
+                obj = {'user': user}
                 self.check_object_permissions(request, obj)  # check the permission
                 # find the sample
                 match = re.match(r"([a-z]+)([0-9]+)", sp_id, re.I)
@@ -2902,7 +2599,7 @@ class SampleAttachmentDetail(APIView):
                     pos = match.groups()
                     sample = Sample.objects.all().filter(box_id=box.pk).filter(vposition__iexact=pos[0]).filter(
                         hposition=pos[1]).first()
-                    if sample:
+                    if sample is not None:
                         attachment = get_object_or_404(SampleAttachment, pk=at_id)
                         attachment.delete()
                         return Response({'detail': 'sample attachment deleted!'},
@@ -2939,14 +2636,14 @@ class SampleAttachmentDetail(APIView):
                 .filter(shelf=int(sf_id)) \
                 .filter(box=int(bx_id)) \
                 .first()
-            if not box:
+            if box is None:
                 return Response({'detail': 'box does not exist!'},
                                 status=status.HTTP_400_BAD_REQUEST)
             # get box researcher
             box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
-            if box_researcher:
+            if box_researcher is not None:
                 user = get_object_or_404(User, pk=box_researcher.researcher_id)
-                obj = {  'user': user  }
+                obj = {'user': user}
                 self.check_object_permissions(request, obj)  # check the permission
                 # find the sample
                 match = re.match(r"([a-z]+)([0-9]+)", sp_id, re.I)
@@ -2954,7 +2651,7 @@ class SampleAttachmentDetail(APIView):
                     pos = match.groups()
                     sample = Sample.objects.all().filter(box_id=box.pk).filter(vposition__iexact=pos[0]).filter(
                         hposition=pos[1]).first()
-                    if sample:
+                    if sample is not None:
                         # get the attachments
                         attachment = get_object_or_404(SampleAttachment, pk=at_id)
                         serializer = SampleAttachmentEditSerializer(data=request.data)
