@@ -2131,6 +2131,9 @@ class SampleDetailUpdate(APIView):
                             status=status.HTTP_400_BAD_REQUEST)
 
 
+########################################################################################################################
+
+
 # update single sample position
 class UpdateSamplePosition(APIView):
     permission_classes = (permissions.IsAuthenticated, IsInGroupContanier, IsPIorAssistantorOwner,)
@@ -2432,9 +2435,7 @@ class SampleAttachmentListAlternative(APIView):
             box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
             if box_researcher:
                 user = get_object_or_404(User, pk=box_researcher.researcher_id)
-                obj = {
-                    'user': user
-                }
+                obj = {'user': user }
                 self.check_object_permissions(request, obj)  # check the permission
                 # find the sample
                 match = re.match(r"([a-z]+)([0-9]+)", sp_id, re.I)
@@ -2483,9 +2484,7 @@ class SampleAttachmentListAlternative(APIView):
             box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
             if box_researcher:
                 user = get_object_or_404(User, pk=box_researcher.researcher_id)
-                obj = {
-                    'user': user
-                }
+                obj = {'user': user}
                 self.check_object_permissions(request, obj)  # check the permission
                 # find the sample
                 match = re.match(r"([a-z]+)([0-9]+)", sp_id, re.I)
@@ -2558,9 +2557,7 @@ class SampleAttachmentList(APIView):
             box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
             if box_researcher:
                 user = get_object_or_404(User, pk=box_researcher.researcher_id)
-                obj = {
-                    'user': user
-                }
+                obj = {'user': user}
                 self.check_object_permissions(request, obj)  # check the permission
                 # find the sample
                 match = re.match(r"([a-z]+)([0-9]+)", sp_id, re.I)
@@ -2679,9 +2676,7 @@ class SampleAttachmentDetailAlternative(APIView):
             box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
             if box_researcher:
                 user = get_object_or_404(User, pk=box_researcher.researcher_id)
-                obj = {
-                    'user': user
-                }
+                obj = { 'user': user}
                 self.check_object_permissions(request, obj)  # check the permission
                 # find the sample
                 match = re.match(r"([a-z]+)([0-9]+)", sp_id, re.I)
@@ -2730,9 +2725,7 @@ class SampleAttachmentDetailAlternative(APIView):
             box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
             if box_researcher:
                 user = get_object_or_404(User, pk=box_researcher.researcher_id)
-                obj = {
-                    'user': user
-                }
+                obj = {'user': user}
                 self.check_object_permissions(request, obj)  # check the permission
                 # find the sample
                 match = re.match(r"([a-z]+)([0-9]+)", sp_id, re.I)
@@ -2782,9 +2775,7 @@ class SampleAttachmentDetailAlternative(APIView):
             box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
             if box_researcher:
                 user = get_object_or_404(User, pk=box_researcher.researcher_id)
-                obj = {
-                    'user': user
-                }
+                obj = {'user': user}
                 self.check_object_permissions(request, obj)  # check the permission
                 # find the sample
                 match = re.match(r"([a-z]+)([0-9]+)", sp_id, re.I)
