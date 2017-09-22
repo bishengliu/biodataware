@@ -9,7 +9,7 @@ from django.dispatch.dispatcher import receiver
 from django.contrib.auth import get_user_model
 
 
-# bio-system model
+# bio-system model, not used anymore
 class Biosystem(models.Model):
     system = models.CharField(max_length=100, unique=True)
     description = models.TextField(null=True, blank=True)
@@ -18,7 +18,7 @@ class Biosystem(models.Model):
         return self.system
 
 
-# bio tissue
+# bio tissue, not used anymore
 class Tissue(models.Model):
     tissue = models.CharField(max_length=100, unique=True)
     description = models.TextField(null=True, blank=True)
@@ -130,7 +130,7 @@ def sample_attachment_delete(sender, instance, **kwargs):
         instance.attachment.delete(False)
 
 
-# sample to tissue
+# sample to tissue, not used anymore
 class SampleTissue(models.Model):
     sample = models.ForeignKey(Sample, on_delete=models.CASCADE)
     system = models.ForeignKey(Biosystem, on_delete=models.CASCADE)

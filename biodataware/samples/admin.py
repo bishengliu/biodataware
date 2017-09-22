@@ -3,14 +3,15 @@ from .models import Biosystem, Tissue, Sample, SampleAttachment, SampleTissue, S
 from django.utils.safestring import mark_safe
 
 
-# register biosystem
+# register biosystem, not used anymore
+
 class BiosystemAdmin(admin.ModelAdmin):
     list_display = ['system', 'description']
 
 admin.site.register(Biosystem, BiosystemAdmin)
 
 
-# register Tissue
+# register Tissue, not used anymore
 class TissueAdmin(admin.ModelAdmin):
     list_display = ['tissue', 'description']
 
@@ -146,7 +147,7 @@ class SampleAttachmentAdmin(admin.ModelAdmin):
 admin.site.register(SampleAttachment, SampleAttachmentAdmin)
 
 
-# register SampleTissue
+# register SampleTissue, not used anymore
 class SampleTissueAdmin(admin.ModelAdmin):
     list_display = ['container_box', 'sample', 'system', 'tissue']
 
