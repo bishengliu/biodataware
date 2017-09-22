@@ -170,7 +170,7 @@ class SampleResearcherSerializer(serializers.ModelSerializer):
 class SampleSerializer(serializers.ModelSerializer):
     box = serializers.StringRelatedField()
     attachments = SampleAttachmentSerializer(many=True, read_only=True, source='sampleattachment_set')
-    tissues = SampleTissueSerializer(many=True, read_only=True, source='sampletissue_set')
+    #tissues = SampleTissueSerializer(many=True, read_only=True, source='sampletissue_set')
     # researchers = SampleResearcherSerializer(many=True, read_only=True, source='sampleresearcher_set')
     researchers = UserSerializer(many=True, read_only=True, source='researcher_objs')
 
@@ -184,7 +184,7 @@ class SampleSerializer(serializers.ModelSerializer):
                   'oligo_sequence', 'oligo_length', 'oligo_GC', 'target_sequence', 'clone_number', 'against_260_280',
                   'feature', 'r_e_analysis', 'backbone', 'insert', 'first_max', 'marker', 'has_glycerol_stock',
                   'strain', 'passage_number', 'cell_amount', 'project', 'creator', 'plasmid', 'titration_titer',
-                  'titration_unit', 'titration_cell_type', 'titration_code')
+                  'titration_unit', 'titration_cell_type', 'titration_code', 'tissue')
 
 
 class BoxSamplesSerializer(serializers.ModelSerializer):
@@ -240,7 +240,7 @@ class BoxLabelSerializer(serializers.Serializer):
     label = serializers.CharField(required=False)
 
 
-# ######################################################## sample create and edit serializer ##########################################
+# ######################################################## sample create and edit serializer ###########################
 # add a new sample
 class SampleCreateSerializer(serializers.Serializer):
     hposition = serializers.RegexField(regex=r'^[0-9]{1,2}$', required=True)  # h position
@@ -261,11 +261,11 @@ class SampleCreateSerializer(serializers.Serializer):
     attachment_description = serializers.CharField(required=False, allow_null=True, allow_blank=True)
 
     # tissues
-    system = serializers.CharField(required=False, allow_null=True, allow_blank=True)  # 1-2
+    # system = serializers.CharField(required=False, allow_null=True, allow_blank=True)  # 1-2
     tissue = serializers.CharField(required=False, allow_null=True, allow_blank=True)  # 2,4,5-2,3,4
 
     # researcher
-    researcher = serializers.CharField(required=False, allow_null=True, allow_blank=True) # 1,2,3
+    # researcher = serializers.CharField(required=False, allow_null=True, allow_blank=True) # 1,2,3
 
 
 # edit sample info
@@ -285,11 +285,11 @@ class SampleEditSerializer(serializers.Serializer):
     description = serializers.CharField(required=False, allow_null=True, allow_blank=True)
 
     # tissues
-    system = serializers.CharField(required=False, allow_null=True, allow_blank=True)  # 1-2
+    # system = serializers.CharField(required=False, allow_null=True, allow_blank=True)  # 1-2
     tissue = serializers.CharField(required=False, allow_null=True, allow_blank=True)  # 2,4,5-2,3,4
 
     # researcher
-    researcher = serializers.CharField(required=False, allow_null=True, allow_blank=True)  # 1,2,3
+    # researcher = serializers.CharField(required=False, allow_null=True, allow_blank=True)  # 1,2,3
 
 
 # edit sample attachment

@@ -51,6 +51,7 @@ class Sample(models.Model):
 
     # tissue only
     pathology_code = models.CharField(max_length=50, null=True, blank=True)  # sample pathology code
+    tissue = models.CharField(max_length=50, null=True, blank=True)  # sample
 
     # extra attrs for molecular lab
     label = models.CharField(max_length=50, null=True, blank=True)
