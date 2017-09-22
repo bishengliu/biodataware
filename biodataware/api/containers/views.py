@@ -873,6 +873,7 @@ class BoxAlternative(APIView):
 
 # box and sample list
 class Box(APIView):
+    parser_classes = (JSONParser, FormParser, MultiPartParser,)
     permission_classes = (permissions.IsAuthenticated, IsInGroupContanier, IsPIorAssistantorOwner,)
 
     def get(self, request, ct_id, id, format=None):
@@ -947,7 +948,7 @@ class Box(APIView):
                 .filter(shelf=int(sf_id)) \
                 .filter(box=int(bx_id)) \
                 .first()
-            if not box:
+            if box is None:
                 return Response({'detail': 'box does not exist!'},
                                 status=status.HTTP_400_BAD_REQUEST)
             # get box researcher
@@ -974,7 +975,28 @@ class Box(APIView):
     @transaction.atomic
     def post(self, request, ct_id, id, format=None):
         try:
-            authUser = request.user
+            user = request.user
+            if not user.is_superuser:
+                self.check_object_permissions(request, {'user': user})  # check the permission
+            # parse data
+            form_data = dict(request.data)
+            # slots
+            slots = json.loads(form_data['slots'][0])
+            # check upload photo
+            has_attachment = False
+            if 'file' in form_data.keys():
+                has_attachment = True
+                attachment_info = json.loads(form_data['attachment_info'][0])
+                attachment_serializer = SampleAttachmentInfoSerializer(data=attachment_info, partial=True)
+                attachment_serializer.is_valid(raise_exception=True)
+                attachment_data = attachment_serializer.data
+            # form model data and load into dict
+            sample_obj = json.loads(form_data['obj'][0])
+
+            serializer = SampleCreateSerializer(data=sample_obj, partial=True)
+            serializer.is_valid(raise_exception=True)
+            data = serializer.data
+
             container = get_object_or_404(Container, pk=int(ct_id))
             id_list = id.split("-")
             tw_id = int(id_list[0])
@@ -983,7 +1005,6 @@ class Box(APIView):
             if int(tw_id) > int(container.tower) or int(tw_id) < 0:
                 return Response({'detail': 'tower does not exist!'},
                                 status=status.HTTP_400_BAD_REQUEST)
-
             if int(sf_id) > int(container.shelf) or int(sf_id) < 0:
                 return Response({'detail': 'shelf does not exist!'},
                                 status=status.HTTP_400_BAD_REQUEST)
@@ -997,89 +1018,98 @@ class Box(APIView):
                 .filter(shelf=int(sf_id)) \
                 .filter(box=int(bx_id)) \
                 .first()
-            if not box:
+            if box is None:
                 return Response({'detail': 'box does not exist!'},
                                 status=status.HTTP_400_BAD_REQUEST)
-            # get box researcher
-            box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
-            if authUser.is_superuser or box_researcher:
-                user = get_object_or_404(User, pk=box_researcher.researcher_id)
-                obj = {'user': user}
-                if not authUser.is_superuser:
-                    self.check_object_permissions(request, obj)  # check the permission
-                serializer = SampleCreateSerializer(data=request.data)
-                serializer.is_valid(raise_exception=True)
-                data = serializer.data
-                # check whether the position of the sample has already be occupied
-                if Sample.objects.all().filter(box_id=box.pk).filter(hposition=data.get("hposition", "")).filter(
-                        vposition=data.get("vposition", "")).filter(occupied=True):
-                    return Response({'detail': 'Sample position has already been taken!'},
-                                    status=status.HTTP_400_BAD_REQUEST)
-                    # save sample
-                sample = Sample.objects.create(
-                    box_id=box.pk,
-                    hposition=data['hposition'],
-                    vposition=data['vposition'],
-                    color=data.get('color', '#EEEEEE'),
-                    name=data['name'],
-                    occupied=True,
-                    date_in=datetime.datetime.now(),
-                    freezing_date=data.get('freezing_date', datetime.datetime.now()),
-                    registration_code=data.get('registration_code', ''),
-                    pathology_code=data.get('pathology_code', ''),
-                    freezing_code=data.get('freezing_code', ''),
-                    quantity=data['quantity'],
-                    type=data.get('type', ''),
-                    description=data.get('description', ''),
-                    tissue=data.get('tissue', "")
-                )
-                # save sample attachments
-                # separated by '|'
-                if data.get('label', "") != "":
-                    if "|" in data.get('label', "") and "|" in data.get("attachment_description", ""):
-                        labels = data.get('label', "").split("|")
-                        descriptions = data.get("attachment_description", "").split("|")
-                        if len(labels) == len(descriptions):
-                            for l in list(range(len(labels))):
-                                SampleAttachment.objects.create(
-                                    sample_id=sample.pk,
-                                    label=labels[l],
-                                    description=descriptions[l],
-                                    # attachment name=attachment0, 1, 2...
-                                    attachment=request.FILES['attachment' + str(l)] if (
-                                    request.FILES and request.FILES['attachment' + str(l)]) else None
-                                )
-                    else:
-                        SampleAttachment.objects.create(
-                            sample_id=sample.pk,
-                            label=data.get('label', ""),
-                            description=data.get("attachment_description", ""),
-                            attachment=request.FILES['attachment'] if (
-                            request.FILES and request.FILES['attachment']) else None
-                        )
+            if not user.is_superuser:
+                # get box researcher
+                box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
+                if box_researcher is not None:
+                    box_user = get_object_or_404(User, pk=box_researcher.researcher_id)
+                    self.check_object_permissions(request, {'user': box_user})
 
-                # save sample researcher
-                if data.get('researcher', "") != "":
-                    if "," in data.get('researcher', ""):
-                        researchers = data.get('researcher', "").split(",")
-                        for r in list(range(len(researchers))):
-                            # validate suer
-                            if get_object_or_404(User, pk=int(researchers[r])):
-                                SampleResearcher.objects.create(
-                                    sample_id=sample.pk,
-                                    researcher_id=int(researchers[r])
-                                )
-                    else:
-                        if get_object_or_404(User, pk=int(data.get('researcher', ""))):
+            # loop slots
+            for slot in slots:
+                sampleAttachment = SampleAttachment()
+                try:
+                    match = re.match(r"([a-z]+)([0-9]+)", slot, re.I)
+                    if match:
+                        pos = match.groups()
+                        sample = Sample.objects.all().filter(box_id=box.pk).filter(vposition__iexact=pos[0]).filter(
+                            hposition=pos[1]).filter(occupied=True).first()
+                        if sample is None:
+                            sample = Sample.objects.create(
+                                box_id=box.pk,
+                                hposition=pos[1],
+                                vposition=pos[0],
+                                color=data.get('color', '#EEEEEE'),
+                                type=data.get('type', 'GENERAL'),
+                                name=data.get('name'),
+                                official_name=data.get('official_name', ''),
+                                label=data.get('label', ''),
+                                tag=data.get('tag', ''),
+                                occupied=True,
+                                date_in=datetime.datetime.now(),
+                                freezing_date=data.get('freezing_date', datetime.datetime.now()),
+                                registration_code=data.get('registration_code', ''),
+                                freezing_code=data.get('freezing_code', ''),
+                                quantity=data.get('quantity'),
+                                quantity_unit=data.get('quantity_unit', ''),
+                                reference_code=data.get('reference_code', ''),
+                                description=data.get('description', ''),
+                                # tissue
+                                pathology_code=data.get('pathology_code', ''),
+                                tissue=data.get('tissue', ""),
+
+                                # (gRNA) Oligo only
+                                oligo_name=data.get('oligo_name', ""),
+                                s_or_as=data.get('s_or_as'),
+                                oligo_sequence=data.get('oligo_sequence', ""),
+                                oligo_length=data.get('oligo_length'),
+                                oligo_GC=data.get('oligo_GC'),
+                                target_sequence=data.get('target_sequence', ""),
+
+                                # construct only
+                                clone_number=data.get('clone_number', ""),
+                                against_260_280=data.get('against_260_280'),
+                                feature=data.get('feature', ""),
+                                r_e_analysis=data.get('r_e_analysis', ""),
+                                backbone=data.get('backbone', ""),
+                                insert=data.get('insert', ""),
+                                first_max=data.get('first_max', ""),
+                                marker=data.get('marker', ""),
+                                has_glycerol_stock=data.get('has_glycerol_stock'),
+                                strain=data.get('strain', ""),
+                                # cell line
+                                passage_number=data.get('passage_number', ""),
+                                cell_amount=data.get('cell_amount', ""),
+                                project=data.get('project', ""),
+                                creator=data.get('creator', ""),
+
+                                # virus
+                                plasmid=data.get('plasmid', ""),
+                                titration_titer=data.get('titration_titer', ""),
+                                titration_unit=data.get('titration_unit', ""),
+                                titration_cell_type=data.get('titration_cell_type', ""),
+                                titration_code=data.get('titration_code', "")
+                            )
+
                             SampleResearcher.objects.create(
                                 sample_id=sample.pk,
                                 researcher_id=int(data.get('researcher', ""))
                             )
 
-                return Response({'detail': 'sample saved!'},
-                                status=status.HTTP_200_OK)
-            return Response({'detail': 'Permission denied!'},
-                            status=status.HTTP_400_BAD_REQUEST)
+                            # save sample attachments
+                            if has_attachment:
+                                sampleAttachment.sample_pk = sample.pk
+                                attachment_name = attachment_data.get('attachment_name')
+                                sampleAttachment.label = attachment_data.get('label', attachment_name)
+                                sampleAttachment.description = attachment_data.get('description', attachment_name)
+                                sampleAttachment.save()
+                except:
+                    if has_attachment and sampleAttachment.attachment:
+                        sampleAttachment.attachment.delete()
+            return Response({'detail': 'samples saved!'}, status=status.HTTP_200_OK)
         except:
             return Response({'detail': 'Something went wrong!'},
                             status=status.HTTP_400_BAD_REQUEST)

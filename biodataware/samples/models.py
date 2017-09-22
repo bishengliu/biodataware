@@ -72,7 +72,7 @@ class Sample(models.Model):
     clone_number = models.CharField(max_length=20, null=True, blank=True)
     against_260_280 = models.DecimalField(max_digits=3, decimal_places=2, null=True, blank=True)
     feature = models.CharField(max_length=150, null=True, blank=True)
-    r_e_analysis = models.CharField(max_length=50, blank=True)
+    r_e_analysis = models.CharField(max_length=50, null=True, blank=True)
     backbone = models.CharField(max_length=50, null=True, blank=True)
     insert = models.CharField(max_length=50, null=True, blank=True)
     first_max = models.CharField(max_length=20, null=True, blank=True)

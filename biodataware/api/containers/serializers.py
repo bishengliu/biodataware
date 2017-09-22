@@ -241,54 +241,66 @@ class BoxLabelSerializer(serializers.Serializer):
 
 # ######################################################## sample create and edit serializer ###########################
 # add a new sample
+
 class SampleCreateSerializer(serializers.Serializer):
-    hposition = serializers.RegexField(regex=r'^[0-9]{1,2}$', required=True)  # h position
-    vposition = serializers.RegexField(regex=r'^[a-zA-Z]$', required=True)  # v position
     color = serializers.RegexField(regex=r'^#[0-9a-fA-F]{6}$', required=False)  # color of the position
     name = serializers.CharField(max_length=150)  # sample
-    freezing_date = serializers.DateField()  # sample freezing date
-    registration_code = serializers.CharField(max_length=50, required=False, allow_null=True, allow_blank=True)  # sample registration code, such as promas barcode
-    pathology_code = serializers.CharField(max_length=50, required=False, allow_null=True, allow_blank=True)  # sample pathology code
-    freezing_code = serializers.CharField(max_length=50, required=False, allow_null=True, allow_blank=True)  # sample freezing code
-    quantity = serializers.IntegerField(validators=[MinValueValidator(1)], default=1)  # sample quantity
-    type = serializers.CharField(max_length=200, required=False, allow_null=True, allow_blank=True)  # sample type, such as tumor
-    description = serializers.CharField(required=False, allow_null=True, allow_blank=True)
-
-    # attachment only one file is allowed
-    label = serializers.CharField(required=False, allow_null=True, allow_blank=True)  # attachment label
-    attachment = serializers.FileField(required=False, allow_null=True, allow_empty_file=True, max_length=100)
-    attachment_description = serializers.CharField(required=False, allow_null=True, allow_blank=True)
-
-    # tissues
-    # system = serializers.CharField(required=False, allow_null=True, allow_blank=True)  # 1-2
-    tissue = serializers.CharField(required=False, allow_null=True, allow_blank=True)  # 2,4,5-2,3,4
-
-    # researcher
-    # researcher = serializers.CharField(required=False, allow_null=True, allow_blank=True) # 1,2,3
-
-
-# edit sample info
-class SampleEditSerializer(serializers.Serializer):
-    color = serializers.RegexField(regex=r'^#[0-9a-fA-F]{6}$', required=False)  # color of the position
-    name = serializers.CharField(max_length=150)  # sample
+    type = serializers.CharField(max_length=50)  # type
     freezing_date = serializers.DateField()  # sample freezing date
     registration_code = serializers.CharField(max_length=50, required=False, allow_null=True,
                                               allow_blank=True)  # sample registration code, such as promas barcode
-    pathology_code = serializers.CharField(max_length=50, required=False, allow_null=True,
-                                           allow_blank=True)  # sample pathology code
     freezing_code = serializers.CharField(max_length=50, required=False, allow_null=True,
                                           allow_blank=True)  # sample freezing code
-    quantity = serializers.IntegerField(validators=[MinValueValidator(1)], default=1)  # sample quantity
-    type = serializers.CharField(max_length=200, required=False, allow_null=True,
-                                 allow_blank=True)  # sample type, such as tumor
+    quantity = serializers.DecimalField(max_digits=8, decimal_places=3, required=False, allow_null=True)  # sample quantity
     description = serializers.CharField(required=False, allow_null=True, allow_blank=True)
+    # extra attrs
+    official_name = serializers.CharField(max_length=20, required=False, allow_null=True, allow_blank=True)
+    label = serializers.CharField(max_length=20, required=False, allow_null=True, allow_blank=True)
+    tag = serializers.CharField(max_length=20, required=False, allow_null=True, allow_blank=True)
+    quantity_unit = serializers.CharField(max_length=20, required=False, allow_null=True, allow_blank=True)
+    reference_code = serializers.CharField(max_length=20, required=False, allow_null=True, allow_blank=True)
 
-    # tissues
-    # system = serializers.CharField(required=False, allow_null=True, allow_blank=True)  # 1-2
-    tissue = serializers.CharField(required=False, allow_null=True, allow_blank=True)  # 2,4,5-2,3,4
+    # tissue only
+    pathology_code = serializers.CharField(max_length=50, required=False, allow_null=True, allow_blank=True)  # sample pathology code
+    tissue = serializers.CharField(required=False, allow_null=True, allow_blank=True)
 
-    # researcher
-    # researcher = serializers.CharField(required=False, allow_null=True, allow_blank=True)  # 1,2,3
+    # (gRNA) Oligo only
+    oligo_name = serializers.CharField(max_length=100, required=False, allow_null=True, allow_blank=True)
+    s_or_as = serializers.NullBooleanField()  # sense or antisense
+    oligo_sequence = serializers.CharField(max_length=50, required=False, allow_null=True, allow_blank=True)
+    oligo_length = serializers.IntegerField(required=False, allow_null=True)  # sample quantity
+    oligo_GC = serializers.DecimalField(max_digits=5, decimal_places=2, allow_null=True, required=False)
+    target_sequence = serializers.CharField(max_length=50, required=False, allow_null=True, allow_blank=True)
+
+    # construct only
+    clone_number = serializers.CharField(max_length=20, required=False, allow_null=True, allow_blank=True)
+    against_260_280 = serializers.DecimalField(max_digits=3, decimal_places=2, required=False, allow_null=True)
+    feature = serializers.CharField(max_length=150, required=False, allow_null=True, allow_blank=True)
+    r_e_analysis = serializers.CharField(max_length=50, required=False, allow_null=True, allow_blank=True)
+    backbone = serializers.CharField(max_length=50, required=False, allow_null=True, allow_blank=True)
+    insert = serializers.CharField(max_length=50, required=False, allow_null=True, allow_blank=True)
+    first_max = serializers.CharField(max_length=20, required=False, allow_null=True, allow_blank=True)
+    marker = serializers.CharField(max_length=100, required=False, allow_null=True, allow_blank=True)
+    has_glycerol_stock = serializers.NullBooleanField()
+    strain = serializers.CharField(max_length=20, required=False, allow_null=True, allow_blank=True)
+    # cell line
+    passage_number = serializers.CharField(max_length=10, required=False, allow_null=True, allow_blank=True)
+    cell_amount = serializers.CharField(max_length=10, required=False, allow_null=True, allow_blank=True)
+    project = serializers.CharField(max_length=10, required=False, allow_null=True, allow_blank=True)
+    creator = serializers.CharField(max_length=10, required=False, allow_null=True, allow_blank=True)
+
+    # virus
+    plasmid = serializers.CharField(max_length=20, required=False, allow_null=True, allow_blank=True)
+    titration_titer = serializers.CharField(max_length=20, required=False, allow_null=True, allow_blank=True)
+    titration_unit = serializers.CharField(max_length=20, required=False, allow_null=True, allow_blank=True)
+    titration_cell_type = serializers.CharField(max_length=20, required=False, allow_null=True, allow_blank=True)
+    titration_code = serializers.CharField(max_length=20, required=False, allow_null=True, allow_blank=True)
+
+
+class SampleAttachmentInfoSerializer(serializers.Serializer):
+    label = serializers.CharField(max_length=100, required=False, allow_null=True, allow_blank=True)  # sample
+    attachment_name = serializers.CharField(max_length=100, required=False, allow_null=True, allow_blank=True)  # sample
+    description = serializers.CharField(required=False, allow_null=True, allow_blank=True)
 
 
 # edit sample attachment
