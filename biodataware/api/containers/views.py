@@ -1096,7 +1096,7 @@ class Box(APIView):
 
                             SampleResearcher.objects.create(
                                 sample_id=sample.pk,
-                                researcher_id=int(data.get('researcher', ""))
+                                researcher_id=user.pk
                             )
 
                             # save sample attachments
