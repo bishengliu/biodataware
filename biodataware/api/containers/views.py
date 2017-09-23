@@ -1030,7 +1030,7 @@ class Box(APIView):
 
             # loop slots
             # for return the pk of stored ids
-            added_samples = []
+            saved_slots = []
             for slot in slots:
                 sampleAttachment = SampleAttachment()
                 try:
@@ -1110,13 +1110,13 @@ class Box(APIView):
                                 sampleAttachment.description = attachment_data.get('description', attachment_name)
                                 sampleAttachment.save()
 
-                            # append stored samples
-                            added_samples.append(sample)
+                            # append stored slots
+                            saved_slots.append(slot)
                 except:
                     if has_attachment and sampleAttachment.attachment:
                         sampleAttachment.attachment.delete()
-            sample_serializer = SampleSerializer(added_samples, many=True)
-            return Response(sample_serializer.data)
+            return Response({'slots': ','.join(saved_slots)},
+                            status=status.HTTP_200_OK)
         except:
             return Response({'detail': 'Something went wrong!'},
                             status=status.HTTP_400_BAD_REQUEST)
