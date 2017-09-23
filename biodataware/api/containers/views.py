@@ -1029,6 +1029,8 @@ class Box(APIView):
                     self.check_object_permissions(request, {'user': box_user})
 
             # loop slots
+            # for return the pk of stored ids
+            added_samples = []
             for slot in slots:
                 sampleAttachment = SampleAttachment()
                 try:
@@ -1107,10 +1109,14 @@ class Box(APIView):
                                 sampleAttachment.label = attachment_data.get('label', attachment_name)
                                 sampleAttachment.description = attachment_data.get('description', attachment_name)
                                 sampleAttachment.save()
+
+                            # append stored samples
+                            added_samples.append(sample)
                 except:
                     if has_attachment and sampleAttachment.attachment:
                         sampleAttachment.attachment.delete()
-            return Response({'detail': 'samples saved!'}, status=status.HTTP_200_OK)
+            sample_serializer = SampleSerializer(added_samples, many=True)
+            return Response(sample_serializer.data)
         except:
             return Response({'detail': 'Something went wrong!'},
                             status=status.HTTP_400_BAD_REQUEST)
