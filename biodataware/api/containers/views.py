@@ -1102,6 +1102,7 @@ class Box(APIView):
                             # save sample attachments
                             if has_attachment:
                                 sampleAttachment.sample_id = sample.pk
+                                sampleAttachment.attachment = form_data['file'][0]
                                 attachment_name = attachment_data.get('attachment_name')
                                 sampleAttachment.label = attachment_data.get('label', attachment_name)
                                 sampleAttachment.description = attachment_data.get('description', attachment_name)
