@@ -60,6 +60,8 @@ urlpatterns = [
     # quick get the box list
     # group boxes in on container
     url(r'^(?P<ct_id>[0-9]+)/boxes/$',  ContainerBoxList.as_view(), name='container-boxes'),
+    # get my group all the favorite boxes
+    url(r'^(?P<ct_id>[0-9]+)/favorite_boxes/$',  ContainerFavoriteBoxList.as_view(), name='container-boxes'),
     # all the boxes in a container, including boxes of other groups
     url(r'^(?P<ct_id>[0-9]+)/all_boxes/$',  ContainerAllBoxList.as_view(), name='container-all_boxes'),
 

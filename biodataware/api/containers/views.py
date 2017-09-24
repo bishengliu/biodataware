@@ -653,6 +653,42 @@ class ContainerBoxList(APIView):
                             status=status.HTTP_400_BAD_REQUEST)
 
 
+# get group favorite boxes
+class ContainerFavoriteBoxList(APIView):
+    permission_classes = (permissions.IsAuthenticated, IsInGroupContanier,)
+
+    def get(self, request, ct_id, format=None):
+        user = request.user
+        # get the container
+        container = get_object_or_404(Container, pk=ct_id)
+        obj = {
+            'user': user,
+            'container': container
+        }
+        if not user.is_superuser:
+            self.check_object_permissions(request, obj)  # check the permission
+        try:
+            # get the boxes
+            if user.is_superuser:
+                container = get_object_or_404(Container, pk=int(ct_id))
+                boxes = BoxContainer.objects.all().filter(container_id=container.pk).filter(rate__gte=1)
+                serializer = BoxSamplesSerializer(boxes, many=True)
+                return Response(serializer.data)
+            else:
+                # get only the boxes of the group(s)
+                # get the current group id
+                groupresearchers = GroupResearcher.object.all().filter(user_id=user.pk)
+                group_ids = [g.group_id for g in groupresearchers]
+                container = get_object_or_404(Container, pk=int(ct_id))
+                boxes = BoxContainer.objects.all().filter(container_id=container.pk).filter(
+                    boxresearcher_set__researcher_id__in=group_ids).filter(rate__gte=1)
+                serializer = BoxSamplesSerializer(boxes, many=True)
+                return Response(serializer.data)
+        except:
+            return Response({'detail': 'Something went wrong!'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+
 # get all the boxes in a container, including the boxes of othe groups
 class ContainerAllBoxList(APIView):
     permission_classes = (permissions.IsAuthenticated, )
