@@ -39,8 +39,8 @@ class ContainerList(APIView):
                 groupresearchers = GroupResearcher.object.all().filter(user_id=user.pk)
                 group_ids = [g.group_id for g in groupresearchers]
                 containers = Container.objects.all().fillter(groupcontainer_set__group_id__in=group_ids)
-            serializer = ConatainerSerializer(containers, many=True)
-            return Response(serializer.data)
+                serializer = ConatainerSerializer(containers, many=True)
+                return Response(serializer.data)
         except:
             return Response({'detail': 'Something went wrong!'},
                             status=status.HTTP_400_BAD_REQUEST)

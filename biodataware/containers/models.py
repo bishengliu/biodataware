@@ -42,6 +42,11 @@ class Container(models.Model):
                 return groups
         return None
 
+    def has_box(self):
+        if self.boxcontainer_set is not None and self.boxcontainer_set.count() > 0:
+            return True
+        return False
+
 
 # containers to groups
 class GroupContainer(models.Model):
