@@ -297,6 +297,31 @@ class SampleCreateSerializer(serializers.Serializer):
     titration_code = serializers.CharField(max_length=20, required=False, allow_null=True, allow_blank=True)
 
 
+# search samples
+class SearchSampleSerializer(serializers.Serializer):
+    container = serializers.IntegerField(required=True)
+    type = serializers.CharField(required=True)
+    occupied = serializers.IntegerField(required=True)
+    name = serializers.CharField(required=False, allow_null=True, allow_blank=True)
+    label = serializers.CharField(required=False, allow_null=True, allow_blank=True)
+    tag = serializers.CharField(required=False, allow_null=True, allow_blank=True)
+    registration_code = serializers.CharField(required=False, allow_null=True, allow_blank=True)
+    freezing_code = serializers.CharField(required=False, allow_null=True, allow_blank=True)
+    freezing_date_from = serializers.DateField(required=False, allow_null=True, input_formats=settings.DATE_INPUT_FORMATS)
+    freezing_date_to = serializers.DateField(required=False, allow_null=True, input_formats=settings.DATE_INPUT_FORMATS)
+    feature = serializers.CharField(required=False, allow_null=True, allow_blank=True)
+    backbone = serializers.CharField(required=False, allow_null=True, allow_blank=True)
+    insert = serializers.CharField(required=False, allow_null=True, allow_blank=True)
+    marker = serializers.CharField(required=False, allow_null=True, allow_blank=True)
+    oligo_name = serializers.CharField(required=False, allow_null=True, allow_blank=True)
+    oligo_length_from = serializers.IntegerField(required=False, allow_null=True)
+    oligo_length_to = serializers.IntegerField(required=False, allow_null=True)
+    plasmid = serializers.CharField(required=False, allow_null=True, allow_blank=True)
+    titration_code = serializers.CharField(required=False, allow_null=True, allow_blank=True)
+    pathology_code = serializers.CharField(required=False, allow_null=True, allow_blank=True)
+    tissue = serializers.CharField(required=False, allow_null=True, allow_blank=True)
+
+
 class SampleAttachmentInfoSerializer(serializers.Serializer):
     label = serializers.CharField(max_length=100, required=False, allow_null=True, allow_blank=True)  # sample
     attachment_name = serializers.CharField(max_length=100, required=False, allow_null=True, allow_blank=True)  # sample

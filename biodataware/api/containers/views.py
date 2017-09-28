@@ -3124,3 +3124,60 @@ class UploadAttachment(APIView):
                 sample_attachment.attachment.delete()
             return Response({'detail': 'Something went wrong, sample attachment not uploaded!'},
                             status=status.HTTP_400_BAD_REQUEST)
+
+
+# search samples
+class SearchSamples(APIView):
+    permission_classes = (permissions.IsAuthenticated, IsInGroupContanier, )
+
+    def post(self, request):
+        try:
+            serializer = SearchSampleSerializer(data=request.data, partial=True)
+            serializer.is_valid(raise_exception=True)
+            data = serializer.data
+            # generate kwargs
+            kwargs ={}
+            # container
+            container = data.get('container', -1)
+
+            type = data.get('type', 'GENERAL')
+            occupied = data.get('oligo_length_from', 1)
+
+
+            name = data.get('name', "")
+            label = data.get('label', '')
+            tag = data.get('tag', '')
+
+            freezing_date_from = data.get('freezing_date_from', "")
+            freezing_date_to = data.get('freezing_date_to', "")
+
+            registration_code = data.get('registration_code', '')
+            freezing_code = data.get('freezing_code', '')
+            reference_code = data.get('reference_code', '')
+
+            # tissue
+            pathology_code = data.get('pathology_code', '')
+            tissue = data.get('tissue', "")
+
+            # (gRNA) Oligo only
+            oligo_name = data.get('oligo_name', "")
+            oligo_length_from = data.get('oligo_length_from', -1)
+            oligo_length_to = data.get('oligo_length_to', -1)
+            # construct only
+            feature = data.get('feature', "")
+            backbone = data.get('backbone', "")
+            insert = data.get('insert', "")
+            marker = data.get('marker', "")
+
+
+            # virus
+            plasmid = data.get('plasmid', "")
+            titration_code = data.get('titration_code', "")
+
+
+
+            return Response({'detail': 'sample not found!'},
+                            status=status.HTTP_200_OK)
+        except:
+            return Response({'detail': 'Something went wrong, search is not performed!'},
+                            status=status.HTTP_400_BAD_REQUEST)

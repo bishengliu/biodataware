@@ -18,6 +18,9 @@ urlpatterns = [
     # find container info
     url(r'^search/$', ContainerSearch.as_view(), name='user_search'),
 
+    # search samples
+    url(r'^search_samples/$', SearchSamples.as_view(), name='search_samples'),
+
     # sample tags
     url(r'^tags/$', Tags.as_view(), name='sample_tags'),
 
