@@ -306,6 +306,7 @@ class SearchSampleSerializer(serializers.Serializer):
     label = serializers.CharField(required=False, allow_null=True, allow_blank=True)
     tag = serializers.CharField(required=False, allow_null=True, allow_blank=True)
     registration_code = serializers.CharField(required=False, allow_null=True, allow_blank=True)
+    reference_code = serializers.CharField(required=False, allow_null=True, allow_blank=True)
     freezing_code = serializers.CharField(required=False, allow_null=True, allow_blank=True)
     freezing_date_from = serializers.DateField(required=False, allow_null=True, input_formats=settings.DATE_INPUT_FORMATS)
     freezing_date_to = serializers.DateField(required=False, allow_null=True, input_formats=settings.DATE_INPUT_FORMATS)
