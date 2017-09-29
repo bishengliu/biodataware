@@ -183,7 +183,7 @@ class SampleSerializer(serializers.ModelSerializer):
                   'oligo_sequence', 'oligo_length', 'oligo_GC', 'target_sequence', 'clone_number', 'against_260_280',
                   'feature', 'r_e_analysis', 'backbone', 'insert', 'first_max', 'marker', 'has_glycerol_stock',
                   'strain', 'passage_number', 'cell_amount', 'project', 'creator', 'plasmid', 'titration_titer',
-                  'titration_unit', 'titration_cell_type', 'titration_code', 'tissue', 'container_id')
+                  'titration_unit', 'titration_cell_type', 'titration_code', 'tissue', 'container_id', 'container')
 
 
 class BoxSamplesSerializer(serializers.ModelSerializer):

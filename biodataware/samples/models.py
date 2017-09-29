@@ -114,6 +114,8 @@ class Sample(models.Model):
     def container_id(self):
         return self.box.container_id
 
+    def container(self):
+        return self.box.container.name
 
 # sample attachment
 class SampleAttachment(models.Model):
