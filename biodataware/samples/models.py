@@ -111,6 +111,9 @@ class Sample(models.Model):
                 return users
         return None
 
+    def container_id(self):
+        return self.box.container_id
+
 
 # sample attachment
 class SampleAttachment(models.Model):
