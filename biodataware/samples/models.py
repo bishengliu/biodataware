@@ -117,6 +117,9 @@ class Sample(models.Model):
     def container(self):
         return self.box.container.name
 
+    def box_position(self):
+        return str(self.box.tower) + '-' + str(self.box.shelf) + '-' + str(self.box.box)
+
 # sample attachment
 class SampleAttachment(models.Model):
     sample = models.ForeignKey(Sample, on_delete=models.CASCADE)
