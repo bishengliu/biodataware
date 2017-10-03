@@ -183,7 +183,6 @@ DATE_INPUT_FORMATS = [
 
 LOGIN_URL = '/login'
 
-DEFAULT_FROM_EMAIL = 'b.liu@nki.nl'
 
 BIO_ADMIN = [
     'b.liu@nki.nl',
@@ -225,3 +224,21 @@ CORS_ALLOW_HEADERS = (
     'x-csrftoken',
     'x-requested-with',
 )
+
+SITE_NAME = 'localhost'
+
+SITE_PROTOCOL = 'http'
+
+DEFAULT_FROM_EMAIL = 'b.liu@nki.nl'
+
+'''
+# smtp server
+EMAIL_USE_TLS = True
+DEFAULT_FROM_EMAIL = 'test@gmail.com'
+SERVER_EMAIL = 'test@gmail.com'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'test@gmail.com'
+EMAIL_HOST_PASSWORD = 'test123##'
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+'''

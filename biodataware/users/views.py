@@ -197,11 +197,11 @@ class ResetPasswordView(View):
                 c = {
                     'email': email,
                     'domain': request.META['HTTP_HOST'],
-                    'site_name': 'localhost',
+                    'site_name': settings.SITE_NAME,
                     'uid': urlsafe_base64_encode(force_bytes(user.pk)),
                     'user': user,
                     'token': default_token_generator.make_token(user),
-                    'protocol': 'http',
+                    'protocol': settings.SITE_PROTOCOL,
                 }
                 email_template_name = 'users/password_reset_email.html'
                 subject = 'Password reset on ' + 'localhost'

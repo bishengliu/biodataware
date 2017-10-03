@@ -35,3 +35,19 @@ REST_FRAMEWORK = {
         #'rest_framework.authentication.SessionAuthentication', # session on the same server
     )
 }
+
+
+'''
+EMAIL_USE_TLS = True
+DEFAULT_FROM_EMAIL = 'test@gmail.com'
+SERVER_EMAIL = 'test@gmail.com'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'test@gmail.com'
+EMAIL_HOST_PASSWORD = 'test123##'
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+'''
+
+SITE_NAME = 'bioku.nl'
+SITE_PROTOCOL = 'http'
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # During development only

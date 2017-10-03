@@ -55,5 +55,6 @@ EMAIL_HOST_USER = 'test@gmail.com'
 EMAIL_HOST_PASSWORD = 'test123##'
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 '''
-
+SITE_NAME = 'localhost'
+SITE_PROTOCOL = 'http'
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # During development only
