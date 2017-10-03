@@ -4,10 +4,17 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.db import transaction
 from django.utils.translation import ugettext_lazy as _
-from .forms import RegistrationForm, LoginForm, UserForm, ProfileForm, PasswordForm
+from .forms import RegistrationForm, LoginForm, UserForm, ProfileForm, PasswordForm, ResetPassword, NewPassword
 from .models import User, Profile
 from django.contrib.auth.mixins import LoginRequiredMixin
 from rest_framework.authtoken.models import Token
+from django.conf import settings
+
+from django.core.mail import send_mail
+from django.utils.encoding import force_bytes
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.contrib.auth.tokens import default_token_generator
+from django.template import loader
 
 
 # register user
@@ -168,3 +175,81 @@ class PasswordView(LoginRequiredMixin, View):
             return redirect('home:index')
         else:
             return render(request, self.template_name, {'form': form})
+
+
+# forget password
+class ResetPasswordView(View):
+    form_class = ResetPassword
+    template_name = "users/users-reset_password.html"
+
+    def get(self, request):
+        form = self.form_class(None)
+        return render(request, self.template_name, {'form': form})
+
+    def post(self, request):
+        form = self.form_class(request.POST)
+
+        if form.is_valid():
+            email = form.cleaned_data["email"]
+            # find the user
+            user = User.objects.get(email__iexact=email)
+            if user is not None:
+                c = {
+                    'email': email,
+                    'domain': request.META['HTTP_HOST'],
+                    'site_name': 'localhost',
+                    'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+                    'user': user,
+                    'token': default_token_generator.make_token(user),
+                    'protocol': 'http',
+                }
+                email_template_name = 'users/password_reset_email.html'
+                subject = 'Password reset on ' + 'localhost'
+                # Email subject *must not* contain newlines
+                subject = ''.join(subject.splitlines())
+                email = loader.render_to_string(email_template_name, c)
+                messages.success(request,
+                                 _('Email has been sent to ' + email + "'s email address. Please check its inbox to continue reseting password."))
+                send_mail(subject, email, settings.DEFAULT_FROM_EMAIL, [user.email], fail_silently=False)
+                return redirect('reset_done')
+        messages.error(request, _('Something went wrong, please try again!'))
+        return render(request, self.template_name, {'form': form})
+
+
+# reset new password
+class ResetPasswordConfirmView(View):
+
+    form_class = NewPassword
+    template_name = "users/users-reset_password_confirm.html"
+
+    def get(self, request, uidb64=None, token=None, *arg, **kwargs):
+        form = self.form_class(None)
+        return render(request, self.template_name, {'form': form})
+
+    def post(self, request, uidb64=None, token=None, *arg, **kwargs):
+        form = self.form_class(request.POST)
+
+        if form.is_valid():
+            assert uidb64 is not None and token is not None  # checked by URLconf
+            try:
+                uid = urlsafe_base64_decode(uidb64)
+                user = User.objects.get(pk=uid)
+            except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+                user = None
+
+            if user is not None and default_token_generator.check_token(user, token):
+                new_password = form.cleaned_data['password1']
+                user.set_password(new_password)
+                user.save()
+                # new token
+                token, created = Token.objects.get_or_create(user=user)
+                token.delete()
+                Token.objects.create(user=user)  # create token
+                messages.success(request, _('Password has been reset. Please login with the new password!'))
+                return redirect('login')
+            else:
+                messages.error(request, _('The reset password link is no longer valid.'))
+                return self.form_invalid(form)
+        else:
+            messages.error(request, _('Password reset failed, please try again.'))
+            return self.form_invalid(form)

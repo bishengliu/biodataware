@@ -191,3 +191,49 @@ class PasswordForm(forms.Form):
                 self.add_error('password1', _(msg))
                 raise forms.ValidationError(_(msg))
         return self.cleaned_data
+
+
+# forget password
+class ResetPassword(forms.Form):
+    email = forms.EmailField(
+        widget=forms.TextInput(attrs=dict(required=True, max_length=30), ),
+        label=_("Email"))
+
+    # validate email
+    def clean_email(self):
+        try:
+            user = User.objects.get(email__iexact=self.cleaned_data['email'])
+            if user is not None:
+                return self.cleaned_data['email']
+            else:
+                raise forms.ValidationError(_('The email not found. Please try another one.'))
+        except:
+            raise forms.ValidationError(_('The email not found. Please try another one.'))
+
+
+# reset password
+class NewPassword(forms.Form):
+    password1 = forms.CharField(
+        widget=forms.PasswordInput(attrs=dict(required=True, max_length=30, render_value=False), ),
+        label=_("New Password"))
+    password2 = forms.CharField(
+        widget=forms.PasswordInput(attrs=dict(required=True, max_length=30, render_value=False), ),
+        label=_("New Password (again)"))
+
+    # validate password1/2
+    def clean(self):
+        super(NewPassword, self).clean()
+        if 'password1' in self.cleaned_data and 'password2' in self.cleaned_data:
+            if self.cleaned_data.get('password1') != self.cleaned_data.get('password2'):
+                msg = "The two password fields did not match."
+                self.add_error('password1', _(msg))
+                self.add_error('password2', _(msg))
+                raise forms.ValidationError(_(msg))
+
+            password_pattern = re.compile("^(?=.*[A-Z])(?=.*[a-z].*[a-z])(?=.*[0-9].*[0-9]).{8,}$")
+            if not password_pattern.search(self.cleaned_data.get('password1')):
+                msg = "Password contains at least: " \
+                      "1 uppercase letter, 2 lowercase letters, 2 digits and must be longer than 8 characters."
+                self.add_error('password1', _(msg))
+                raise forms.ValidationError(_(msg))
+        return self.cleaned_data

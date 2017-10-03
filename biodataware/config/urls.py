@@ -48,7 +48,18 @@ urlpatterns = [
         view=users_view.LoginView.as_view(),
         name='login'
     ),
-
+    # forgot password
+    url(
+        regex=r'^reset$',
+        view=users_view.ResetPasswordView.as_view(),
+        name='reset'
+    ),
+    url(
+        regex=r'^/reset_confirm/(?P<uidb64>[0-9A-Za-z]+)-(?P<token>.+)/$',
+        view=users_view.ResetPasswordConfirmView.as_view(),
+        name='reset_password_confirm'
+    ),
+    # r'^reset/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$
     # REST
     url(r'^api/', include('api.urls', namespace='api'))
 

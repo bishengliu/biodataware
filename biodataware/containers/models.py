@@ -90,7 +90,6 @@ class BoxContainer(models.Model):
                 return users
         return None
 
-
 # boxes assigned to the group
 class BoxResearcher(models.Model):
     box = models.ForeignKey(BoxContainer, on_delete=models.CASCADE)

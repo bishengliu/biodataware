@@ -183,6 +183,8 @@ DATE_INPUT_FORMATS = [
 
 LOGIN_URL = '/login'
 
+DEFAULT_FROM_EMAIL = 'b.liu@nki.nl'
+
 BIO_ADMIN = [
     'b.liu@nki.nl',
     'bishengliu36@gmail.com'
