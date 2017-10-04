@@ -435,3 +435,35 @@ class ResetPassword(APIView):
             return Response({'detail': 'not matched user!'}, status=status.HTTP_400_BAD_REQUEST)
         except:
             return Response({'detail': 'reset password failed!'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+# confirm reset password
+class ConfirmResetPassword(APIView):
+    def post(self, request, uidb64=None, token=None):
+        try:
+            serializer = ConfirmResetPasswordSerializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            data = serializer.data
+            assert uidb64 is not None and token is not None  # checked by URLconf
+            try:
+                uid = urlsafe_base64_decode(uidb64)
+                user = User.objects.get(pk=uid)
+            except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+                user = None
+
+            if user is not None and default_token_generator.check_token(user, token):
+                new_password = data.get('new_password1', '')
+                user.set_password(new_password)
+                user.save()
+                # new token
+                token, created = Token.objects.get_or_create(user=user)
+                token.delete()
+                Token.objects.create(user=user)  # create token
+                return Response({'detail': 'password reset!'}, status=status.HTTP_200_OK)
+            else:
+                return Response({'detail': 'reset password failed!'}, status=status.HTTP_400_BAD_REQUEST)
+
+        except:
+            return Response({'detail': 'reset password failed!'}, status=status.HTTP_400_BAD_REQUEST)
+
+

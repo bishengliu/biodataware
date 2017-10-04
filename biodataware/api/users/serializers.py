@@ -150,3 +150,33 @@ class ResetPasswordSerializer(serializers.Serializer):
     email = serializers.EmailField(required=True, allow_blank=False)
     url = serializers.CharField(required=True, allow_blank=False)
     default_from_email = serializers.EmailField(required=True, allow_blank=False)
+
+
+# conform reset password
+class ConfirmResetPasswordSerializer(serializers.Serializer):
+    new_password1 = serializers.CharField(required=True, allow_blank=False)
+    new_password2 = serializers.CharField(required=True, allow_blank=False)
+
+    def validate_new_password1(self, value):
+        password_pattern = re.compile("^(?=.*[A-Z])(?=.*[a-z].*[a-z])(?=.*[0-9].*[0-9]).{8,}$")
+        msg = _("Password contains at least: " \
+              "1 uppercase letter, 2 lowercase letters, 2 digits and must be longer than 8 characters.")
+        if not password_pattern.search(value):
+            raise serializers.ValidationError(msg)
+        return value
+
+    def validate_new_password2(self, value):
+        password_pattern = re.compile("^(?=.*[A-Z])(?=.*[a-z].*[a-z])(?=.*[0-9].*[0-9]).{8,}$")
+        msg = _("Password contains at least: " \
+              "1 uppercase letter, 2 lowercase letters, 2 digits and must be longer than 8 characters.")
+        if not password_pattern.search(value):
+            raise serializers.ValidationError(msg)
+        return value
+
+    def validate(self, data):
+        try:
+            if data['new_password1'] == data['new_password2']:
+                return data
+            raise serializers.ValidationError(_("passwords don't match!"))
+        except:
+            raise serializers.ValidationError(_("passwords don't match!"))
