@@ -1,5 +1,5 @@
 from django.conf.urls import url
-from .views import UserList, UserCount, UserDetail, GetMyToken, ObtainToken, UserPassword, UserRoleDetail, UserRoleDelete, Register, Logout, AuthUserDetail, UserImage, UserSearch
+from .views import UserList, UserCount, UserDetail, GetMyToken, ObtainToken, UserPassword, UserRoleDetail, UserRoleDelete, Register, Logout, AuthUserDetail, UserImage, UserSearch, ResetPassword
 
 
 urlpatterns = [
@@ -37,4 +37,10 @@ urlpatterns = [
 
     # logout
     url(r'^logout/$', Logout.as_view(), name='logout'),
+
+    # request reset password
+    url(r'^reset_password/$', ResetPassword.as_view(), name='api-reset-password'),
+
+    # request reset password confirm
+    url(r'^reset_password/$', ResetPassword.as_view(), name='api_reset_password_confirm'),
 ]

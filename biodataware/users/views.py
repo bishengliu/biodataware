@@ -211,7 +211,7 @@ class ResetPasswordView(View):
                 messages.success(request,
                                  _('Email has been sent to ' + email + "'s email address. Please check its inbox to continue reseting password."))
                 send_mail(subject, email, settings.DEFAULT_FROM_EMAIL, [user.email], fail_silently=False)
-                return redirect('reset_done')
+                return redirect('login')
         messages.error(request, _('Something went wrong, please try again!'))
         return render(request, self.template_name, {'form': form})
 

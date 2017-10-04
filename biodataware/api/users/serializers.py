@@ -143,3 +143,10 @@ class UserCreateSerializer(serializers.Serializer):
 class LoginSerializer(serializers.Serializer):
     username = serializers.RegexField(regex=r'^\w+$', required=True)
     password = serializers.CharField(required=True, max_length=30)
+
+
+# request reset password
+class ResetPasswordSerializer(serializers.Serializer):
+    email = serializers.EmailField(required=True, allow_blank=False)
+    url = serializers.CharField(required=True, allow_blank=False)
+    default_from_email = serializers.EmailField(required=True, allow_blank=False)
