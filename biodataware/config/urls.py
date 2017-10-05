@@ -55,7 +55,7 @@ urlpatterns = [
         name='reset'
     ),
     url(
-        regex=r'^/reset_confirm/(?P<uidb64>[0-9A-Za-z]+)-(?P<token>.+)/$',
+        regex=r'^reset_confirm/(?P<uidb64>[0-9A-Za-z]+)-(?P<token>.+)/$',
         view=users_view.ResetPasswordConfirmView.as_view(),
         name='reset_password_confirm'
     ),
