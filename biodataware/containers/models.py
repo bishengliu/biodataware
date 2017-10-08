@@ -47,6 +47,11 @@ class Container(models.Model):
             return True
         return False
 
+    def first_container_box(self):
+        if self.boxcontainer_set is not None and self.boxcontainer_set.count() > 0:
+            return self.boxcontainer_set.first()
+        return None
+
 
 # containers to groups
 class GroupContainer(models.Model):
@@ -89,6 +94,7 @@ class BoxContainer(models.Model):
                 users = User.objects.all().filter(pk__in=user_ids)
                 return users
         return None
+
 
 # boxes assigned to the group
 class BoxResearcher(models.Model):
