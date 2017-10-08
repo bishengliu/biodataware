@@ -203,7 +203,7 @@ class ConatainerSerializer(serializers.ModelSerializer):
     groups = GroupSerializer(many=True, read_only=True, source='group_objs')
 
     # boxes no samples
-    # boxes = BoxContainerSerializer(many=True, read_only=True, source='boxcontainer_set')
+    boxes = BoxContainerSerializer(many=True, read_only=True, source='boxcontainer_set')
 
     # boxes with samples
     # add this to the fields: , 'boxes'
@@ -212,7 +212,7 @@ class ConatainerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Container
         fields = ('pk', 'name', 'room', 'photo', 'photo_tag', 'temperature', 'code39', 'qrcode', 'tower', 'shelf',
-        'box', 'description', 'groups', 'has_box')
+        'box', 'description', 'groups', 'has_box', 'boxes')
 
 # sample color
 class SampleColorSerializer(serializers.Serializer):
