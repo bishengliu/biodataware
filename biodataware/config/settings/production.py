@@ -21,6 +21,12 @@ ALLOWED_HOSTS = ['*']
 MESSAGE_LEVEL = 10  # DEBUG
 
 
+# https://github.com/ottoyiu/django-cors-headers/#configuration
+# cors rest api request
+CORS_ORIGIN_WHITELIST = (
+    'http://localhost'
+)
+
 # restful
 REST_FRAMEWORK = {
     # Use Django's standard `django.contrib.auth` permissions,
@@ -51,3 +57,19 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 SITE_NAME = 'bioku.nl'
 SITE_PROTOCOL = 'http'
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # During development only
+
+
+# DATABASE
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'bioku_test',
+        'USER': 'bioku',
+        'PASSWORD': 'bioku',
+        'HOST': 'localhost',
+        'PORT': '',
+    }
+}
+
+# for development
+SITE_ID = 1

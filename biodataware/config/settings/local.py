@@ -58,3 +58,16 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 SITE_NAME = 'localhost'
 SITE_PROTOCOL = 'http'
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # During development only
+
+
+# DATABASE
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'bioku_test',
+        'USER': 'bioku',
+        'PASSWORD': 'bioku',
+        'HOST': 'localhost',
+        'PORT': '3306',
+    }
+}
