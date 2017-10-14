@@ -7,10 +7,10 @@ SOCKFILE=/usr/share/nginx/html/biodataware/run/gunicorn.sock        # we will co
 USER=bioku                                        # the user to run as (*)
 GROUP=bioku                                     # the group to run as (*)
 NUM_WORKERS=1                                     #  how many worker processes should Gunicorn spawn (*)
-DJANGO_SETTINGS_MODULE=config.settings.production             # which settings file should Django use (*)
-DJANGO_WSGI_MODULE=config.wsgi                     # WSGI module name (*)
+DJANGO_SETTINGS_MODULE=config.settings.test       # which settings file should Django use (*)
+DJANGO_WSGI_MODULE=config.wsgi_test                     # WSGI module name (*)
 
-echo "Starting $NAME as `whoami`"
+echo "Starting $NAME as `whoami`, the server must be run by user: $USER !"
 
 # Activate the virtual environment
 cd $DJANGODIR

@@ -10,7 +10,7 @@ NUM_WORKERS=1                                     #  how many worker processes s
 DJANGO_SETTINGS_MODULE=config.settings.production             # which settings file should Django use (*)
 DJANGO_WSGI_MODULE=config.wsgi                     # WSGI module name (*)
 
-echo "Starting $NAME as `whoami`"
+echo "Starting $NAME as `whoami`, the server must be run by user: $USER !"
 
 # Activate the virtual environment
 cd $DJANGODIR
