@@ -23,9 +23,10 @@ MESSAGE_LEVEL = 10  # DEBUG
 
 # https://github.com/ottoyiu/django-cors-headers/#configuration
 # cors rest api request
-CORS_ORIGIN_WHITELIST = (
-    'http://localhost'
-)
+# CORS_ORIGIN_WHITELIST = (
+#     'http://localhost'
+# )
+CORS_ORIGIN_ALLOW_ALL = True
 
 # restful
 REST_FRAMEWORK = {
