@@ -20,6 +20,7 @@ ALLOWED_HOSTS = ['*']
 # message level
 MESSAGE_LEVEL = 10  # DEBUG
 
+STATIC_ROOT = os.path.join(APPS_DIR, 'static')
 
 # https://github.com/ottoyiu/django-cors-headers/#configuration
 # cors rest api request
@@ -32,9 +33,9 @@ CORS_ORIGIN_ALLOW_ALL = True
 REST_FRAMEWORK = {
     # Use Django's standard `django.contrib.auth` permissions,
     # or allow read-only access for unauthenticated users.
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated',
-    ],
+    #'DEFAULT_PERMISSION_CLASSES': [
+    #    'rest_framework.permissions.IsAuthenticated',
+    #],
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.TokenAuthentication', # token
         #'helpers.authentication.ExpiringTokenAuthentication', # custom token
