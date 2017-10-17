@@ -37,9 +37,9 @@ class ContainerList(APIView):
                 return Response(serializer.data)
             else:
                 # get the group id of the current user
-                groupresearchers = GroupResearcher.object.all().filter(user_id=user.pk)
+                groupresearchers = GroupResearcher.objects.all().filter(user_id=user.pk)
                 group_ids = [g.group_id for g in groupresearchers]
-                containers = Container.objects.all().fillter(groupcontainer_set__group_id__in=group_ids)
+                containers = Container.objects.all().filter(groupcontainer__group_id__in=group_ids)
                 serializer = ConatainerSerializer(containers, many=True)
                 return Response(serializer.data)
         except:
@@ -70,7 +70,6 @@ class ContainerList(APIView):
             data = serializer.data
             container = Container()
             if user.is_superuser:
-
                 container.name = data.get('name')
                 container.temperature = data.get('temperature', '')
                 container.tower = data.get('tower')
@@ -84,7 +83,7 @@ class ContainerList(APIView):
                 return Response({'detail': 'container added!'}, status=status.HTTP_200_OK)
             else:
                 # get the group id of the current user
-                groupresearchers = GroupResearcher.object.all().filter(user_id=user.pk)
+                groupresearchers = GroupResearcher.objects.all().filter(user_id=user.pk)
                 group_ids = [g.group_id for g in groupresearchers]
                 try:
                     container.name = data.get('name')
@@ -115,7 +114,7 @@ class ContainerList(APIView):
 
 
 class ContainerCount(APIView):
-    permission_classes = (permissions.IsAuthenticated, permissions.IsAdminUser,)
+    permission_classes = (permissions.IsAuthenticated, IsInGroupContanier,)
 
     def get(self, request, format=None):
         container_count = Container.objects.all().count()
@@ -150,7 +149,7 @@ class ContainerDetail(APIView):
 
     def get(self, request, pk, format=None):
         user = request.user
-        obj = { 'user': user }
+        obj = {'user': user}
         if not user.is_superuser:
             self.check_object_permissions(request, obj)  # check the permission
         container = get_object_or_404(Container, pk=pk)

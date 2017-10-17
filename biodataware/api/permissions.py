@@ -368,14 +368,12 @@ class IsPIorAssistantofUserOrReadOnly(permissions.BasePermission):
             if auth_user.is_authenticated():
                 if auth_user.is_superuser:
                     return True
-
                 user = obj['user']
                 # first check whether the user is in any group
                 user_groups = GroupResearcher.objects.all().filter(user_id=user.id)
                 if not user_groups:
                     return False
                 user_group_ids = [g.id for g in user_groups]
-
                 # pi role
                 role = Role.objects.all().filter(role__iexact='PI').first()
                 if role:
