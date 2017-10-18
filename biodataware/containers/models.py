@@ -5,6 +5,7 @@ from django.utils.safestring import mark_safe
 from django.conf import settings
 from django.contrib.auth import get_user_model
 
+
 # containers
 class Container(models.Model):
     name = models.CharField(max_length=100, unique=True)

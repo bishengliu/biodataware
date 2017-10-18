@@ -7,6 +7,7 @@ from django.db import transaction
 from datetime import datetime, timedelta
 import pytz
 from users.models import UserRole
+from groups.models import Group
 from .serializers import *
 from api.permissions import IsReadOnlyOwner, IsOwner, IsOwnOrReadOnly, IsPIorAssistantofUser
 from django.contrib.auth import authenticate, login, logout
@@ -381,6 +382,19 @@ class Register(APIView):
                 telephone=data.get('telephone', ''),
                 photo=form_data['file'][0] if has_photo else None  # auto upload file
             )
+            profile.save()
+
+            # auto create pi role
+            group = Group.objects.all().filter(email__iexact=email).first()
+            if group is not None:
+                # check PI role
+                pi_role = Role.objects.all().filter(role__exact='PI').first()
+                if pi_role is not None:
+                    auto_pi_role = UserRole.objects.create(
+                        role_id=pi_role.pk,
+                        user_id=user.pk)
+                    auto_pi_role.save()
+
             # return user token
             return Response({'detail': True, 'token': token.key, 'user': user.pk}, status=status.HTTP_200_OK)
         except:

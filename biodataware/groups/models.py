@@ -3,7 +3,6 @@ from helpers.validators import validate_phone
 from django.utils.safestring import mark_safe
 from users.models import User, UserRole
 from roles.models import Role
-from containers.models import GroupContainer
 from django.conf import settings
 from django.db.models.signals import post_save, post_delete
 from django.dispatch.dispatcher import receiver
@@ -48,6 +47,13 @@ def auto_set_PI(sender, instance, **kwargs):
                 user_id=user.pk,
                 role_id=pi_role.pk)
             user_role.save()
+            # add user to the group
+    group_researcher = GroupResearcher.objects.all().filter(group_id=instance.pk).filter(user_id=user.pk).first()
+    if group_researcher is None:
+        researcher = GroupResearcher.objects.create(
+            user_id=user.pk,
+            group_id=instance.pk)
+        researcher.save()
 
 
 # auto remove user pi role
@@ -63,10 +69,13 @@ def auto_remove_PI(sender, instance, **kwargs):
         if pi_userrole is not None:
             # check Assistant and Group Researcher
             assistants = Assistant.objects.all().filter(group_id=instance.pk)
-            groupresearchers = GroupResearcher.objects.all().filter(group_id=instance.pk)
-            containers = GroupContainer.objects.all().filter(group_id=instance.pk)
-            if not assistants or not groupresearchers or not containers:
+            groupresearchers = GroupResearcher.objects.all().filter(group_id=instance.pk).exclude(user_id=user.pk)
+            if not assistants and not groupresearchers:
                 pi_userrole.delete()
+            # delete selt in groupresearcher
+            groupresearcher = GroupResearcher.objects.all().filter(group_id=instance.pk).filter(user_id=user.pk).first()
+            if groupresearcher is not None:
+                groupresearcher.delete()
 
 
 # admin assistants
