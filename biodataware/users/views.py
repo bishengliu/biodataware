@@ -210,6 +210,7 @@ class PasswordView(LoginRequiredMixin, View):
                 messages.success(request, _('Something went wrong, please try again!'))
                 return redirect('home:index')
         else:
+            messages.success(request, _('Something went wrong, please fill all the required fields!'))
             return render(request, self.template_name, {'form': form})
 
 

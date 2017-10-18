@@ -138,7 +138,7 @@ class ProfileForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(ProfileForm, self).__init__(*args, **kwargs)
-        self.fields['birth_date'].required = True
+        self.fields['birth_date'].required = False
 
     class Meta:
         model = Profile
