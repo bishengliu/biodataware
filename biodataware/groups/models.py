@@ -48,12 +48,12 @@ def auto_set_PI(sender, instance, **kwargs):
                 role_id=pi_role.pk)
             user_role.save()
             # add user to the group
-    group_researcher = GroupResearcher.objects.all().filter(group_id=instance.pk).filter(user_id=user.pk).first()
-    if group_researcher is None:
-        researcher = GroupResearcher.objects.create(
-            user_id=user.pk,
-            group_id=instance.pk)
-        researcher.save()
+        group_researcher = GroupResearcher.objects.all().filter(group_id=instance.pk).filter(user_id=user.pk).first()
+        if group_researcher is None:
+            researcher = GroupResearcher.objects.create(
+                user_id=user.pk,
+                group_id=instance.pk)
+            researcher.save()
 
 
 # auto remove user pi role

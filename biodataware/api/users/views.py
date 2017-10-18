@@ -21,6 +21,7 @@ from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.contrib.auth.tokens import default_token_generator
 from django.template import loader
 
+
 # user list
 # readonly for all
 class UserList(APIView):
@@ -349,8 +350,8 @@ class UserPassword(APIView):
 
 # register new user
 class Register(APIView):
-
     parser_classes = (JSONParser, FormParser, MultiPartParser, )
+
     @transaction.atomic
     def post(self, request, format=None):
         form_data = dict(request.data)
@@ -394,7 +395,6 @@ class Register(APIView):
                         role_id=pi_role.pk,
                         user_id=user.pk)
                     auto_pi_role.save()
-
             # return user token
             return Response({'detail': True, 'token': token.key, 'user': user.pk}, status=status.HTTP_200_OK)
         except:
@@ -451,6 +451,7 @@ class ResetPassword(APIView):
 
 # confirm reset password
 class ConfirmResetPassword(APIView):
+
     def post(self, request, uidb64=None, token=None):
         try:
             serializer = ConfirmResetPasswordSerializer(data=request.data)
