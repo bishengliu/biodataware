@@ -59,9 +59,7 @@ class UserDetail(APIView):
     @transaction.atomic
     def put(self, request, pk, format=None):
         user = get_object_or_404(User, pk=pk)
-        obj = {
-            'user': user
-        }
+        obj = {'user': user}
         self.check_object_permissions(request, obj)  # check the permission
         # parse data
         form_data = dict(request.data)
