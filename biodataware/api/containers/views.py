@@ -585,11 +585,11 @@ class ContainerBoxList(APIView):
             else:
                 # get only the boxes of the group(s)
                 # get the current group id
-                groupresearchers = GroupResearcher.object.all().filter(user_id=user.pk)
+                groupresearchers = GroupResearcher.objects.all().filter(user_id=user.pk)
                 group_ids = [g.group_id for g in groupresearchers]
                 container = get_object_or_404(Container, pk=int(ct_id))
                 boxes = BoxContainer.objects.all().filter(container_id=container.pk).filter(
-                    boxresearcher_set__researcher_id__in=group_ids)
+                    boxresearcher__researcher_id__in=group_ids)
                 serializer = BoxSamplesSerializer(boxes, many=True)
                 return Response(serializer.data)
         except:
@@ -663,25 +663,22 @@ class ContainerFavoriteBoxList(APIView):
         container = get_object_or_404(Container, pk=ct_id)
         obj = {
             'user': user,
-            'container': container
-        }
+            'container': container}
         if not user.is_superuser:
             self.check_object_permissions(request, obj)  # check the permission
         try:
             # get the boxes
             if user.is_superuser:
-                container = get_object_or_404(Container, pk=int(ct_id))
                 boxes = BoxContainer.objects.all().filter(container_id=container.pk).filter(rate__gte=1)
                 serializer = BoxSamplesSerializer(boxes, many=True)
                 return Response(serializer.data)
             else:
                 # get only the boxes of the group(s)
                 # get the current group id
-                groupresearchers = GroupResearcher.object.all().filter(user_id=user.pk)
+                groupresearchers = GroupResearcher.objects.all().filter(user_id=user.pk)
                 group_ids = [g.group_id for g in groupresearchers]
-                container = get_object_or_404(Container, pk=int(ct_id))
                 boxes = BoxContainer.objects.all().filter(container_id=container.pk).filter(
-                    boxresearcher_set__researcher_id__in=group_ids).filter(rate__gte=1)
+                    boxresearcher__researcher_id__in=group_ids).filter(rate__gte=1)
                 serializer = BoxSamplesSerializer(boxes, many=True)
                 return Response(serializer.data)
         except:
