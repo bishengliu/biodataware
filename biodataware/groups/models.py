@@ -3,6 +3,7 @@ from helpers.validators import validate_phone
 from django.utils.safestring import mark_safe
 from users.models import User, UserRole
 from roles.models import Role
+from containers.models import GroupContainer
 from django.conf import settings
 from django.db.models.signals import post_save, post_delete
 from django.dispatch.dispatcher import receiver
@@ -41,15 +42,16 @@ def auto_set_PI(sender, instance, **kwargs):
     if user is not None:
         # check PI role
         pi_role = Role.objects.all().filter(role__exact='PI').first()
-        if pi_role is None:
+        if pi_role is not None:
             # create PI role of the user
             user_role = UserRole.objects.create(
-                user=user,
-                role=pi_role)
+                user_id=user.pk,
+                role_id=pi_role.pk)
             user_role.save()
 
 
 # auto remove user pi role
+@receiver(post_delete, sender=Group)
 def auto_remove_PI(sender, instance, **kwargs):
     # Pass false so FileField doesn't save the model.
     group_email = instance.email
@@ -57,13 +59,14 @@ def auto_remove_PI(sender, instance, **kwargs):
     user = User.objects.all().filter(email__iexact=group_email).first()
     if user is not None:
         # check user role
-        pi_role = Role.objects.all().filter(role__exact='PI').first()
-    if pi_role is not None:
-        # check Assistant and Group Researcher
-        assistants = Assistant.objects.all.filter(group_id=instance.pk)
-        groupresearchers = GroupResearcher.objects.all.filter(group_id=instance.pk)
-        if not assistants and not groupresearchers:
-            pi_role.delete()
+        pi_userrole = UserRole.objects.all().filter(user_id=user.pk).first()
+        if pi_userrole is not None:
+            # check Assistant and Group Researcher
+            assistants = Assistant.objects.all().filter(group_id=instance.pk)
+            groupresearchers = GroupResearcher.objects.all().filter(group_id=instance.pk)
+            containers = GroupContainer.objects.all().filter(group_id=instance.pk)
+            if not assistants or not groupresearchers or not containers:
+                pi_userrole.delete()
 
 
 # admin assistants
