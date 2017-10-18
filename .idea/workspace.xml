@@ -1,11 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="e07c48b7-1c00-4eca-bd6a-d182d44a745f" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/biodataware/config/db.sqlite3" afterPath="$PROJECT_DIR$/biodataware/config/db.sqlite3" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/biodataware/api/users/views.py" afterPath="$PROJECT_DIR$/biodataware/api/users/views.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/biodataware/groups/models.py" afterPath="$PROJECT_DIR$/biodataware/groups/models.py" />
-    </list>
+    <list default="true" id="e07c48b7-1c00-4eca-bd6a-d182d44a745f" name="Default" comment="" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -85,21 +81,34 @@
       <file leaf-file-name="views.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/biodataware/api/users/views.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="720">
-              <caret line="397" column="0" lean-forward="false" selection-start-line="397" selection-start-column="0" selection-end-line="397" selection-end-column="0" />
+            <state relative-caret-position="437">
+              <caret line="23" column="0" lean-forward="false" selection-start-line="23" selection-start-column="0" selection-end-line="23" selection-end-column="0" />
               <folding>
                 <element signature="e#0#46#0" expanded="true" />
-                <element signature="e#1589#4686#0" expanded="false" />
-                <element signature="e#2180#4686#0" expanded="false" />
-                <element signature="e#4840#5405#0" expanded="false" />
-                <element signature="e#5545#6640#0" expanded="false" />
-                <element signature="e#7131#7430#0" expanded="false" />
-                <element signature="e#7486#8385#0" expanded="false" />
-                <element signature="e#8647#9085#0" expanded="false" />
-                <element signature="e#9150#9802#0" expanded="false" />
-                <element signature="e#10087#11354#0" expanded="false" />
-                <element signature="e#11628#12544#0" expanded="false" />
-                <element signature="e#12750#14015#0" expanded="false" />
+                <element signature="e#1590#4687#0" expanded="false" />
+                <element signature="e#2181#4687#0" expanded="false" />
+                <element signature="e#4841#5406#0" expanded="false" />
+                <element signature="e#5546#6641#0" expanded="false" />
+                <element signature="e#7132#7431#0" expanded="false" />
+                <element signature="e#7487#8386#0" expanded="false" />
+                <element signature="e#8648#9086#0" expanded="false" />
+                <element signature="e#9151#9803#0" expanded="false" />
+                <element signature="e#9959#11358#0" expanded="false" />
+                <element signature="e#10088#11355#0" expanded="false" />
+                <element signature="e#11432#12545#0" expanded="false" />
+                <element signature="e#11629#12545#0" expanded="false" />
+                <element signature="e#12612#14016#0" expanded="false" />
+                <element signature="e#12751#14016#0" expanded="false" />
+                <element signature="e#14065#16213#0" expanded="false" />
+                <element signature="e#14201#16213#0" expanded="false" />
+                <element signature="e#14527#16033#0" expanded="false" />
+                <element signature="e#16243#16652#0" expanded="false" />
+                <element signature="e#16380#16652#0" expanded="false" />
+                <element signature="e#16690#18138#0" expanded="false" />
+                <element signature="e#16723#18138#0" expanded="false" />
+                <element signature="e#17203#17920#0" expanded="false" />
+                <element signature="e#18205#19488#0" expanded="false" />
+                <element signature="e#18263#19488#0" expanded="false" />
               </folding>
             </state>
           </provider>
@@ -206,8 +215,8 @@
         <option value="$PROJECT_DIR$/biodataware/containers/models.py" />
         <option value="$PROJECT_DIR$/biodataware/users/models.py" />
         <option value="$PROJECT_DIR$/biodataware/api/groups/views.py" />
-        <option value="$PROJECT_DIR$/biodataware/api/users/views.py" />
         <option value="$PROJECT_DIR$/biodataware/groups/models.py" />
+        <option value="$PROJECT_DIR$/biodataware/api/users/views.py" />
       </list>
     </option>
   </component>
@@ -523,8 +532,7 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="17" y="22" width="2494" height="1418" extended-state="0" />
-    <editor active="true" />
+    <frame x="17" y="22" width="2494" height="1418" extended-state="1" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.22850123" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.17124543" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
@@ -533,8 +541,8 @@
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.1735474" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.53205127" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.1554878" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.2804878" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.1554878" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.2804878" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Data View" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
@@ -589,43 +597,6 @@
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/biodataware/api/users/views.py</url>
-          <line>388</line>
-          <option name="timeStamp" value="2013" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/biodataware/api/users/views.py</url>
-          <line>387</line>
-          <option name="timeStamp" value="2014" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/biodataware/api/users/views.py</url>
-          <line>395</line>
-          <option name="timeStamp" value="2015" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/biodataware/api/users/views.py</url>
-          <line>397</line>
-          <option name="timeStamp" value="2016" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/biodataware/api/users/views.py</url>
-          <line>401</line>
-          <option name="timeStamp" value="2017" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/biodataware/api/users/views.py</url>
-          <line>390</line>
-          <option name="timeStamp" value="2024" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/biodataware/api/users/views.py</url>
-          <line>391</line>
-          <option name="timeStamp" value="2025" />
-        </line-breakpoint>
-      </breakpoints>
       <default-breakpoints>
         <breakpoint type="python-exception">
           <properties notifyOnTerminate="true" exception="BaseException">
@@ -1034,21 +1005,34 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/biodataware/api/users/views.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="720">
-          <caret line="397" column="0" lean-forward="false" selection-start-line="397" selection-start-column="0" selection-end-line="397" selection-end-column="0" />
+        <state relative-caret-position="437">
+          <caret line="23" column="0" lean-forward="false" selection-start-line="23" selection-start-column="0" selection-end-line="23" selection-end-column="0" />
           <folding>
             <element signature="e#0#46#0" expanded="true" />
-            <element signature="e#1589#4686#0" expanded="false" />
-            <element signature="e#2180#4686#0" expanded="false" />
-            <element signature="e#4840#5405#0" expanded="false" />
-            <element signature="e#5545#6640#0" expanded="false" />
-            <element signature="e#7131#7430#0" expanded="false" />
-            <element signature="e#7486#8385#0" expanded="false" />
-            <element signature="e#8647#9085#0" expanded="false" />
-            <element signature="e#9150#9802#0" expanded="false" />
-            <element signature="e#10087#11354#0" expanded="false" />
-            <element signature="e#11628#12544#0" expanded="false" />
-            <element signature="e#12750#14015#0" expanded="false" />
+            <element signature="e#1590#4687#0" expanded="false" />
+            <element signature="e#2181#4687#0" expanded="false" />
+            <element signature="e#4841#5406#0" expanded="false" />
+            <element signature="e#5546#6641#0" expanded="false" />
+            <element signature="e#7132#7431#0" expanded="false" />
+            <element signature="e#7487#8386#0" expanded="false" />
+            <element signature="e#8648#9086#0" expanded="false" />
+            <element signature="e#9151#9803#0" expanded="false" />
+            <element signature="e#9959#11358#0" expanded="false" />
+            <element signature="e#10088#11355#0" expanded="false" />
+            <element signature="e#11432#12545#0" expanded="false" />
+            <element signature="e#11629#12545#0" expanded="false" />
+            <element signature="e#12612#14016#0" expanded="false" />
+            <element signature="e#12751#14016#0" expanded="false" />
+            <element signature="e#14065#16213#0" expanded="false" />
+            <element signature="e#14201#16213#0" expanded="false" />
+            <element signature="e#14527#16033#0" expanded="false" />
+            <element signature="e#16243#16652#0" expanded="false" />
+            <element signature="e#16380#16652#0" expanded="false" />
+            <element signature="e#16690#18138#0" expanded="false" />
+            <element signature="e#16723#18138#0" expanded="false" />
+            <element signature="e#17203#17920#0" expanded="false" />
+            <element signature="e#18205#19488#0" expanded="false" />
+            <element signature="e#18263#19488#0" expanded="false" />
           </folding>
         </state>
       </provider>

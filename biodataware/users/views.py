@@ -6,6 +6,8 @@ from django.db import transaction
 from django.utils.translation import ugettext_lazy as _
 from .forms import RegistrationForm, LoginForm, UserForm, ProfileForm, PasswordForm, ResetPassword, NewPassword
 from .models import User, Profile
+from groups.models import Group, GroupResearcher
+from users.models import UserRole, Role
 from django.contrib.auth.mixins import LoginRequiredMixin
 from rest_framework.authtoken.models import Token
 from django.conf import settings
@@ -41,11 +43,29 @@ class RegisterView(View):
             user.save()
             Token.objects.create(user=user)  # create token
 
-            Profile.objects.create(
+            profile = Profile.objects.create(
                 user=user,
                 birth_date=form.cleaned_data['birth_date'],
                 photo=request.FILES['photo'] if request.FILES else None   # auto upload file
             )
+            profile.save()
+            # auto create pi role
+            group = Group.objects.all().filter(email__iexact=email).first()
+            if group is not None:
+                # check PI role
+                pi_role = Role.objects.all().filter(role__exact='PI').first()
+                if pi_role is not None:
+                    auto_pi_role = UserRole.objects.create(
+                        role_id=pi_role.pk,
+                        user_id=user.pk)
+                    auto_pi_role.save()
+                    # auto add user to the group
+                    groupresearcher = GroupResearcher.objects.create(
+                        user_id=user.pk,
+                        group_id=group.pk
+                    )
+                    groupresearcher.save()
+
             # login user
             user = authenticate(username=username, password=form.cleaned_data.get('password1'))
             if user is not None:
@@ -234,22 +254,25 @@ class ResetPasswordConfirmView(View):
             try:
                 uid = urlsafe_base64_decode(uidb64)
                 user = User.objects.get(pk=uid)
+
+                if user is not None and default_token_generator.check_token(user, token):
+                    new_password = form.cleaned_data['password1']
+                    user.set_password(new_password)
+                    user.save()
+                    # new token
+                    token, created = Token.objects.get_or_create(user=user)
+                    token.delete()
+                    Token.objects.create(user=user)  # create token
+                    messages.success(request, _('Password has been reset. Please login with the new password!'))
+                    return redirect('login')
+                else:
+                    messages.error(request, _('The reset password link is no longer valid.'))
+                    return self.form_invalid(form)
+
             except (TypeError, ValueError, OverflowError, User.DoesNotExist):
                 user = None
 
-            if user is not None and default_token_generator.check_token(user, token):
-                new_password = form.cleaned_data['password1']
-                user.set_password(new_password)
-                user.save()
-                # new token
-                token, created = Token.objects.get_or_create(user=user)
-                token.delete()
-                Token.objects.create(user=user)  # create token
-                messages.success(request, _('Password has been reset. Please login with the new password!'))
-                return redirect('login')
-            else:
-                messages.error(request, _('The reset password link is no longer valid.'))
-                return self.form_invalid(form)
+
         else:
             messages.error(request, _('Password reset failed, please try again.'))
             return self.form_invalid(form)

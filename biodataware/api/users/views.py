@@ -395,6 +395,12 @@ class Register(APIView):
                         role_id=pi_role.pk,
                         user_id=user.pk)
                     auto_pi_role.save()
+                    # auto add user to the group
+                    groupresearcher = GroupResearcher.objects.create(
+                        user_id=user.pk,
+                        group_id=group.pk
+                    )
+                    groupresearcher.save()
             # return user token
             return Response({'detail': True, 'token': token.key, 'user': user.pk}, status=status.HTTP_200_OK)
         except:
