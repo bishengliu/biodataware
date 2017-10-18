@@ -1,8 +1,11 @@
 from django.db import models
 from helpers.validators import validate_phone
 from django.utils.safestring import mark_safe
-from users.models import User
+from users.models import User, UserRole
+from roles.models import Role
 from django.conf import settings
+from django.db.models.signals import post_save, post_delete
+from django.dispatch.dispatcher import receiver
 
 
 class Group(models.Model):
@@ -26,6 +29,41 @@ class Group(models.Model):
 
     def __str__(self):
         return self.group_name + " (" + self.pi + ")"
+
+
+# auto create user PI role
+@receiver(post_save, sender=Group)
+def auto_set_PI(sender, instance, **kwargs):
+    # Pass false so FileField doesn't save the model.
+    group_email = instance.email
+    # check for user
+    user = User.objects.all().filter(email__iexact=group_email).first()
+    if user is not None:
+        # check PI role
+        pi_role = Role.objects.all().filter(role__exact='PI').first()
+        if pi_role is None:
+            # create PI role of the user
+            user_role = UserRole.objects.create(
+                user=user,
+                role=pi_role)
+            user_role.save()
+
+
+# auto remove user pi role
+def auto_remove_PI(sender, instance, **kwargs):
+    # Pass false so FileField doesn't save the model.
+    group_email = instance.email
+    # check for user
+    user = User.objects.all().filter(email__iexact=group_email).first()
+    if user is not None:
+        # check user role
+        pi_role = Role.objects.all().filter(role__exact='PI').first()
+    if pi_role is not None:
+        # check Assistant and Group Researcher
+        assistants = Assistant.objects.all.filter(group_id=instance.pk)
+        groupresearchers = GroupResearcher.objects.all.filter(group_id=instance.pk)
+        if not assistants and not groupresearchers:
+            pi_role.delete()
 
 
 # admin assistants
