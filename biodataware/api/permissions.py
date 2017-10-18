@@ -320,13 +320,12 @@ class IsPIorAssistantofUserReadOnly(permissions.BasePermission):
             auth_user = request.user
             if auth_user.is_superuser:
                 return True
-
             user = obj['user']
             # first check whether the user is in any group
             user_groups = GroupResearcher.objects.all().filter(user_id=user.id)
             if not user_groups:
                 return False
-            user_group_ids = [g.id for g in user_groups]
+            user_group_ids = [g.group_id for g in user_groups]
 
             if request.user.is_authenticated():
                 # pi
@@ -348,7 +347,7 @@ class IsPIorAssistantofUserReadOnly(permissions.BasePermission):
                         # get the group
                         auth_groups = GroupResearcher.objects.all().filter(user_id=auth_user.id)
                         if auth_groups:
-                            auth_group_ids = [g.id for g in auth_groups]
+                            auth_group_ids = [g.group_id for g in auth_groups]
                             assistant_groups = Assistant.objects.all().filter(group_id__in=auth_group_ids)
                             if assistant_groups:
                                 assistant_group_ids = [a.group_id for a in assistant_groups]
@@ -373,7 +372,7 @@ class IsPIorAssistantofUserOrReadOnly(permissions.BasePermission):
                 user_groups = GroupResearcher.objects.all().filter(user_id=user.id)
                 if not user_groups:
                     return False
-                user_group_ids = [g.id for g in user_groups]
+                user_group_ids = [g.group_id for g in user_groups]
                 # pi role
                 role = Role.objects.all().filter(role__iexact='PI').first()
                 if role:
@@ -388,7 +387,7 @@ class IsPIorAssistantofUserOrReadOnly(permissions.BasePermission):
                     else:
                         auth_groups = GroupResearcher.objects.all().filter(user_id=auth_user.id)
                         if auth_groups:
-                            auth_group_ids = [g.id for g in auth_groups]
+                            auth_group_ids = [g.group_id for g in auth_groups]
                             assistant_groups = Assistant.objects.all().filter(group_id__in=auth_group_ids)
                             if assistant_groups:
                                 assistant_group_ids = [a.group_id for a in assistant_groups]

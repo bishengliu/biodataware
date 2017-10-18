@@ -79,7 +79,7 @@ class GroupDetail(APIView):
     def delete(self, request, pk, format=None):
         group = get_object_or_404(Group, pk=pk)
         try:
-            group_researchers = GroupResearcher.objects.all().filter(group_id=group.pk)
+            group_researchers = GroupResearcher.objects.all().filter(group_id=group.pk).exclude(user__email__iexact=group.email)
             if group_researchers:
                 return Response({'detail': 'group not deleted! The group contains researcher(s).'},
                                 status=status.HTTP_400_BAD_REQUEST)
