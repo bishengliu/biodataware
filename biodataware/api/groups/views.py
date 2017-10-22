@@ -177,7 +177,7 @@ class MyGroupUpdate(APIView):
 
 # list all my groups
 class MyGroupList(APIView):
-    permission_classes = (permissions.IsAuthenticated, IsPIorAssistantofUserOrReadOnly,)
+    permission_classes = (permissions.IsAuthenticated, )
 
     def get(self, request, format=None):
         try:
@@ -206,8 +206,7 @@ class MyGroupList(APIView):
 
 # list all the researchers in my groups
 class GroupResearcherList(APIView):
-
-    permission_classes = (permissions.IsAuthenticated, IsPIorAssistantofUserOrReadOnly,)
+    permission_classes = (permissions.IsAuthenticated, )
 
     # get the list of current user with role
     def get(self, request, format=None):
@@ -239,7 +238,7 @@ class GroupResearcherList(APIView):
 # researcher details
 class GroupResearcherDetail(APIView):
 
-    permission_classes = (permissions.IsAuthenticated, IsPIorAssistantofUserOrReadOnly,)
+    permission_classes = (permissions.IsAuthenticated, )
 
     def get(self, request, pk, format=None):
         try:
