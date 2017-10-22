@@ -42,12 +42,14 @@ def auto_set_PI(sender, instance, **kwargs):
         # check PI role
         pi_role = Role.objects.all().filter(role__exact='PI').first()
         if pi_role is not None:
-            # create PI role of the user
-            user_role = UserRole.objects.create(
-                user_id=user.pk,
-                role_id=pi_role.pk)
-            user_role.save()
-            # add user to the group
+            pi_user_role = UserRole.objects.all().filter(user_id=user.pk).filter(role_id=pi_role.pk).first()
+            if pi_user_role is None:
+                # create PI role of the user
+                user_role = UserRole.objects.create(
+                    user_id=user.pk,
+                    role_id=pi_role.pk)
+                user_role.save()
+        # add user to the group
         group_researcher = GroupResearcher.objects.all().filter(group_id=instance.pk).filter(user_id=user.pk).first()
         if group_researcher is None:
             researcher = GroupResearcher.objects.create(

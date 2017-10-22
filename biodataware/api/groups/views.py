@@ -199,7 +199,10 @@ class MyGroupList(APIView):
                 groups = Group.objects.all().filter(pk__in=group_ids).distinct()
                 serializer = GroupSerializer(groups, many=True)
                 return Response(serializer.data)
-            return Response({'detail': False}, status=status.HTTP_200_OK)
+            groups = Group.objects.all().filter(pk__in=my_groups).distinct()
+            serializer = GroupSerializer(groups, many=True)
+            return Response(serializer.data)
+            # return Response({'detail': False}, status=status.HTTP_200_OK)
         except:
             return Response({'detail': 'something went wrong!'}, status=status.HTTP_400_BAD_REQUEST)
 
