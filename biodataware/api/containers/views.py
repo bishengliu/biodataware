@@ -941,7 +941,7 @@ class Box(APIView):
             if not authUser.is_superuser:
                 if box_researcher is not None:
                     user = get_object_or_404(User, pk=box_researcher.researcher_id)
-                    obj = {'user': user}
+                    obj = {'user': user, 'container': container}
                     self.check_object_permissions(request, obj)  # check the permission
                     serializer = BoxSamplesSerializer(box)
                     return Response(serializer.data)
