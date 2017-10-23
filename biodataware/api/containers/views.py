@@ -185,25 +185,25 @@ class ContainerDetail(APIView):
         model = form_data['obj'][0]
         # load into dict
         obj = json.loads(model)
+        obj['pk'] = pk
+        serializer = ContainerUpdateSerializer(data=obj, partial=True)
+        serializer.is_valid(raise_exception=True)
+        data = serializer.data
 
         try:
+            # save the container
+            container.name = data.get("name", "")
+            container.room = data.get("room", "")
+            container.temperature = data.get("temperature", "")
+            container.tower = data.get("tower", 1)
+            container.shelf = data.get("shelf", 1)
+            container.box = data.get("box", 1)
+            container.description = data.get("description", "")
+            if has_photo:
+                if container.photo:
+                    container.photo.delete()
+                container.photo = form_data['file'][0]
             if user.is_superuser:
-                serializer = ContainerUpdateSerializer(container, data=obj, partial=True)
-                serializer.is_valid(raise_exception=True)
-                data = serializer.data
-
-                # save the container
-                container.name = data.get("name", "")
-                container.room = data.get("room", "")
-                container.temperature = data.get("temperature", "")
-                container.tower = data.get("tower", 1)
-                container.shelf = data.get("shelf", 1)
-                container.box = data.get("box", 1)
-                container.description = data.get("description", "")
-                if has_photo:
-                    if container.photo:
-                        container.photo.delete()
-                    container.photo = form_data['file'][0]
                 container.save()
                 return Response({'detail': True}, status=status.HTTP_200_OK)
             else:
@@ -213,23 +213,6 @@ class ContainerDetail(APIView):
                     group_container_ids = [gc.group_id for gc in group_containers]
                     # is pi/assistant of the group
                     if isPIorAssistantofGroup(user, group_container_ids):
-                        # save data
-                        serializer = ContainerUpdateSerializer(container, data=obj, partial=True)
-                        serializer.is_valid(raise_exception=True)
-                        data = serializer.data
-
-                        # save the container
-                        container.name = data.get("name", "")
-                        container.room = data.get("room", "")
-                        container.temperature = data.get("temperature", "")
-                        container.tower = data.get("tower", 1)
-                        container.shelf = data.get("shelf", 1)
-                        container.box = data.get("box", 1)
-                        container.description = data.get("description", "")
-                        if has_photo:
-                            if container.photo:
-                                container.photo.delete()
-                            container.photo = form_data['file'][0]
                         container.save()
                         return Response({'detail': True}, status=status.HTTP_200_OK)
                 return Response({'detail': 'container info not changed!'}, status=status.HTTP_400_BAD_REQUEST)

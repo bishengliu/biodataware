@@ -8,7 +8,7 @@ from django.contrib.auth import get_user_model
 
 # containers
 class Container(models.Model):
-    name = models.CharField(max_length=100, unique=True)
+    name = models.CharField(max_length=100)
     room = models.CharField(max_length=100, null=True, blank=True)
     photo = models.ImageField(upload_to='containers/', max_length=150, null=True, blank=True)
     code39 = models.CharField(max_length=50, null=True, blank=True)
