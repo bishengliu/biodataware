@@ -1376,7 +1376,6 @@ class MoveBox(APIView):
     def post(self, request, format=None):
         try:
             auth_user = request.user
-
             serializer = MoveBoxSerializer(data=request.data)
             serializer.is_valid(raise_exception=True)
             data = serializer.data
@@ -1422,7 +1421,7 @@ class MoveBox(APIView):
                         ori_box_researcher = BoxResearcher.objects.all().filter(box_id=ori_box.pk).first()
                         if ori_box_researcher is not None:
                             ori_box_user = get_object_or_404(User, pk=ori_box_researcher.researcher_id)
-                            obj = {'user': ori_box_user}
+                            obj = {'user': ori_box_user, 'container': original_container}
                             self.check_object_permissions(request, obj)  # check the permission
                     # check the target box
                     target_box = BoxContainer.objects.all() \
@@ -1437,7 +1436,7 @@ class MoveBox(APIView):
                             target_box_researcher = BoxResearcher.objects.all().filter(box_id=target_box.pk).first()
                             if target_box_researcher is not None:
                                 target_box_user = get_object_or_404(User, pk=target_box_researcher.researcher_id)
-                                obj = {'user': target_box_user}
+                                obj = {'user': target_box_user, 'container': target_container}
                                 self.check_object_permissions(request, obj)  # check the permission
                         # check whether the boxes matches
                         if(ori_box.box_horizontal == target_box.box_horizontal and ori_box.box_vertical == target_box.box_vertical):
