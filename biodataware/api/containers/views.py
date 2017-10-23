@@ -145,14 +145,14 @@ class ContainerSearch(APIView):
 # view, edit and delete container
 class ContainerDetail(APIView):
     parser_classes = (JSONParser, FormParser, MultiPartParser,)
-    permission_classes = (permissions.IsAuthenticated, IsPIorReadOnly, )
+    permission_classes = (permissions.IsAuthenticated, IsPIorReadOnly, IsInGroupContanier, )
 
     def get(self, request, pk, format=None):
         user = request.user
-        obj = {'user': user}
+        container = get_object_or_404(Container, pk=pk)
+        obj = {'user': user, 'container': container}
         if not user.is_superuser:
             self.check_object_permissions(request, obj)  # check the permission
-        container = get_object_or_404(Container, pk=pk)
         if user.is_superuser:
             serializer = ConatainerSerializer(container)
             return Response(serializer.data)
@@ -170,27 +170,26 @@ class ContainerDetail(APIView):
 
     def put(self, request, pk, format=None):
         user = request.user
-        obj = {'user': user}
-        if not user.is_superuser:
-            self.check_object_permissions(request, obj)  # check the permission
         container = get_object_or_404(Container, pk=pk)
-
-        # parse data
-        form_data = dict(request.data)
-        # check upload photo
-        has_photo = False
-        if 'file' in form_data.keys():
-            has_photo = True
-        # form model data
-        model = form_data['obj'][0]
-        # load into dict
-        obj = json.loads(model)
-        obj['pk'] = pk
-        serializer = ContainerUpdateSerializer(data=obj, partial=True)
-        serializer.is_valid(raise_exception=True)
-        data = serializer.data
-
         try:
+            obj = {'user': user, 'container': container}
+            if not user.is_superuser:
+                self.check_object_permissions(request, obj)  # check the permission
+            # parse data
+            form_data = dict(request.data)
+            # check upload photo
+            has_photo = False
+            if 'file' in form_data.keys():
+                has_photo = True
+            # form model data
+            model = form_data['obj'][0]
+            # load into dict
+            obj = json.loads(model)
+
+            serializer = ContainerUpdateSerializer(data=obj, partial=True)
+            serializer.is_valid(raise_exception=True)
+            data = serializer.data
+
             # save the container
             container.name = data.get("name", "")
             container.room = data.get("room", "")
@@ -221,11 +220,11 @@ class ContainerDetail(APIView):
 
     def delete(self, request, pk, format=None):
         user = request.user
-        obj = {'user': user }
-        if not user.is_superuser:
-            self.check_object_permissions(request, obj)  # check the permission
         container = get_object_or_404(Container, pk=pk)
         try:
+            obj = {'user': user, 'container': container}
+            if not user.is_superuser:
+                self.check_object_permissions(request, obj)  # check the permission
             if user.is_superuser:
                 if container.groupcontainer_set.exists():
                     return Response(
@@ -244,7 +243,7 @@ class ContainerDetail(APIView):
                     group_container_ids = [gc.group_id for gc in group_containers]
                     # is pi/assistant of the group
                     if isPIorAssistantofGroup(user, group_container_ids):
-                        if container.groupcontainer_set.exists():
+                        if container.groupcontainer_set.exclude(group_id__in=group_container_ids).exists():
                             return Response(
                                 {'detail': 'container not deleted! '
                                            '\The container is assigned to researcher group(s).'},
