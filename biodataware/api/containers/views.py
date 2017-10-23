@@ -1184,7 +1184,7 @@ class BoxRate(APIView):
                                 status=status.HTTP_200_OK)
             if box_researcher is not None:
                 user = get_object_or_404(User, pk=box_researcher.researcher_id)
-                obj = {'user': user}
+                obj = {'user': user, 'container': container}
                 self.check_object_permissions(request, obj)  # check the permission
                 box.save()
                 return Response({'detail': 'rate is updated!'},
@@ -1193,7 +1193,7 @@ class BoxRate(APIView):
             return Response({'detail': 'Permission denied!'},
                             status=status.HTTP_400_BAD_REQUEST)
         except:
-            return Response({'detail': 'Something went wrong!'},
+            return Response({'detail': 'Something went wrong, box rate not updated!'},
                             status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -1237,13 +1237,13 @@ class BoxColor(APIView):
             box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
             if box_researcher is not None and not auth_user.is_superuser:
                 user = get_object_or_404(User, pk=box_researcher.researcher_id)
-                obj = {'user': user}
+                obj = {'user': user, 'container': container}
                 self.check_object_permissions(request, obj)  # check the permission
             box.save()
             return Response({'detail': 'color is updated!'},
                                 status=status.HTTP_200_OK)
         except:
-            return Response({'detail': 'Something went wrong!'},
+            return Response({'detail': 'Something went wrong, box color not updated!'},
                             status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -1289,13 +1289,13 @@ class BoxDescription(APIView):
             if not auth_user.is_superuser:
                 if box_researcher is not None:
                     user = get_object_or_404(User, pk=box_researcher.researcher_id)
-                    obj = {'user': user}
+                    obj = {'user': user, 'container': container}
                     self.check_object_permissions(request, obj)  # check the permission
             box.save()
-            return Response({'detail': 'color is updated!'},
+            return Response({'detail': 'box description is updated!'},
                                 status=status.HTTP_200_OK)
         except:
-            return Response({'detail': 'Something went wrong!'},
+            return Response({'detail': 'Something went wrong, box description not updated!'},
                             status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -1340,13 +1340,13 @@ class BoxLabel(APIView):
             if not auth_user.is_superuser:
                 if box_researcher is not None:
                     user = get_object_or_404(User, pk=box_researcher.researcher_id)
-                    obj = {'user': user}
+                    obj = {'user': user, 'container': container}
                     self.check_object_permissions(request, obj)  # check the permission
             box.save()
-            return Response({'detail': 'color is updated!'},
+            return Response({'detail': 'box label is updated!'},
                             status=status.HTTP_200_OK)
         except:
-            return Response({'detail': 'Something went wrong!'},
+            return Response({'detail': 'Something went wrong, box label not updated!'},
                             status=status.HTTP_400_BAD_REQUEST)
 
 
