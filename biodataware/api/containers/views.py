@@ -642,12 +642,10 @@ class ContainerFavoriteBoxList(APIView):
         user = request.user
         # get the container
         container = get_object_or_404(Container, pk=ct_id)
-        obj = {
-            'user': user,
-            'container': container}
-        if not user.is_superuser:
-            self.check_object_permissions(request, obj)  # check the permission
         try:
+            obj = {'user': user, 'container': container}
+            if not user.is_superuser:
+                self.check_object_permissions(request, obj)  # check the permission
             # get the boxes
             if user.is_superuser:
                 boxes = BoxContainer.objects.all().filter(container_id=container.pk).filter(rate__gte=1)
@@ -657,9 +655,11 @@ class ContainerFavoriteBoxList(APIView):
                 # get only the boxes of the group(s)
                 # get the current group id
                 groupresearchers = GroupResearcher.objects.all().filter(user_id=user.pk)
-                group_ids = [g.group_id for g in groupresearchers]
-                boxes = BoxContainer.objects.all().filter(container_id=container.pk).filter(
-                    boxresearcher__researcher_id__in=group_ids).filter(rate__gte=1)
+                researcher_ids = [g.user_id for g in groupresearchers]
+                boxes = BoxContainer.objects.all() \
+                    .filter(container_id=container.pk) \
+                    .filter(rate__gte=1) \
+                    .filter(boxresearcher__researcher_id__in=researcher_ids)
                 serializer = BoxSamplesSerializer(boxes, many=True)
                 return Response(serializer.data)
         except:
