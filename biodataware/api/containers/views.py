@@ -569,16 +569,13 @@ class ContainerBoxList(APIView):
         user = request.user
         # get the container
         container = get_object_or_404(Container, pk=ct_id)
-        obj = {
-            'user': user,
-            'container': container
-        }
-        if not user.is_superuser:
-            self.check_object_permissions(request, obj)  # check the permission
         try:
+            obj = {'user': user, 'container': container}
+            if not user.is_superuser:
+                self.check_object_permissions(request, obj)  # check the permission
+
             # get the boxes
             if user.is_superuser:
-                container = get_object_or_404(Container, pk=int(ct_id))
                 boxes = BoxContainer.objects.all().filter(container_id=container.pk)
                 serializer = BoxSamplesSerializer(boxes, many=True)
                 return Response(serializer.data)
@@ -586,10 +583,11 @@ class ContainerBoxList(APIView):
                 # get only the boxes of the group(s)
                 # get the current group id
                 groupresearchers = GroupResearcher.objects.all().filter(user_id=user.pk)
-                group_ids = [g.group_id for g in groupresearchers]
-                container = get_object_or_404(Container, pk=int(ct_id))
-                boxes = BoxContainer.objects.all().filter(container_id=container.pk).filter(
-                    boxresearcher__researcher_id__in=group_ids)
+                researcher_ids = [g.user_id for g in groupresearchers]
+                # get all the researchers in the group
+                boxes = BoxContainer.objects.all() \
+                    .filter(container_id=container.pk) \
+                    .filter(boxresearcher__researcher_id__in=researcher_ids)
                 serializer = BoxSamplesSerializer(boxes, many=True)
                 return Response(serializer.data)
         except:
@@ -642,11 +640,12 @@ class ContainerBoxList(APIView):
                 color=getattr(data, 'color', '#ffffff'),
                 description=getattr(data, 'description', '')
             )
-
+            box_container.save()
             box_researcher = BoxResearcher.objects.create(
                 box_id=box_container.pk,
                 researcher_id=user.pk
             )
+            box_researcher.save()
             return Response({'detail': 'Box add!'}, status=status.HTTP_200_OK)
         except:
             return Response({'detail': 'Box not added!'},
@@ -1485,10 +1484,10 @@ class AddBox(APIView):
     def put(self, request, pk, format=None):
         try:
             user = request.user
-            obj = {'user': user}
+            container = get_object_or_404(Container, pk=pk)
+            obj = {'user': user, 'container': container}
             if not user.is_superuser:
                 self.check_object_permissions(request, obj)  # check the permission
-            container = get_object_or_404(Container, pk=pk)
             serializer = AddBoxSerializer(data=request.data)
             serializer.is_valid(raise_exception=True)
             data = serializer.data
