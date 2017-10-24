@@ -114,7 +114,7 @@ class ContainerList(APIView):
 
 
 class ContainerCount(APIView):
-    permission_classes = (permissions.IsAuthenticated, IsInGroupContanier,)
+    permission_classes = (permissions.IsAuthenticated, )
 
     def get(self, request, format=None):
         container_count = Container.objects.all().count()
@@ -384,11 +384,11 @@ class ShelfAlternative(APIView):
 
     def get(self, request, ct_id, tw_id, sf_id, format=None):
         user = request.user
-        obj = {'user': user}
-        if not user.is_superuser:
-            self.check_object_permissions(request, obj)  # check the permission
         # get the container
         container = get_object_or_404(Container, pk=int(ct_id))
+        obj = {'user': user, 'container': container}
+        if not user.is_superuser:
+            self.check_object_permissions(request, obj)  # check the permission
         try:
             if int(tw_id) > int(container.tower) or int(tw_id) < 0:
                 return Response({'detail': 'tower does not exist!'},
@@ -409,11 +409,11 @@ class ShelfAlternative(APIView):
     @transaction.atomic
     def post(self, request, ct_id, tw_id, sf_id, format=None):
         user = request.user
-        obj = { 'user': user }
-        if not user.is_superuser:
-            self.check_object_permissions(request, obj)  # check the permission
         # get the container
         container = get_object_or_404(Container, pk=int(ct_id))
+        obj = {'user': user, 'container': container}
+        if not user.is_superuser:
+            self.check_object_permissions(request, obj)  # check the permission
         if int(tw_id) > int(container.tower) or int(tw_id) < 0:
             return Response({'detail': 'tower does not exist!'},
                             status=status.HTTP_400_BAD_REQUEST)
@@ -465,11 +465,11 @@ class Shelf(APIView):
 
     def get(self, request, ct_id, id, format=None):
         user = request.user
-        obj = {'user': user}
+        container = get_object_or_404(Container, pk=int(ct_id))
+        obj = {'user': user, 'container': container}
         if not user.is_superuser:
             self.check_object_permissions(request, obj)  # check the permission
         # get the container
-        container = get_object_or_404(Container, pk=int(ct_id))
         # parse tw_id and sf_id
         id_list = id.split("-")
         tw_id = int(id_list[0])
@@ -489,11 +489,11 @@ class Shelf(APIView):
     @transaction.atomic
     def post(self, request, ct_id, id, format=None):
         user = request.user
-        obj = {'user': user}
-        if not user.is_superuser:
-            self.check_object_permissions(request, obj)  # check the permission
         # get the container
         container = get_object_or_404(Container, pk=int(ct_id))
+        obj = {'user': user, 'container': container}
+        if not user.is_superuser:
+            self.check_object_permissions(request, obj)  # check the permission
         # parse tw_id and sf_id
         id_list = id.split("-")
         tw_id = int(id_list[0])
@@ -552,24 +552,30 @@ class ContainerBoxList(APIView):
         # get the container
         container = get_object_or_404(Container, pk=ct_id)
         try:
-            obj = {'user': user, 'container': container}
-            if not user.is_superuser:
-                self.check_object_permissions(request, obj)  # check the permission
-
             # get the boxes
             if user.is_superuser:
                 boxes = BoxContainer.objects.all().filter(container_id=container.pk)
                 serializer = BoxSamplesSerializer(boxes, many=True)
                 return Response(serializer.data)
             else:
-                # get only the boxes of the group(s)
+                obj = {'user': user, 'container': container}
+                if not user.is_superuser:
+                    self.check_object_permissions(request, obj)  # check the permission
+
+                # get only the researchers of the group(s)
+                researcher_ids = []
+                group_ids = []
                 # get the current group id
                 groupresearchers = GroupResearcher.objects.all().filter(user_id=user.pk)
-                researcher_ids = [g.user_id for g in groupresearchers]
-                # get all the researchers in the group
-                boxes = BoxContainer.objects.all() \
-                    .filter(container_id=container.pk) \
-                    .filter(boxresearcher__researcher_id__in=researcher_ids)
+                if groupresearchers:
+                    group_ids = [g.group_id for g in groupresearchers]
+                # get all the researchers in the groups
+                researchers = GroupResearcher.objects.all().filter(group_id__in=group_ids)
+                if researchers:
+                    researcher_ids = [r.user_id for r in researchers]
+                    # get all the researchers in the group
+                boxes = BoxContainer.objects.all().filter(container_id=container.pk) \
+                        .filter(boxresearcher__researcher_id__in=researcher_ids)
                 serializer = BoxSamplesSerializer(boxes, many=True)
                 return Response(serializer.data)
         except:
@@ -579,11 +585,11 @@ class ContainerBoxList(APIView):
     @transaction.atomic
     def post(self, request, ct_id, format=None):
         user = request.user
-        obj = {'user': user}
-        if not user.is_superuser:
-            self.check_object_permissions(request, obj)  # check the permission
         # get the container
         container = get_object_or_404(Container, pk=int(ct_id))
+        obj = {'user': user, 'container': container}
+        if not user.is_superuser:
+            self.check_object_permissions(request, obj)  # check the permission
         # add box
         try:
             serializer = ContainerBoxCreateSerializer(data=request.data)
@@ -643,19 +649,26 @@ class ContainerFavoriteBoxList(APIView):
         # get the container
         container = get_object_or_404(Container, pk=ct_id)
         try:
-            obj = {'user': user, 'container': container}
-            if not user.is_superuser:
-                self.check_object_permissions(request, obj)  # check the permission
             # get the boxes
             if user.is_superuser:
                 boxes = BoxContainer.objects.all().filter(container_id=container.pk).filter(rate__gte=1)
                 serializer = BoxSamplesSerializer(boxes, many=True)
                 return Response(serializer.data)
             else:
-                # get only the boxes of the group(s)
+                obj = {'user': user, 'container': container}
+                if not user.is_superuser:
+                    self.check_object_permissions(request, obj)  # check the permission
+                # get only the researchers of the group(s)
+                researcher_ids = []
+                group_ids = []
                 # get the current group id
                 groupresearchers = GroupResearcher.objects.all().filter(user_id=user.pk)
-                researcher_ids = [g.user_id for g in groupresearchers]
+                if groupresearchers:
+                    group_ids = [g.group_id for g in groupresearchers]
+                # get all the researchers in the groups
+                researchers = GroupResearcher.objects.all().filter(group_id__in=group_ids)
+                if researchers:
+                    researcher_ids = [r.user_id for r in researchers]
                 boxes = BoxContainer.objects.all() \
                     .filter(container_id=container.pk) \
                     .filter(rate__gte=1) \
@@ -690,7 +703,7 @@ class ContainerAllBoxList(APIView):
 
 # need to apply permissions to only allow view the box details in the group
 class BoxAlternative(APIView):
-    permission_classes = (permissions.IsAuthenticated, IsInGroupContanier, IsPIorAssistantorOwner,)
+    permission_classes = (permissions.IsAuthenticated, IsInGroupContanier, )
 
     def get(self, request, ct_id, tw_id, sf_id, bx_id, format=None):
         try:
@@ -720,9 +733,7 @@ class BoxAlternative(APIView):
             box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
             if box_researcher:
                 user = get_object_or_404(User, pk=box_researcher.researcher_id)
-                obj = {
-                    'user': user
-                }
+                obj = {'user': user, 'container': container}
                 self.check_object_permissions(request, obj)  # check the permission
                 serializer = BoxSamplesSerializer(box)
                 return Response(serializer.data)
@@ -761,9 +772,7 @@ class BoxAlternative(APIView):
             box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
             if box_researcher:
                 user = get_object_or_404(User, pk=box_researcher.researcher_id)
-                obj = {
-                    'user': user
-                }
+                obj = {'user': user, 'container': container}
                 self.check_object_permissions(request, obj)  # check the permission
                 # check samples
                 if box.sample_set:
@@ -808,7 +817,7 @@ class BoxAlternative(APIView):
             box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
             if box_researcher:
                 user = get_object_or_404(User, pk=box_researcher.researcher_id)
-                obj = { 'user': user}
+                obj = {'user': user, 'container': container}
                 self.check_object_permissions(request, obj)  # check the permission
                 serializer = SampleCreateSerializer(data=request.data)
                 serializer.is_valid(raise_exception=True)
@@ -888,7 +897,7 @@ class BoxAlternative(APIView):
 # box and sample list
 class Box(APIView):
     parser_classes = (JSONParser, FormParser, MultiPartParser,)
-    permission_classes = (permissions.IsAuthenticated, IsInGroupContanier, IsPIorAssistantorOwner,)
+    permission_classes = (permissions.IsAuthenticated, IsInGroupContanier, )
 
     def get(self, request, ct_id, id, format=None):
         try:
@@ -931,7 +940,6 @@ class Box(APIView):
                                 status=status.HTTP_400_BAD_REQUEST)
             serializer = BoxSamplesSerializer(box)
             return Response(serializer.data)
-
         except:
             return Response({'detail': 'Something went wrong!'},
                     status=status.HTTP_400_BAD_REQUEST)
@@ -969,7 +977,7 @@ class Box(APIView):
             box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
             if authUser.is_superuser or box_researcher:
                 user = get_object_or_404(User, pk=box_researcher.researcher_id)
-                obj = {'user': user}
+                obj = {'user': user, 'container': container}
                 if not authUser.is_superuser:
                     self.check_object_permissions(request, obj)  # check the permission
                 # check samples
@@ -990,8 +998,9 @@ class Box(APIView):
     def post(self, request, ct_id, id, format=None):
         try:
             user = request.user
+            container = get_object_or_404(Container, pk=int(ct_id))
             if not user.is_superuser:
-                self.check_object_permissions(request, {'user': user})  # check the permission
+                self.check_object_permissions(request, {'user': user, 'container': container})  # check the permission
             # parse data
             form_data = dict(request.data)
             # slots
@@ -1011,7 +1020,6 @@ class Box(APIView):
             serializer.is_valid(raise_exception=True)
             data = serializer.data
 
-            container = get_object_or_404(Container, pk=int(ct_id))
             id_list = id.split("-")
             tw_id = int(id_list[0])
             sf_id = int(id_list[1])
@@ -1514,7 +1522,7 @@ class AddBox(APIView):
 
 # get, put and delete sample
 class SampleDetailAlternative(APIView):
-    permission_classes = (permissions.IsAuthenticated, IsInGroupContanier, IsPIorAssistantorOwner,)
+    permission_classes = (permissions.IsAuthenticated, IsInGroupContanier, )
 
     def get(self, request, ct_id, tw_id, sf_id, bx_id, sp_id):
         try:
@@ -1544,7 +1552,7 @@ class SampleDetailAlternative(APIView):
             box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
             if box_researcher is not None:
                 user = get_object_or_404(User, pk=box_researcher.researcher_id)
-                obj = {'user': user}
+                obj = {'user': user, 'container': container}
                 self.check_object_permissions(request, obj)  # check the permission
                 # find the sample
                 match = re.match(r"([a-z]+)([0-9]+)", sp_id, re.I)
@@ -1592,7 +1600,7 @@ class SampleDetailAlternative(APIView):
             box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
             if box_researcher is not None:
                 user = get_object_or_404(User, pk=box_researcher.researcher_id)
-                obj = {'user': user}
+                obj = {'user': user, 'container': container}
                 self.check_object_permissions(request, obj)  # check the permission
                 # find the sample
                 match = re.match(r"([a-z]+)([0-9]+)", sp_id, re.I)
@@ -1615,7 +1623,7 @@ class SampleDetailAlternative(APIView):
 
 # get, put and delete sample
 class SampleDetail(APIView):
-    permission_classes = (permissions.IsAuthenticated, IsInGroupContanier, IsPIorAssistantorOwner,)
+    permission_classes = (permissions.IsAuthenticated, IsInGroupContanier, )
 
     def get(self, request, ct_id, bx_id, sp_id):
         try:
@@ -1648,7 +1656,7 @@ class SampleDetail(APIView):
             box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
             if box_researcher is not None:
                 user = get_object_or_404(User, pk=box_researcher.researcher_id)
-                obj = {'user': user}
+                obj = {'user': user, 'container': container}
                 self.check_object_permissions(request, obj)  # check the permission
                 # find the sample
                 match = re.match(r"([a-z]+)([0-9]+)", sp_id, re.I)
@@ -1699,7 +1707,7 @@ class SampleDetail(APIView):
             box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
             if box_researcher is not None:
                 user = get_object_or_404(User, pk=box_researcher.researcher_id)
-                obj = {'user': user}
+                obj = {'user': user, 'container': container}
                 self.check_object_permissions(request, obj)  # check the permission
                 # find the sample
                 match = re.match(r"([a-z]+)([0-9]+)", sp_id, re.I)
@@ -1755,7 +1763,7 @@ class SampleDetailUpdate(APIView):
             box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
             if box_researcher:
                 user = get_object_or_404(User, pk=box_researcher.researcher_id)
-                obj = {'user': user}
+                obj = {'user': user, 'container': container}
                 self.check_object_permissions(request, obj)  # check the permission
                 # find the sample
                 match = re.match(r"([a-z]+)([0-9]+)", sp_id, re.I)
@@ -1834,7 +1842,7 @@ class UpdateSamplePosition(APIView):
                     box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
                     if box_researcher is not None:
                         user = get_object_or_404(User, pk=box_researcher.researcher_id)
-                        obj = {'user': user}
+                        obj = {'user': user, 'container': container}
                         self.check_object_permissions(request, obj)  # check the permission
 
                 if switch_sample is not None:
@@ -1915,7 +1923,7 @@ class SampleSwitchPosition(APIView):
                         box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
                         if box_researcher is not None:
                             user = get_object_or_404(User, pk=box_researcher.researcher_id)
-                            obj = {'user': user}
+                            obj = {'user': user, 'container': container}
                             self.check_object_permissions(request, obj)  # check the permission
                             # switch position
                             sample1.vposition = second_pos[0]
@@ -1966,7 +1974,7 @@ class SwitchSample(APIView):
             first_sample_vposition = data.get('first_sample_vposition', '')
             first_sample_hposition = data.get('first_sample_hposition', '')
 
-            get_object_or_404(Container, pk=int(first_container_pk))
+            first_container = get_object_or_404(Container, pk=int(first_container_pk))
             first_box = BoxContainer.objects.all() \
                 .filter(container_id=int(first_container_pk)) \
                 .filter(tower=int(first_box_tower)) \
@@ -1980,8 +1988,8 @@ class SwitchSample(APIView):
             if not auth_user.is_superuser:
                 first_box_researcher = BoxResearcher.objects.all().filter(box_id=first_box.pk).first()
                 if first_box_researcher is not None:
-                    user = get_object_or_404(User, pk=first_box_researcher.researcher_id)
-                    obj = {'user': user}
+                    # user = get_object_or_404(User, pk=first_box_researcher.researcher_id)
+                    obj = {'user': auth_user, 'container': first_container}
                     self.check_object_permissions(request, obj)  # check the permission
 
             # second container
@@ -1992,7 +2000,7 @@ class SwitchSample(APIView):
             second_sample_vposition = data.get('second_sample_vposition', '')
             second_sample_hposition = data.get('second_sample_hposition', '')
 
-            get_object_or_404(Container, pk=int(second_container_pk))
+            second_container = get_object_or_404(Container, pk=int(second_container_pk))
             second_box = BoxContainer.objects.all() \
                 .filter(container_id=int(second_container_pk)) \
                 .filter(tower=int(second_box_tower)) \
@@ -2007,10 +2015,9 @@ class SwitchSample(APIView):
             if not auth_user.is_superuser:
                 second_box_researcher = BoxResearcher.objects.all().filter(box_id=second_box.pk).first()
                 if second_box_researcher is not None:
-                    user = get_object_or_404(User, pk=second_box_researcher.researcher_id)
-                    obj = {'user': user}
+                    # user = get_object_or_404(User, pk=second_box_researcher.researcher_id)
+                    obj = {'user': auth_user, 'container': second_container}
                     self.check_object_permissions(request, obj)  # check the permission
-
 
             # first sample
             first_sample = Sample.objects.all().filter(box_id=first_box.pk).filter(
@@ -2079,7 +2086,7 @@ class SampleAttachmentListAlternative(APIView):
             box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
             if box_researcher is not None:
                 user = get_object_or_404(User, pk=box_researcher.researcher_id)
-                obj = {'user': user }
+                obj = {'user': user, 'container': container}
                 self.check_object_permissions(request, obj)  # check the permission
                 # find the sample
                 match = re.match(r"([a-z]+)([0-9]+)", sp_id, re.I)
@@ -2128,7 +2135,7 @@ class SampleAttachmentListAlternative(APIView):
             box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
             if box_researcher is not None:
                 user = get_object_or_404(User, pk=box_researcher.researcher_id)
-                obj = {'user': user}
+                obj = {'user': user, 'container': container}
                 self.check_object_permissions(request, obj)  # check the permission
                 # find the sample
                 match = re.match(r"([a-z]+)([0-9]+)", sp_id, re.I)
@@ -2201,7 +2208,7 @@ class SampleAttachmentList(APIView):
             box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
             if box_researcher is not None:
                 user = get_object_or_404(User, pk=box_researcher.researcher_id)
-                obj = {'user': user}
+                obj = {'user': user, 'container': container}
                 self.check_object_permissions(request, obj)  # check the permission
                 # find the sample
                 match = re.match(r"([a-z]+)([0-9]+)", sp_id, re.I)
@@ -2253,7 +2260,7 @@ class SampleAttachmentList(APIView):
             box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
             if box_researcher is not None:
                 user = get_object_or_404(User, pk=box_researcher.researcher_id)
-                obj = {'user': user}
+                obj = {'user': user, 'container': container}
                 self.check_object_permissions(request, obj)  # check the permission
                 # find the sample
                 match = re.match(r"([a-z]+)([0-9]+)", sp_id, re.I)
@@ -2320,7 +2327,7 @@ class SampleAttachmentDetailAlternative(APIView):
             box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
             if box_researcher is not None:
                 user = get_object_or_404(User, pk=box_researcher.researcher_id)
-                obj = {'user': user}
+                obj = {'user': user, 'container': container}
                 self.check_object_permissions(request, obj)  # check the permission
                 # find the sample
                 match = re.match(r"([a-z]+)([0-9]+)", sp_id, re.I)
@@ -2369,7 +2376,7 @@ class SampleAttachmentDetailAlternative(APIView):
             box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
             if box_researcher is not None:
                 user = get_object_or_404(User, pk=box_researcher.researcher_id)
-                obj = {'user': user}
+                obj = {'user': user, 'container': container}
                 self.check_object_permissions(request, obj)  # check the permission
                 # find the sample
                 match = re.match(r"([a-z]+)([0-9]+)", sp_id, re.I)
@@ -2419,7 +2426,7 @@ class SampleAttachmentDetailAlternative(APIView):
             box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
             if box_researcher is not None:
                 user = get_object_or_404(User, pk=box_researcher.researcher_id)
-                obj = {'user': user}
+                obj = {'user': user, 'container': container}
                 self.check_object_permissions(request, obj)  # check the permission
                 # find the sample
                 match = re.match(r"([a-z]+)([0-9]+)", sp_id, re.I)
@@ -2483,7 +2490,7 @@ class SampleAttachmentDetail(APIView):
             box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
             if box_researcher is not None:
                 user = get_object_or_404(User, pk=box_researcher.researcher_id)
-                obj = {'user': user}
+                obj = {'user': user, 'container': container}
                 self.check_object_permissions(request, obj)  # check the permission
                 # find the sample
                 match = re.match(r"([a-z]+)([0-9]+)", sp_id, re.I)
@@ -2534,7 +2541,7 @@ class SampleAttachmentDetail(APIView):
             box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
             if box_researcher is not None:
                 user = get_object_or_404(User, pk=box_researcher.researcher_id)
-                obj = {'user': user}
+                obj = {'user': user, 'container': container}
                 self.check_object_permissions(request, obj)  # check the permission
                 # find the sample
                 match = re.match(r"([a-z]+)([0-9]+)", sp_id, re.I)
@@ -2586,7 +2593,7 @@ class SampleAttachmentDetail(APIView):
             box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
             if box_researcher is not None:
                 user = get_object_or_404(User, pk=box_researcher.researcher_id)
-                obj = {'user': user}
+                obj = {'user': user, 'container': container}
                 self.check_object_permissions(request, obj)  # check the permission
                 # find the sample
                 match = re.match(r"([a-z]+)([0-9]+)", sp_id, re.I)
@@ -2648,7 +2655,7 @@ class SampleTakeAlternative(APIView):
             box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
             if box_researcher is not None:
                 user = get_object_or_404(User, pk=box_researcher.researcher_id)
-                obj = {'user': user}
+                obj = {'user': user, 'container': container}
                 self.check_object_permissions(request, obj)  # check the permission
                 # find the sample
                 match = re.match(r"([a-z]+)([0-9]+)", sp_id, re.I)
@@ -2705,7 +2712,7 @@ class SampleTake(APIView):
             box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
             if box_researcher is not None:
                 user = get_object_or_404(User, pk=box_researcher.researcher_id)
-                obj = {'user': user}
+                obj = {'user': user, 'container': container}
                 self.check_object_permissions(request, obj)  # check the permission
                 # find the sample
                 match = re.match(r"([a-z]+)([0-9]+)", sp_id, re.I)
@@ -2760,7 +2767,7 @@ class SampleBackAlternative(APIView):
             box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
             if box_researcher is not None:
                 user = get_object_or_404(User, pk=box_researcher.researcher_id)
-                obj = {'user': user}
+                obj = {'user': user, 'container': container}
                 self.check_object_permissions(request, obj)  # check the permission
                 # find the sample
                 match = re.match(r"([a-z]+)([0-9]+)", sp_id, re.I)
@@ -2822,7 +2829,7 @@ class SampleBack(APIView):
             box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
             if box_researcher is not None:
                 user = get_object_or_404(User, pk=box_researcher.researcher_id)
-                obj = {'user': user}
+                obj = {'user': user, 'container': container}
                 self.check_object_permissions(request, obj)  # check the permission
                 # find the sample
                 match = re.match(r"([a-z]+)([0-9]+)", sp_id, re.I)
@@ -2882,7 +2889,7 @@ class SampleColorAlternative(APIView):
             box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
             if box_researcher is not None:
                 user = get_object_or_404(User, pk=box_researcher.researcher_id)
-                obj = {'user': user}
+                obj = {'user': user, 'container': container}
                 self.check_object_permissions(request, obj)  # check the permission
                 # find the sample
                 match = re.match(r"([a-z]+)([0-9]+)", sp_id, re.I)
@@ -2942,7 +2949,7 @@ class SampleColor(APIView):
             box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
             if box_researcher is not None:
                 user = get_object_or_404(User, pk=box_researcher.researcher_id)
-                obj = {'user': user}
+                obj = {'user': user, 'container': container}
                 self.check_object_permissions(request, obj)  # check the permission
                 # find the sample
                 match = re.match(r"([a-z]+)([0-9]+)", sp_id, re.I)
