@@ -30,7 +30,8 @@ class Container(models.Model):
     photo_tag.allow_tags = True
 
     def __str__(self):
-        return self.name
+        # return self.name
+        return 'container_' + self.pk
 
     def group_objs(self):
         gc_set = self.groupcontainer_set

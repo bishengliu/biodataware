@@ -1,12 +1,15 @@
 from django.db import models
 from users.models import User
-from containers.models import BoxContainer
+from containers.models import BoxContainer, Container
 from django.core.validators import MinValueValidator
 
 # Receive the pre_delete signal and delete the file associated with the model instance.
 from django.db.models.signals import pre_delete
 from django.dispatch.dispatcher import receiver
 from django.contrib.auth import get_user_model
+from datetime import datetime
+import os
+
 
 
 # bio-system model, not used anymore
@@ -121,15 +124,35 @@ class Sample(models.Model):
         return str(self.box.tower) + '-' + str(self.box.shelf) + '-' + str(self.box.box)
 
 
+# upload handler
+def upload_path_handler(instance, filename):
+
+    # get the sample
+    sample = Sample.objects.get(pk=instance.sample_id)
+    if sample is not None:
+        # get the box
+        box = BoxContainer.objects.get(pk=sample.box_id)
+        if box is not None:
+            # get the container
+            container = Container.objects.get(pk=box.container_id)
+            if container is not None:
+                return os.path.join('samples', str(container), filename)
+    return os.path.join('samples', filename)
+
+
 # sample attachment
 class SampleAttachment(models.Model):
     sample = models.ForeignKey(Sample, on_delete=models.CASCADE)
     label = models.CharField(max_length=150)  # attachment label
-    attachment = models.FileField(upload_to='samples/', max_length=250, null=True, blank=True)
+    # attachment = models.FileField(upload_to='samples/', max_length=250, null=True, blank=True)
+    attachment = models.FileField(upload_to=upload_path_handler, max_length=250, null=True, blank=True)
     description = models.TextField(null=True, blank=True)
 
     def __str__(self):
         return self.sample.name + ' :' + self.label
+
+    def filename(self):
+        return os.path.basename(self.file.name)
 
 
 @receiver(pre_delete, sender=SampleAttachment)
