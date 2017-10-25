@@ -59,13 +59,13 @@ class IsInGroupReadonly(permissions.BasePermission):
             user_groups = GroupResearcher.objects.all().filter(user_id=user.id)
             if not user_groups:
                 return False
-            user_group_ids = [g.id for g in user_groups]
+            user_group_ids = [g.group_id for g in user_groups]
 
             if request.user.is_authenticated():
                 groups = GroupResearcher.objects.all().filter(group__email=auth_user.email)
                 if not groups:
                     return False
-                group_ids = [g.id for g in groups]
+                group_ids = [g.group_id for g in groups]
                 # get the intersection
                 inter_ids = list(set(user_group_ids) & set(group_ids))
                 if len(inter_ids) >= 1:
@@ -209,7 +209,7 @@ class IsPIofUser(permissions.BasePermission):
             user_groups = GroupResearcher.objects.all().filter(user_id=user.id)
             if not user_groups:
                 return False
-            user_group_ids = [g.id for g in user_groups]
+            user_group_ids = [g.group_id for g in user_groups]
             # check authUser
             if request.user.is_authenticated():
                 # check whether current user is one of the PI
@@ -243,7 +243,7 @@ class IsPIofUserReadOnly(permissions.BasePermission):
             user_groups = GroupResearcher.objects.all().filter(user_id=user.id)
             if not user_groups:
                 return False
-            user_group_ids = [g.id for g in user_groups]
+            user_group_ids = [g.group_id for g in user_groups]
             # check authUser
             if request.user.is_authenticated():
                 # check whether current user is one of the PI
@@ -280,7 +280,7 @@ class IsPIorAssistantofUser(permissions.BasePermission):
             user_groups = GroupResearcher.objects.all().filter(user_id=user.id)
             if not user_groups:
                 return False
-            user_group_ids = [g.id for g in user_groups]
+            user_group_ids = [g.group_id for g in user_groups]
             if request.user.is_authenticated():
                 # pi
                 role = Role.objects.all().filter(role__iexact='PI').first()
@@ -300,7 +300,7 @@ class IsPIorAssistantofUser(permissions.BasePermission):
                         # get the group
                         auth_groups = GroupResearcher.objects.all().filter(user_id=auth_user.id)
                         if auth_groups:
-                            auth_group_ids = [g.id for g in auth_groups]
+                            auth_group_ids = [g.group_id for g in auth_groups]
                             assistant_groups = Assistant.objects.all().filter(group_id__in=auth_group_ids)
                             if assistant_groups:
                                 assistant_group_ids = [a.group_id for a in assistant_groups]
@@ -452,7 +452,7 @@ class IsPIorAssistantorOwner(permissions.BasePermission):
                     user_groups = GroupResearcher.objects.all().filter(user_id=user.id)
                     if not user_groups:
                         return False
-                    user_group_ids = [g.id for g in user_groups]
+                    user_group_ids = [g.group_id for g in user_groups]
                     # pi
                     role = Role.objects.all().filter(role__iexact='PI').first()
                     if role:
@@ -471,7 +471,7 @@ class IsPIorAssistantorOwner(permissions.BasePermission):
                             # get the group
                             auth_groups = GroupResearcher.objects.all().filter(user_id=auth_user.id)
                             if auth_groups:
-                                auth_group_ids = [g.id for g in auth_groups]
+                                auth_group_ids = [g.group_id for g in auth_groups]
                                 assistant_groups = Assistant.objects.all().filter(group_id__in=auth_group_ids)
                                 if assistant_groups:
                                     assistant_group_ids = [a.group_id for a in assistant_groups]
@@ -503,7 +503,7 @@ class IsPIorAssistantorOwnerorReadOnly(permissions.BasePermission):
                     user_groups = GroupResearcher.objects.all().filter(user_id=user.id)
                     if not user_groups:
                         return False
-                    user_group_ids = [g.id for g in user_groups]
+                    user_group_ids = [g.group_id for g in user_groups]
                     # pi
                     role = Role.objects.all().filter(role__iexact='PI').first()
                     if role:
@@ -522,7 +522,7 @@ class IsPIorAssistantorOwnerorReadOnly(permissions.BasePermission):
                             # get the group
                             auth_groups = GroupResearcher.objects.all().filter(user_id=auth_user.id)
                             if auth_groups:
-                                auth_group_ids = [g.id for g in auth_groups]
+                                auth_group_ids = [g.group_id for g in auth_groups]
                                 assistant_groups = Assistant.objects.all().filter(group_id__in=auth_group_ids)
                                 if assistant_groups:
                                     assistant_group_ids = [a.group_id for a in assistant_groups]
