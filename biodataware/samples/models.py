@@ -11,7 +11,6 @@ from datetime import datetime
 import os
 
 
-
 # bio-system model, not used anymore
 class Biosystem(models.Model):
     system = models.CharField(max_length=100, unique=True)
@@ -126,7 +125,6 @@ class Sample(models.Model):
 
 # upload handler
 def upload_path_handler(instance, filename):
-
     # get the sample
     sample = Sample.objects.get(pk=instance.sample_id)
     if sample is not None:
@@ -136,7 +134,9 @@ def upload_path_handler(instance, filename):
             # get the container
             container = Container.objects.get(pk=box.container_id)
             if container is not None:
-                return os.path.join('samples', str(container), filename)
+                # new file name
+                format_filename = 'sample_' + str(sample.pk) + '_' + filename
+                return os.path.join('samples', 'container_' + str(container.pk), format_filename)
     return os.path.join('samples', filename)
 
 
