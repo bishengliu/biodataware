@@ -53,6 +53,15 @@ class Container(models.Model):
             return self.boxcontainer_set.first()
         return None
 
+    def sample_count(self):
+        if self.boxcontainer_set is not None:
+            count_sample = 0
+            for box in self.boxcontainer_set.all():
+                if box.sample_set is not None:
+                    count_sample = count_sample + box.sample_set.count()
+            return count_sample
+        return 0
+
 
 # containers to groups
 class GroupContainer(models.Model):

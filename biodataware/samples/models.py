@@ -158,7 +158,7 @@ class SampleResearcher(models.Model):
         return self.sample.name + ' (' + self.researcher.username + ')'
 
 
-# sample tags
+# sample tags, not used anymore
 class SampleTag(models.Model):
     name = models.CharField(max_length=50)  # attachment label
     category = models.CharField(max_length=50)  # attachment label

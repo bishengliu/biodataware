@@ -141,7 +141,7 @@ class ContainerBoxCreateSerializer(serializers.ModelSerializer):
 
 # ======for sample =====================
 class SampleAttachmentSerializer(serializers.ModelSerializer):
-    #sample = serializers.StringRelatedField()
+    # sample = serializers.StringRelatedField()
 
     class Meta:
         model = SampleAttachment
@@ -170,7 +170,7 @@ class SampleResearcherSerializer(serializers.ModelSerializer):
 class SampleSerializer(serializers.ModelSerializer):
     box = serializers.StringRelatedField()
     attachments = SampleAttachmentSerializer(many=True, read_only=True, source='sampleattachment_set')
-    #tissues = SampleTissueSerializer(many=True, read_only=True, source='sampletissue_set')
+    # tissues = SampleTissueSerializer(many=True, read_only=True, source='sampletissue_set')
     # researchers = SampleResearcherSerializer(many=True, read_only=True, source='sampleresearcher_set')
     researchers = UserSerializer(many=True, read_only=True, source='researcher_objs')
 
@@ -215,7 +215,7 @@ class ConatainerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Container
         fields = ('pk', 'name', 'room', 'photo', 'photo_tag', 'temperature', 'code39', 'qrcode', 'tower', 'shelf',
-        'box', 'description', 'groups', 'has_box', 'first_box')
+        'box', 'description', 'groups', 'has_box', 'first_box', 'sample_count')
 
 
 # sample color
