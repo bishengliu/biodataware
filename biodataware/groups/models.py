@@ -6,13 +6,21 @@ from roles.models import Role
 from django.conf import settings
 from django.db.models.signals import post_save, post_delete
 from django.dispatch.dispatcher import receiver
+import os
+
+
+# upload handler
+def upload_path_handler(instance, filename):
+    format_filename = 'group_' + str(instance.pk) + '_' + filename
+    return os.path.join('groups', format_filename)
 
 
 class Group(models.Model):
     group_name = models.CharField(max_length=100, unique=True)
     pi = models.CharField(max_length=100)
     pi_fullname = models.CharField(max_length=150)
-    photo = models.ImageField(upload_to='groups/', max_length=150, null=True, blank=True)
+    # photo = models.ImageField(upload_to='groups/', max_length=150, null=True, blank=True)
+    photo = models.ImageField(upload_to=upload_path_handler, max_length=150, null=True, blank=True)
     email = models.EmailField(max_length=50, unique=True)
     telephone = models.CharField(validators=[validate_phone], null=True, blank=True, max_length=20)
     department = models.CharField(max_length=150, null=True, blank=True)

@@ -4,13 +4,21 @@ from groups.models import Group, GroupResearcher
 from django.utils.safestring import mark_safe
 from django.conf import settings
 from django.contrib.auth import get_user_model
+import os
+
+
+# upload handler
+def upload_path_handler(instance, filename):
+    format_filename = 'container_' + str(instance.pk) + '_' + filename
+    return os.path.join('containers', format_filename)
 
 
 # containers
 class Container(models.Model):
     name = models.CharField(max_length=100)
     room = models.CharField(max_length=100, null=True, blank=True)
-    photo = models.ImageField(upload_to='containers/', max_length=150, null=True, blank=True)
+    # photo = models.ImageField(upload_to='containers/', max_length=150, null=True, blank=True)
+    photo = models.ImageField(upload_to=upload_path_handler, max_length=150, null=True, blank=True)
     code39 = models.CharField(max_length=50, null=True, blank=True)
     qrcode = models.CharField(max_length=50, null=True, blank=True)
     temperature = models.CharField(max_length=50, null=True, blank=True)
@@ -31,6 +39,9 @@ class Container(models.Model):
 
     def __str__(self):
         return self.name
+
+    def filename(self):
+        return os.path.basename(self.file.name)
 
     def group_objs(self):
         gc_set = self.groupcontainer_set
