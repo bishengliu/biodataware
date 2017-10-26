@@ -22,44 +22,41 @@ MESSAGE_LEVEL = 10  # DEBUG
 
 STATIC_ROOT = os.path.join(APPS_DIR, 'static')
 
+# need to change this to restrict the access to the backend
 # https://github.com/ottoyiu/django-cors-headers/#configuration
 # cors rest api request
 # CORS_ORIGIN_WHITELIST = (
 #     'http://localhost'
 # )
+# allow all for access
 CORS_ORIGIN_ALLOW_ALL = True
 
 # restful
 REST_FRAMEWORK = {
     # Use Django's standard `django.contrib.auth` permissions,
     # or allow read-only access for unauthenticated users.
-    #'DEFAULT_PERMISSION_CLASSES': [
+    # 'DEFAULT_PERMISSION_CLASSES': [
     #    'rest_framework.permissions.IsAuthenticated',
-    #],
+    # ],
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.TokenAuthentication', # token
-        #'helpers.authentication.ExpiringTokenAuthentication', # custom token
-        #'rest_framework.authentication.BasicAuthentication', # login plain password
-        #'rest_framework.authentication.SessionAuthentication', # session on the same server
+        # 'helpers.authentication.ExpiringTokenAuthentication', # custom token
+        # 'rest_framework.authentication.BasicAuthentication', # login plain password
+        # 'rest_framework.authentication.SessionAuthentication', # session on the same server
     )
 }
 
+SITE_NAME = 'BIOKU'
 
-'''
-EMAIL_USE_TLS = True
-DEFAULT_FROM_EMAIL = 'test@gmail.com'
-SERVER_EMAIL = 'test@gmail.com'
-EMAIL_HOST = 'smtp.gmail.com'
+# sendgrid
+EMAIL_USE_TLS = False
+DEFAULT_FROM_EMAIL = 'admin@bioku.nl'
+SERVER_EMAIL = 'admin@bioku.nl'
+EMAIL_HOST = 'smtp.sendgrid.net'
 EMAIL_PORT = 587
-EMAIL_HOST_USER = 'test@gmail.com'
-EMAIL_HOST_PASSWORD = 'test123##'
+EMAIL_HOST_USER = 'bisheng'
+EMAIL_HOST_PASSWORD = 'Lbs198236'
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-'''
-
-SITE_NAME = 'bioku.nl'
-SITE_PROTOCOL = 'http'
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # During development only
-
 
 # DATABASE
 DATABASES = {

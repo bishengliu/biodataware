@@ -225,20 +225,18 @@ CORS_ALLOW_HEADERS = (
     'x-requested-with',
 )
 
-SITE_NAME = 'localhost'
+SITE_NAME = 'BIOKU'
 
-SITE_PROTOCOL = 'http'
+DEFAULT_FROM_EMAIL = 'admin@bioku.nl'
 
-DEFAULT_FROM_EMAIL = 'b.liu@nki.nl'
 
-'''
-# smtp server
-EMAIL_USE_TLS = True
-DEFAULT_FROM_EMAIL = 'test@gmail.com'
-SERVER_EMAIL = 'test@gmail.com'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_HOST_USER = 'test@gmail.com'
-EMAIL_HOST_PASSWORD = 'test123##'
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-'''
+# # smtp server
+# EMAIL_USE_TLS = True
+# DEFAULT_FROM_EMAIL = 'test@gmail.com'
+# SERVER_EMAIL = 'test@gmail.com'
+# EMAIL_HOST = 'smtp.gmail.com'
+# EMAIL_PORT = 587
+# EMAIL_HOST_USER = 'test@gmail.com'
+# EMAIL_HOST_PASSWORD = 'test123##'
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+

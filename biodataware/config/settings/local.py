@@ -45,16 +45,29 @@ REST_FRAMEWORK = {
 # email for forgot password
 
 
-'''
-EMAIL_USE_TLS = True
-DEFAULT_FROM_EMAIL = 'test@gmail.com'
-SERVER_EMAIL = 'test@gmail.com'
-EMAIL_HOST = 'smtp.gmail.com'
+# EMAIL_USE_TLS = True
+# DEFAULT_FROM_EMAIL = 'test@gmail.com'
+# SERVER_EMAIL = 'test@gmail.com'
+# EMAIL_HOST = 'smtp.gmail.com'
+# EMAIL_PORT = 587
+# EMAIL_HOST_USER = 'test@gmail.com'
+# EMAIL_HOST_PASSWORD = 'test123##'
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+
+
+# sendgrid
+EMAIL_USE_TLS = False
+DEFAULT_FROM_EMAIL = 'admin@bioku.nl'
+SERVER_EMAIL = 'admin@bioku.nl'
+EMAIL_HOST = 'smtp.sendgrid.net'
 EMAIL_PORT = 587
-EMAIL_HOST_USER = 'test@gmail.com'
-EMAIL_HOST_PASSWORD = 'test123##'
+EMAIL_HOST_USER = 'bisheng'
+EMAIL_HOST_PASSWORD = 'Lbs198236'
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-'''
-SITE_NAME = 'localhost'
-SITE_PROTOCOL = 'http'
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # During development only
+
+
+# console for development
+# During development only
+# SITE_NAME = 'localhost'
+# SITE_PROTOCOL = 'http'
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
