@@ -60,7 +60,7 @@ class GroupList(APIView):
 
 # group count
 class GroupCount(APIView):
-    permission_classes = (permissions.IsAuthenticated, permissions.IsAdminUser,)
+    # permission_classes = (permissions.IsAuthenticated, permissions.IsAdminUser,)
 
     def get(self, request, format=None):
         group_count = Group.objects.all().count()
