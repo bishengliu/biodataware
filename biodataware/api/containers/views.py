@@ -1017,7 +1017,10 @@ class Box(APIView):
                 attachment_data = attachment_serializer.data
             # form model data and load into dict
             sample_obj = json.loads(form_data['obj'][0])
-
+            # today
+            today = datetime.date.today()
+            if not sample_obj['freezing_date']:
+                sample_obj['freezing_date'] = today
             serializer = SampleCreateSerializer(data=sample_obj, partial=True)
             serializer.is_valid(raise_exception=True)
             data = serializer.data
