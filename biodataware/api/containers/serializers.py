@@ -250,7 +250,7 @@ class SampleCreateSerializer(serializers.Serializer):
     color = serializers.RegexField(regex=r'^#[0-9a-fA-F]{6}$', required=False)  # color of the position
     name = serializers.CharField(max_length=150)  # sample
     type = serializers.CharField(max_length=50)  # type
-    freezing_date = serializers.DateField()  # sample freezing date
+    freezing_date = serializers.DateField(required=False, allow_null=True, input_formats=settings.DATE_INPUT_FORMATS)  # sample freezing date
     registration_code = serializers.CharField(max_length=50, required=False, allow_null=True,
                                               allow_blank=True)  # sample registration code, such as promas barcode
     freezing_code = serializers.CharField(max_length=50, required=False, allow_null=True,
@@ -396,3 +396,14 @@ class UploadAttacgmentSerializer(serializers.Serializer):
     # sample_pk = serializers.IntegerField(required=True)  # first container pk
     label = serializers.CharField(required=False, allow_null=True, allow_blank=True)
     description = serializers.CharField(required=False, allow_null=True, allow_blank=True)
+
+
+# upload samples to a container
+class UploadSample2ContainerSerializer(SampleCreateSerializer):
+    box_horizontal = serializers.IntegerField(validators=[MinValueValidator(1)], required=True)  # box_horizontal
+    box_vertical = serializers.IntegerField(validators=[MinValueValidator(1)], required=True)  # box_vertical
+    tower = serializers.IntegerField(validators=[MinValueValidator(1)], required=True)
+    shelf = serializers.IntegerField(validators=[MinValueValidator(1)], required=True)
+    box = serializers.IntegerField(validators=[MinValueValidator(1)], required=True)
+    vposition = serializers.CharField(max_length=150, required=True)  # sample
+    hposition = serializers.IntegerField(validators=[MinValueValidator(1)], required=True)

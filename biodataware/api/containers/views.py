@@ -257,6 +257,134 @@ class ContainerDetail(APIView):
             return Response({'detail': 'Something went wrong, container not deleted!'}, status=status.HTTP_400_BAD_REQUEST)
 
 
+# upload samples 2 a container
+class ContainerSampleUpload(APIView):
+    permission_classes = (permissions.IsAuthenticated, IsPIorReadOnly,)
+
+    @transaction.atomic
+    def post(self, request, pk, format=None):
+        try:
+            user = request.user
+            container = get_object_or_404(Container, pk=pk)
+            obj = {'user': user, 'container': container}
+            if not user.is_superuser:
+                self.check_object_permissions(request, obj)  # check the permission
+            data = request.data
+            serializer = UploadSample2ContainerSerializer(data=data, many=True, partial=True)
+            serializer.is_valid(raise_exception=True)
+            data = serializer.data
+
+            if data is not None:
+                for item in data:
+                    # create box
+                    box = BoxContainer()
+                    tower = int(item.get('tower'))
+                    shelf = int(item.get('shelf'))
+                    box_id = int(item.get('box'))
+                    if int(tower) > int(container.tower) or int(tower) < 0:
+                        continue
+                    if int(shelf) > int(container.shelf) or int(shelf) < 0:
+                        continue
+                    if int(box_id) > int(container.box) or int(box_id) < 0:
+                        continue
+                    box = BoxContainer.objects.all() \
+                        .filter(container_id=int(container.pk)) \
+                        .filter(tower=int(tower)) \
+                        .filter(shelf=int(shelf)) \
+                        .filter(box=int(box_id)) \
+                        .first()
+                    if box is None:
+                        box = BoxContainer.objects.create(
+                            container=container,
+                            tower=tower,
+                            shelf=shelf,
+                            box=box_id,
+                            box_horizontal=item.get('box_horizontal'),
+                            box_vertical=item.get('box_vertical')
+                        )
+                        box.save()
+
+                        box_researcher = BoxResearcher.objects.create(
+                            box=box,
+                            researcher_id=user.pk
+                        )
+                        box_researcher.save()
+
+                    sample_found = Sample.objects.all().filter(box_id=box.pk).filter(
+                        vposition__iexact=item.get('vposition')).filter(
+                        hposition=int(item.get('hposition'))).filter(occupied=True).first()
+                    if sample_found is None:
+                        sample = Sample.objects.create(
+                            box=box,
+                            hposition=int(item.get('hposition')),
+                            vposition=item.get('vposition'),
+                            color=item.get('color', '#616161'),
+                            type=item.get('type', 'GENERAL'),
+                            name=item.get('name'),
+                            official_name=item.get('official_name', ''),
+                            label=item.get('label', ''),
+                            tag=item.get('tag', ''),
+                            occupied=True,
+                            date_in=datetime.datetime.now(),
+                            freezing_date=item.get('freezing_date', datetime.datetime.now()),
+                            registration_code=item.get('registration_code', ''),
+                            freezing_code=item.get('freezing_code', ''),
+                            quantity=item.get('quantity'),
+                            quantity_unit=item.get('quantity_unit', ''),
+                            reference_code=item.get('reference_code', ''),
+                            description=item.get('description', ''),
+                            # tissue
+                            pathology_code=item.get('pathology_code', ''),
+                            tissue=item.get('tissue', ""),
+
+                            # (gRNA) Oligo only
+                            oligo_name=item.get('oligo_name', ""),
+                            s_or_as=item.get('s_or_as'),
+                            oligo_sequence=item.get('oligo_sequence', ""),
+                            oligo_length=item.get('oligo_length'),
+                            oligo_GC=item.get('oligo_GC'),
+                            target_sequence=item.get('target_sequence', ""),
+
+                            # construct only
+                            clone_number=item.get('clone_number', ""),
+                            against_260_280=item.get('against_260_280'),
+                            feature=item.get('feature', ""),
+                            r_e_analysis=item.get('r_e_analysis', ""),
+                            backbone=item.get('backbone', ""),
+                            insert=item.get('insert', ""),
+                            first_max=item.get('first_max', ""),
+                            marker=item.get('marker', ""),
+                            has_glycerol_stock=item.get('has_glycerol_stock'),
+                            strain=item.get('strain', ""),
+                            # cell line
+                            passage_number=item.get('passage_number', ""),
+                            cell_amount=item.get('cell_amount', ""),
+                            project=item.get('project', ""),
+                            creator=item.get('creator', ""),
+
+                            # virus
+                            plasmid=item.get('plasmid', ""),
+                            titration_titer=item.get('titration_titer', ""),
+                            titration_unit=item.get('titration_unit', ""),
+                            titration_cell_type=item.get('titration_cell_type', ""),
+                            titration_code=item.get('titration_code', "")
+                        )
+                        sample.save()
+
+                        # add sample researcher
+                        SampleResearcher.objects.create(
+                            sample=sample,
+                            researcher=user
+                        )
+
+                return Response({'detail': 'samples saved!'}, status=status.HTTP_200_OK)
+            return Response({'detail': 'empty data sent!'},
+                            status=status.HTTP_400_BAD_REQUEST)
+        except:
+            return Response({'detail': 'Something went wrong, sample not saved!'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+
 # group containers list
 class GroupContainerList(APIView):
     permission_classes = (permissions.IsAuthenticated, IsPIorReadOnly, )

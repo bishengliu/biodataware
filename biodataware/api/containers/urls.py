@@ -42,6 +42,9 @@ urlpatterns = [
     # ====================================================group container detail========================================
     url(r'^(?P<ct_id>[0-9]+)/groups/(?P<gp_id>[0-9]+)/$', GroupContainerDetail.as_view(), name='groupcontainers-detail'),
 
+    # =========================================upload samples to a freezer =============================================
+    url(r'^(?P<pk>[0-9]+)/upload_samples/$', ContainerSampleUpload.as_view(), name='container-sample-upload'),
+
     # ====================================================tower details=================================================
     # shelf list, number of shelves
     # containers/container_id/12-(tower_id)/ or containers/container_id/12(tower_id)/

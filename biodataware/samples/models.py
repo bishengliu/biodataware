@@ -41,7 +41,7 @@ class Sample(models.Model):
     date_out = models.DateField(null=True, blank=True)  # timestamp for taking the sample out
     # sample info
     name = models.CharField(max_length=150)  # sample
-    freezing_date = models.DateField()  # sample freezing date
+    freezing_date = models.DateField(auto_now_add=True, null=True, blank=True)  # sample freezing date
     registration_code = models.CharField(max_length=50, null=True, blank=True)  # sample registration code, such as promas barcode
     freezing_code = models.CharField(max_length=50, null=True, blank=True)  # sample freezing code
     # quantity = models.IntegerField(validators=[MinValueValidator(1)], default=1)  # sample quantity
