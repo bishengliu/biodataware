@@ -258,11 +258,11 @@ class SampleCreateSerializer(serializers.Serializer):
     quantity = serializers.DecimalField(max_digits=10, decimal_places=3, required=False, allow_null=True)  # sample quantity
     description = serializers.CharField(required=False, allow_null=True, allow_blank=True)
     # extra attrs
-    official_name = serializers.CharField(max_length=20, required=False, allow_null=True, allow_blank=True)
-    label = serializers.CharField(max_length=20, required=False, allow_null=True, allow_blank=True)
-    tag = serializers.CharField(max_length=20, required=False, allow_null=True, allow_blank=True)
-    quantity_unit = serializers.CharField(max_length=20, required=False, allow_null=True, allow_blank=True)
-    reference_code = serializers.CharField(max_length=20, required=False, allow_null=True, allow_blank=True)
+    official_name = serializers.CharField(max_length=50, required=False, allow_null=True, allow_blank=True)
+    label = serializers.CharField(max_length=50, required=False, allow_null=True, allow_blank=True)
+    tag = serializers.CharField(max_length=50, required=False, allow_null=True, allow_blank=True)
+    quantity_unit = serializers.CharField(max_length=50, required=False, allow_null=True, allow_blank=True)
+    reference_code = serializers.CharField(max_length=50, required=False, allow_null=True, allow_blank=True)
 
     # tissue only
     pathology_code = serializers.CharField(max_length=50, required=False, allow_null=True, allow_blank=True)  # sample pathology code
@@ -283,22 +283,22 @@ class SampleCreateSerializer(serializers.Serializer):
     r_e_analysis = serializers.CharField(max_length=50, required=False, allow_null=True, allow_blank=True)
     backbone = serializers.CharField(max_length=50, required=False, allow_null=True, allow_blank=True)
     insert = serializers.CharField(max_length=50, required=False, allow_null=True, allow_blank=True)
-    first_max = serializers.CharField(max_length=20, required=False, allow_null=True, allow_blank=True)
+    first_max = serializers.CharField(max_length=50, required=False, allow_null=True, allow_blank=True)
     marker = serializers.CharField(max_length=100, required=False, allow_null=True, allow_blank=True)
-    has_glycerol_stock = serializers.CharField(max_length=20, required=False, allow_null=True, allow_blank=True)
-    strain = serializers.CharField(max_length=20, required=False, allow_null=True, allow_blank=True)
+    has_glycerol_stock = serializers.CharField(max_length=50, required=False, allow_null=True, allow_blank=True)
+    strain = serializers.CharField(max_length=50, required=False, allow_null=True, allow_blank=True)
     # cell line
-    passage_number = serializers.CharField(max_length=10, required=False, allow_null=True, allow_blank=True)
-    cell_amount = serializers.CharField(max_length=10, required=False, allow_null=True, allow_blank=True)
-    project = serializers.CharField(max_length=10, required=False, allow_null=True, allow_blank=True)
-    creator = serializers.CharField(max_length=10, required=False, allow_null=True, allow_blank=True)
+    passage_number = serializers.CharField(max_length=50, required=False, allow_null=True, allow_blank=True)
+    cell_amount = serializers.CharField(max_length=50, required=False, allow_null=True, allow_blank=True)
+    project = serializers.CharField(max_length=50, required=False, allow_null=True, allow_blank=True)
+    creator = serializers.CharField(max_length=50, required=False, allow_null=True, allow_blank=True)
 
     # virus
-    plasmid = serializers.CharField(max_length=20, required=False, allow_null=True, allow_blank=True)
-    titration_titer = serializers.CharField(max_length=20, required=False, allow_null=True, allow_blank=True)
-    titration_unit = serializers.CharField(max_length=20, required=False, allow_null=True, allow_blank=True)
-    titration_cell_type = serializers.CharField(max_length=20, required=False, allow_null=True, allow_blank=True)
-    titration_code = serializers.CharField(max_length=20, required=False, allow_null=True, allow_blank=True)
+    plasmid = serializers.CharField(max_length=50, required=False, allow_null=True, allow_blank=True)
+    titration_titer = serializers.CharField(max_length=50, required=False, allow_null=True, allow_blank=True)
+    titration_unit = serializers.CharField(max_length=50, required=False, allow_null=True, allow_blank=True)
+    titration_cell_type = serializers.CharField(max_length=50, required=False, allow_null=True, allow_blank=True)
+    titration_code = serializers.CharField(max_length=50, required=False, allow_null=True, allow_blank=True)
 
 
 # search samples

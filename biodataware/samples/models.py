@@ -45,7 +45,7 @@ class Sample(models.Model):
     registration_code = models.CharField(max_length=50, null=True, blank=True)  # sample registration code, such as promas barcode
     freezing_code = models.CharField(max_length=50, null=True, blank=True)  # sample freezing code
     # quantity = models.IntegerField(validators=[MinValueValidator(1)], default=1)  # sample quantity
-    quantity = models.DecimalField(max_digits=8, decimal_places=3, null=True, blank=True)  # sample quantity
+    quantity = models.DecimalField(max_digits=10, decimal_places=3, null=True, blank=True)  # sample quantity
     type = models.CharField(max_length=200, null=True, blank=True)  # sample type, such as tumor
     description = models.TextField(null=True, blank=True)
     code39 = models.CharField(max_length=50, null=True, blank=True)  # sample
@@ -59,7 +59,7 @@ class Sample(models.Model):
     label = models.CharField(max_length=50, null=True, blank=True)
     tag = models.CharField(max_length=50, null=True, blank=True)
     official_name = models.CharField(max_length=100, null=True, blank=True)
-    quantity_unit = models.CharField(max_length=20, null=True, blank=True)
+    quantity_unit = models.CharField(max_length=50, null=True, blank=True)
     reference_code = models.CharField(max_length=50, null=True, blank=True)
 
     # (gRNA) Oligo only
@@ -67,33 +67,33 @@ class Sample(models.Model):
     s_or_as = models.NullBooleanField()  # sense or antisense
     oligo_sequence = models.CharField(max_length=100, null=True, blank=True)
     oligo_length = models.IntegerField(validators=[MinValueValidator(100)], null=True, blank=True)  # sample quantity
-    oligo_GC = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
+    oligo_GC = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     target_sequence = models.CharField(max_length=100, null=True, blank=True)
 
     # construct only
-    clone_number = models.CharField(max_length=20, null=True, blank=True)
-    against_260_280 = models.DecimalField(max_digits=3, decimal_places=2, null=True, blank=True)
+    clone_number = models.CharField(max_length=50, null=True, blank=True)
+    against_260_280 = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     feature = models.CharField(max_length=150, null=True, blank=True)
     r_e_analysis = models.CharField(max_length=50, null=True, blank=True)
     backbone = models.CharField(max_length=50, null=True, blank=True)
     insert = models.CharField(max_length=50, null=True, blank=True)
-    first_max = models.CharField(max_length=20, null=True, blank=True)
+    first_max = models.CharField(max_length=50, null=True, blank=True)
     marker = models.CharField(max_length=100, null=True, blank=True)
-    has_glycerol_stock = models.CharField(max_length=20, null=True, blank=True)
-    strain = models.CharField(max_length=20, null=True, blank=True)
+    has_glycerol_stock = models.CharField(max_length=50, null=True, blank=True)
+    strain = models.CharField(max_length=50, null=True, blank=True)
 
     # cell line
-    passage_number = models.CharField(max_length=10, null=True, blank=True)
-    cell_amount = models.CharField(max_length=10, null=True, blank=True)
-    project = models.CharField(max_length=10, null=True, blank=True)
-    creator = models.CharField(max_length=10, null=True, blank=True)
+    passage_number = models.CharField(max_length=50, null=True, blank=True)
+    cell_amount = models.CharField(max_length=50, null=True, blank=True)
+    project = models.CharField(max_length=50, null=True, blank=True)
+    creator = models.CharField(max_length=50, null=True, blank=True)
 
     # virus
-    plasmid = models.CharField(max_length=20, null=True, blank=True)
-    titration_titer = models.CharField(max_length=20, null=True, blank=True)
-    titration_unit = models.CharField(max_length=20, null=True, blank=True)
-    titration_cell_type = models.CharField(max_length=20, null=True, blank=True)
-    titration_code = models.CharField(max_length=20, null=True, blank=True)
+    plasmid = models.CharField(max_length=50, null=True, blank=True)
+    titration_titer = models.CharField(max_length=50, null=True, blank=True)
+    titration_unit = models.CharField(max_length=50, null=True, blank=True)
+    titration_cell_type = models.CharField(max_length=50, null=True, blank=True)
+    titration_code = models.CharField(max_length=50, null=True, blank=True)
 
     def position(self):
         return self.vposition + self.hposition
