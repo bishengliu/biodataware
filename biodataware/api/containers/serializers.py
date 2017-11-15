@@ -255,7 +255,7 @@ class SampleCreateSerializer(serializers.Serializer):
                                               allow_blank=True)  # sample registration code, such as promas barcode
     freezing_code = serializers.CharField(max_length=50, required=False, allow_null=True,
                                           allow_blank=True)  # sample freezing code
-    quantity = serializers.DecimalField(max_digits=8, decimal_places=3, required=False, allow_null=True)  # sample quantity
+    quantity = serializers.DecimalField(max_digits=10, decimal_places=3, required=False, allow_null=True)  # sample quantity
     description = serializers.CharField(required=False, allow_null=True, allow_blank=True)
     # extra attrs
     official_name = serializers.CharField(max_length=20, required=False, allow_null=True, allow_blank=True)
@@ -273,19 +273,19 @@ class SampleCreateSerializer(serializers.Serializer):
     s_or_as = serializers.NullBooleanField()  # sense or antisense
     oligo_sequence = serializers.CharField(max_length=50, required=False, allow_null=True, allow_blank=True)
     oligo_length = serializers.IntegerField(required=False, allow_null=True)  # sample quantity
-    oligo_GC = serializers.DecimalField(max_digits=5, decimal_places=2, allow_null=True, required=False)
+    oligo_GC = serializers.DecimalField(max_digits=10, decimal_places=2, allow_null=True, required=False)
     target_sequence = serializers.CharField(max_length=50, required=False, allow_null=True, allow_blank=True)
 
     # construct only
     clone_number = serializers.CharField(max_length=20, required=False, allow_null=True, allow_blank=True)
-    against_260_280 = serializers.DecimalField(max_digits=3, decimal_places=2, required=False, allow_null=True)
+    against_260_280 = serializers.DecimalField(max_digits=10, decimal_places=2, required=False, allow_null=True)
     feature = serializers.CharField(max_length=150, required=False, allow_null=True, allow_blank=True)
     r_e_analysis = serializers.CharField(max_length=50, required=False, allow_null=True, allow_blank=True)
     backbone = serializers.CharField(max_length=50, required=False, allow_null=True, allow_blank=True)
     insert = serializers.CharField(max_length=50, required=False, allow_null=True, allow_blank=True)
     first_max = serializers.CharField(max_length=20, required=False, allow_null=True, allow_blank=True)
     marker = serializers.CharField(max_length=100, required=False, allow_null=True, allow_blank=True)
-    has_glycerol_stock = serializers.NullBooleanField()
+    has_glycerol_stock = serializers.CharField(max_length=20, required=False, allow_null=True, allow_blank=True)
     strain = serializers.CharField(max_length=20, required=False, allow_null=True, allow_blank=True)
     # cell line
     passage_number = serializers.CharField(max_length=10, required=False, allow_null=True, allow_blank=True)

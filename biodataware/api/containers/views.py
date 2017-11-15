@@ -263,16 +263,17 @@ class ContainerSampleUpload(APIView):
 
     @transaction.atomic
     def post(self, request, pk, format=None):
+        data = request.data
+        serializer = UploadSample2ContainerSerializer(data=data, many=True, partial=True)
+        serializer.is_valid(raise_exception=True)
+        data = serializer.data
         try:
             user = request.user
             container = get_object_or_404(Container, pk=pk)
             obj = {'user': user, 'container': container}
             if not user.is_superuser:
                 self.check_object_permissions(request, obj)  # check the permission
-            data = request.data
-            serializer = UploadSample2ContainerSerializer(data=data, many=True, partial=True)
-            serializer.is_valid(raise_exception=True)
-            data = serializer.data
+
             if data is not None:
                 for item in data:
                     # create box

@@ -79,7 +79,7 @@ class Sample(models.Model):
     insert = models.CharField(max_length=50, null=True, blank=True)
     first_max = models.CharField(max_length=20, null=True, blank=True)
     marker = models.CharField(max_length=100, null=True, blank=True)
-    has_glycerol_stock = models.NullBooleanField()
+    has_glycerol_stock = models.CharField(max_length=20, null=True, blank=True)
     strain = models.CharField(max_length=20, null=True, blank=True)
 
     # cell line
