@@ -273,7 +273,6 @@ class ContainerSampleUpload(APIView):
             serializer = UploadSample2ContainerSerializer(data=data, many=True, partial=True)
             serializer.is_valid(raise_exception=True)
             data = serializer.data
-
             if data is not None:
                 for item in data:
                     # create box
