@@ -271,10 +271,10 @@ class SampleCreateSerializer(serializers.Serializer):
     # (gRNA) Oligo only
     oligo_name = serializers.CharField(max_length=100, required=False, allow_null=True, allow_blank=True)
     s_or_as = serializers.NullBooleanField()  # sense or antisense
-    oligo_sequence = serializers.CharField(max_length=50, required=False, allow_null=True, allow_blank=True)
+    oligo_sequence = serializers.CharField(max_length=200, required=False, allow_null=True, allow_blank=True)
     oligo_length = serializers.IntegerField(required=False, allow_null=True)  # sample quantity
     oligo_GC = serializers.DecimalField(max_digits=10, decimal_places=2, allow_null=True, required=False)
-    target_sequence = serializers.CharField(max_length=50, required=False, allow_null=True, allow_blank=True)
+    target_sequence = serializers.CharField(max_length=200, required=False, allow_null=True, allow_blank=True)
 
     # construct only
     clone_number = serializers.CharField(max_length=20, required=False, allow_null=True, allow_blank=True)
