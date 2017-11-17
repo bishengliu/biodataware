@@ -268,7 +268,6 @@ class ContainerSampleUpload(APIView):
         serializer.is_valid(raise_exception=True)
         data = serializer.data
         try:
-
             user = request.user
             container = get_object_or_404(Container, pk=pk)
             obj = {'user': user, 'container': container}
