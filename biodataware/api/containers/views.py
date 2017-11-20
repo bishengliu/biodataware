@@ -263,11 +263,11 @@ class ContainerSampleUpload(APIView):
 
     @transaction.atomic
     def post(self, request, pk, format=None):
-        data = request.data
-        serializer = UploadSample2ContainerSerializer(data=data, many=True, partial=True)
-        serializer.is_valid(raise_exception=True)
-        data = serializer.data
         try:
+            data = request.data
+            serializer = UploadSample2ContainerSerializer(data=data, many=True, partial=True)
+            serializer.is_valid(raise_exception=True)
+            data = serializer.data
             user = request.user
             container = get_object_or_404(Container, pk=pk)
             obj = {'user': user, 'container': container}
