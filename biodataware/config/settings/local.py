@@ -57,9 +57,9 @@ REST_FRAMEWORK = {
 
 # sendgrid
 EMAIL_USE_TLS = False
-DEFAULT_FROM_EMAIL = 'admin@bioku.nl'
-SERVER_EMAIL = 'admin@bioku.nl'
-EMAIL_HOST = 'smtp.sendgrid.net'
+DEFAULT_FROM_EMAIL = 'bishengliu36@gmail.com'
+SERVER_EMAIL = 'bishengliu36@gmail.com'
+EMAIL_HOST = 'bishengliu36@gmail.com'
 EMAIL_PORT = 587
 EMAIL_HOST_USER = 'bisheng'
 EMAIL_HOST_PASSWORD = 'Lbs198236'

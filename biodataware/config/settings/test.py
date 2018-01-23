@@ -49,12 +49,12 @@ REST_FRAMEWORK = {
 
 '''
 EMAIL_USE_TLS = True
-DEFAULT_FROM_EMAIL = 'test@gmail.com'
-SERVER_EMAIL = 'test@gmail.com'
-EMAIL_HOST = 'smtp.gmail.com'
+DEFAULT_FROM_EMAIL = 'bishengliu36@gmail.com'
+SERVER_EMAIL = 'bishengliu36@gmail.com'
+EMAIL_HOST = 'bishengliu36@gmail.com'
 EMAIL_PORT = 587
-EMAIL_HOST_USER = 'test@gmail.com'
-EMAIL_HOST_PASSWORD = 'test123##'
+EMAIL_HOST_USER = 'azure_a0bed7402d312ae0c71db9d57a71c67c@azure.com'
+EMAIL_HOST_PASSWORD = 'boL5MRQUCtbM1K8'
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 '''
 
@@ -68,7 +68,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'OPTIONS': {'init_command': "SET sql_mode='STRICT_TRANS_TABLES'", },
-        'NAME': 'bioku_test',
+        'NAME': 'bioku',
         'USER': 'bioku',
         'PASSWORD': 'bioku',
         'HOST': 'localhost',

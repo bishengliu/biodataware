@@ -185,7 +185,6 @@ LOGIN_URL = '/login'
 
 
 BIO_ADMIN = [
-    'b.liu@nki.nl',
     'bishengliu36@gmail.com'
 ]
 
@@ -201,7 +200,8 @@ REST_FRAMEWORK_TOKEN_EXPIRE_HOURS = 24
 # https://github.com/ottoyiu/django-cors-headers/#configuration
 # cors rest api request
 CORS_ORIGIN_WHITELIST = (
-    'http://localhost:4200'
+    'http://localhost:4200',
+    'http://localhost:80'
 )
 
 CORS_ALLOW_METHODS = (
@@ -227,7 +227,7 @@ CORS_ALLOW_HEADERS = (
 
 SITE_NAME = 'BIOKU'
 
-DEFAULT_FROM_EMAIL = 'admin@bioku.nl'
+DEFAULT_FROM_EMAIL = 'bishengliu36@gmail.com'
 
 
 # # smtp server
