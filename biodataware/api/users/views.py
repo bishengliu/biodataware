@@ -425,33 +425,34 @@ class Logout(APIView):
 class ResetPassword(APIView):
 
     def post(self, request):
+        obj = dict(request.data)
+        serializer = ResetPasswordSerializer(data=obj.get('obj'))
+        serializer.is_valid(raise_exception=True)
+        data = serializer.data
+        # get email
+        email = data.get('email', '')
+        url = data.get('url', '')
+        default_from_email = data.get('default_from_email', '')
+        site_name = data.get('site_name', settings.SITE_NAME)
+        user = User.objects.get(email__iexact=email)
+        if user is not None:
+            c = {
+                'email': email,
+                'url': url,
+                'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+                'user': user,
+                'token': default_token_generator.make_token(user),
+                'site_name': site_name,
+            }
+            email_template_name = 'users/api_password_reset_email.html'
+            subject = 'Password reset on ' + url
+            subject = ''.join(subject.splitlines())
+            email_content = loader.render_to_string(email_template_name, c)
+            send_mail(subject, email_content, default_from_email, [user.email], fail_silently=False)
+            return Response({'detail': 'email has been sent!'}, status=status.HTTP_200_OK)
+        return Response({'detail': 'not matched user!'}, status=status.HTTP_400_BAD_REQUEST)
         try:
-            obj = dict(request.data)
-            serializer = ResetPasswordSerializer(data=obj.get('obj'))
-            serializer.is_valid(raise_exception=True)
-            data = serializer.data
-            # get email
-            email = data.get('email', '')
-            url = data.get('url', '')
-            default_from_email = data.get('default_from_email', '')
-            site_name = data.get('site_name', settings.SITE_NAME)
-            user = User.objects.get(email__iexact=email)
-            if user is not None:
-                c = {
-                    'email': email,
-                    'url': url,
-                    'uid': urlsafe_base64_encode(force_bytes(user.pk)),
-                    'user': user,
-                    'token': default_token_generator.make_token(user),
-                    'site_name': site_name,
-                }
-                email_template_name = 'users/api_password_reset_email.html'
-                subject = 'Password reset on ' + url
-                subject = ''.join(subject.splitlines())
-                email_content = loader.render_to_string(email_template_name, c)
-                send_mail(subject, email_content, default_from_email, [user.email], fail_silently=False)
-                return Response({'detail': 'email has been sent!'}, status=status.HTTP_200_OK)
-            return Response({'detail': 'not matched user!'}, status=status.HTTP_400_BAD_REQUEST)
+            pass
         except:
             return Response({'detail': 'reset password failed!'}, status=status.HTTP_400_BAD_REQUEST)
 

@@ -57,10 +57,19 @@ EMAIL_HOST_USER = 'azure_a0bed7402d312ae0c71db9d57a71c67c@azure.com'
 EMAIL_HOST_PASSWORD = 'boL5MRQUCtbM1K8'
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 '''
+EMAIL_USE_TLS = True
+DEFAULT_FROM_EMAIL = 'bishengliu36@gmail.com'
+SERVER_EMAIL = 'bishengliu36@gmail.com'
+EMAIL_HOST = 'smtp.sendgrid.net'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'azure_a0bed7402d312ae0c71db9d57a71c67c@azure.com'
+EMAIL_HOST_PASSWORD = 'boL5MRQUCtbM1K8'
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
-SITE_NAME = 'bioku.nl'
-SITE_PROTOCOL = 'http'
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # During development only
+
+# SITE_NAME = 'bioku.nl'
+# SITE_PROTOCOL = 'http'
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # During development only
 
 
 # DATABASE

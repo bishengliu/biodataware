@@ -49,10 +49,10 @@ REST_FRAMEWORK = {
 SITE_NAME = 'BIOKU'
 
 # sendgrid
-EMAIL_USE_TLS = False
+EMAIL_USE_TLS = True
 DEFAULT_FROM_EMAIL = 'bishengliu36@gmail.com'
 SERVER_EMAIL = 'bishengliu36@gmail.com'
-EMAIL_HOST = 'bishengliu36@gmail.com'
+EMAIL_HOST = 'smtp.sendgrid.net'
 EMAIL_PORT = 587
 EMAIL_HOST_USER = 'azure_a0bed7402d312ae0c71db9d57a71c67c@azure.com'
 EMAIL_HOST_PASSWORD = 'boL5MRQUCtbM1K8'
