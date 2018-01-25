@@ -119,7 +119,7 @@ class BoxContainer(models.Model):
     def sample_count(self):
         sp_set = self.sample_set
         if sp_set:
-            return str(sp_set.count)
+            return str(sp_set.count())
         return str(0)
 
 
