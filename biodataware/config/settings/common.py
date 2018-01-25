@@ -229,6 +229,8 @@ SITE_NAME = 'BIOKU'
 
 DEFAULT_FROM_EMAIL = 'bishengliu36@gmail.com'
 
+# when show the box card view OR CARD FULLNESS PROGRESS VIEW?
+BOX_FULNESS_PROGRESS_VIEW = 10
 
 # # smtp server
 # EMAIL_USE_TLS = True

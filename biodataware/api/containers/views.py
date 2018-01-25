@@ -1,4 +1,5 @@
 from rest_framework.views import APIView
+from django.conf import settings
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 from rest_framework import permissions, status
@@ -681,6 +682,9 @@ class ContainerBoxList(APIView):
             # get the boxes
             if user.is_superuser:
                 boxes = BoxContainer.objects.all().filter(container_id=container.pk)
+                if boxes.count() > getattr(settings, "BOX_FULNESS_PROGRESS_VIEW", 10):
+                    serializer = BoxSampleFullnessSerializer(boxes, many=True)
+                    return Response(serializer.data)
                 serializer = BoxSamplesSerializer(boxes, many=True)
                 return Response(serializer.data)
             else:
@@ -702,6 +706,9 @@ class ContainerBoxList(APIView):
                     # get all the researchers in the group
                 boxes = BoxContainer.objects.all().filter(container_id=container.pk) \
                         .filter(boxresearcher__researcher_id__in=researcher_ids)
+                if boxes.count() > getattr(settings, "BOX_FULNESS_PROGRESS_VIEW", 10):
+                    serializer = BoxSampleFullnessSerializer(boxes, many=True)
+                    return Response(serializer.data)
                 serializer = BoxSamplesSerializer(boxes, many=True)
                 return Response(serializer.data)
         except:
@@ -778,6 +785,9 @@ class ContainerFavoriteBoxList(APIView):
             # get the boxes
             if user.is_superuser:
                 boxes = BoxContainer.objects.all().filter(container_id=container.pk).filter(rate__gte=1)
+                if boxes.count() > getattr(settings, "BOX_FULNESS_PROGRESS_VIEW", 10):
+                    serializer = BoxSampleFullnessSerializer(boxes, many=True)
+                    return Response(serializer.data)
                 serializer = BoxSamplesSerializer(boxes, many=True)
                 return Response(serializer.data)
             else:
@@ -799,6 +809,9 @@ class ContainerFavoriteBoxList(APIView):
                     .filter(container_id=container.pk) \
                     .filter(rate__gte=1) \
                     .filter(boxresearcher__researcher_id__in=researcher_ids)
+                if boxes.count() > getattr(settings, "BOX_FULNESS_PROGRESS_VIEW", 10):
+                    serializer = BoxSampleFullnessSerializer(boxes, many=True)
+                    return Response(serializer.data)
                 serializer = BoxSamplesSerializer(boxes, many=True)
                 return Response(serializer.data)
         except:
@@ -819,6 +832,9 @@ class ContainerAllBoxList(APIView):
             if not user.is_superuser:
                 self.check_object_permissions(request, obj)  # check the permission
             boxes = BoxContainer.objects.all().filter(container_id=container.pk)
+            if boxes.count() > getattr(settings, "BOX_FULNESS_PROGRESS_VIEW", 10):
+                serializer = BoxSampleFullnessSerializer(boxes, many=True)
+                return Response(serializer.data)
             serializer = BoxSamplesSerializer(boxes, many=True)
             return Response(serializer.data)
         except:

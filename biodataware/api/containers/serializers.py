@@ -193,7 +193,18 @@ class BoxSamplesSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = BoxContainer
-        fields = ('pk', 'label', 'box_position', 'box_vertical', 'box_horizontal', 'tower', 'shelf', 'box', 'code39', 'qrcode', 'color', 'rate', 'description', 'samples', 'researchers')
+        fields = ('pk', 'label', 'box_position', 'box_vertical', 'box_horizontal', 'tower', 'shelf', 'box', 'code39', 'qrcode', 'color', 'rate', 'description', 'samples', 'sample_count', 'researchers')
+
+
+# box without sample details loading
+class BoxSampleFullnessSerializer(serializers.ModelSerializer):
+    researchers = UserSerializer(many=True, read_only=True, source='researcher_objs')
+    # researchers = BoxResearcherSerializer(many=True, read_only=True, source='boxresearcher_set')
+    # samples = SampleSerializer(many=True, read_only=True, source='sample_set')
+
+    class Meta:
+        model = BoxContainer
+        fields = ('pk', 'label', 'box_position', 'box_vertical', 'box_horizontal', 'tower', 'shelf', 'box', 'code39', 'qrcode', 'color', 'rate', 'description', 'sample_count', 'researchers')
 
 # ======for sample =====================
 
