@@ -303,13 +303,13 @@ class ContainerSampleUpload(APIView):
                             box_horizontal=item.get('box_horizontal'),
                             box_vertical=item.get('box_vertical')
                         )
-                        box.save()
+                        # box.save()
 
                         box_researcher = BoxResearcher.objects.create(
                             box=box,
                             researcher_id=user.pk
                         )
-                        box_researcher.save()
+                        # box_researcher.save()
 
                     sample_found = Sample.objects.all().filter(box_id=box.pk).filter(
                         vposition__iexact=item.get('vposition')).filter(
@@ -370,7 +370,7 @@ class ContainerSampleUpload(APIView):
                             titration_cell_type=item.get('titration_cell_type', ""),
                             titration_code=item.get('titration_code', "")
                         )
-                        sample.save()
+                        # sample.save()
 
                         # add sample researcher
                         SampleResearcher.objects.create(
