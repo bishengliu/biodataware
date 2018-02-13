@@ -315,7 +315,7 @@ class SampleCreateSerializer(serializers.Serializer):
 # search samples
 class SearchSampleSerializer(serializers.Serializer):
     container = serializers.IntegerField(required=True)
-    type = serializers.CharField(required=True)
+    type = serializers.CharField(required=False, allow_null=True, allow_blank=True)
     occupied = serializers.IntegerField(required=True)
     name = serializers.CharField(required=False, allow_null=True, allow_blank=True)
     label = serializers.CharField(required=False, allow_null=True, allow_blank=True)

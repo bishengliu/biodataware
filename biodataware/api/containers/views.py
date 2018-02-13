@@ -3523,7 +3523,11 @@ class SearchSamples(APIView):
             if container != -1:
                 kwargs["box__container_id__exact"] = container
             if type is not None:
-                kwargs["type__iexact"] = type
+                if "|" in type:
+                    types = type.split("|");
+                    kwargs["type__in"] = types
+                else:
+                    kwargs["type__iexact"] = type
             if occupied == 0:
                 kwargs["occupied__iexact"] = 1
             if occupied == 1:
