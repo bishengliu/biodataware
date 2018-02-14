@@ -21,6 +21,9 @@ urlpatterns = [
     # search samples
     url(r'^search_samples/$', SearchSamples.as_view(), name='search_samples'),
 
+    # pre search samples to return sample count
+    url(r'^presearch_samples/$', PreSearchSamples.as_view(), name='presearch_samples'),
+
     # sample tags
     url(r'^tags/$', Tags.as_view(), name='sample_tags'),
 

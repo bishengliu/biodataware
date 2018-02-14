@@ -3617,3 +3617,120 @@ class SearchSamples(APIView):
         except:
             return Response({'detail': 'Something went wrong, search is not performed!'},
                             status=status.HTTP_400_BAD_REQUEST)
+
+
+# presearch sample
+class PreSearchSamples(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def post(self, request):
+        try:
+            serializer = SearchSampleSerializer(data=request.data, partial=True)
+            serializer.is_valid(raise_exception=True)
+            data = serializer.data
+            # generate kwargs
+
+            # container
+            container = data.get('container', -1)
+            type = data.get('type', 'GENERAL')
+            occupied = data.get('occupied', 0)
+
+            kwargs = {}
+
+            if container != -1:
+                kwargs["box__container_id__exact"] = container
+            if type is not None:
+                if "|" in type:
+                    types = type.split("|");
+                    kwargs["type__in"] = types
+                else:
+                    kwargs["type__iexact"] = type
+            if occupied == 0:
+                kwargs["occupied__iexact"] = 1
+            if occupied == 1:
+                kwargs["occupied__iexact"] = 0
+            name = data.get('name', "")
+            if name is not None:
+                kwargs["name__icontains"] = name
+
+            label = data.get('label', '')
+            if label is not None:
+                kwargs["label__icontains"] = label
+
+            tag = data.get('tag', '')
+            if tag is not None:
+                kwargs["tag__icontains"] = tag
+
+            freezing_date_from = data.get('freezing_date_from', "")
+            if freezing_date_from is not None:
+                kwargs["freezing_date__gte"] = freezing_date_from
+
+            freezing_date_to = data.get('freezing_date_to', "")
+            if freezing_date_to is not None:
+                kwargs["freezing_date__lte"] = freezing_date_to
+
+            registration_code = data.get('registration_code', "")
+            if registration_code is not None:
+                kwargs["registration_code__icontains"] = registration_code
+
+            freezing_code = data.get('freezing_code', "")
+            if freezing_code is not None:
+                kwargs["freezing_code__icontains"] = freezing_code
+
+            reference_code = data.get('reference_code', "")
+            if reference_code is not None:
+                kwargs["reference_code__icontains"] = reference_code
+
+            # tissue
+            pathology_code = data.get('pathology_code', "")
+            if pathology_code is not None:
+                kwargs["pathology_code__icontains"] = pathology_code
+
+            tissue = data.get('tissue', "")
+            if tissue is not None:
+                kwargs["tissue__icontains"] = tissue
+
+            # (gRNA) Oligo only
+            oligo_name = data.get('oligo_name', "")
+            if oligo_name is not None:
+                kwargs["oligo_name__icontains"] = oligo_name
+
+            oligo_length_from = data.get('oligo_length_from', "")
+            if oligo_length_from is not None:
+                kwargs["oligo_length__gte"] = oligo_length_from
+
+            oligo_length_to = data.get('oligo_length_to', "")
+            if oligo_length_to is not None:
+                kwargs["oligo_length__lte"] = oligo_length_to
+
+            # construct only
+            feature = data.get('feature', "")
+            if feature is not None:
+                kwargs["feature__icontains"] = feature
+
+            backbone = data.get('backbone', "")
+            if backbone is not None:
+                kwargs["backbone__icontains"] = backbone
+
+            insert = data.get('insert', "")
+            if insert is not None:
+                kwargs["insert__icontains"] = insert
+
+            marker = data.get('marker', "")
+            if marker is not None:
+                kwargs["marker__icontains"] = marker
+
+            # virus
+            plasmid = data.get('plasmid', "")
+            if plasmid is not None:
+                kwargs["plasmid__icontains"] = plasmid
+
+            titration_code = data.get('titration_code', "")
+            if titration_code is not None:
+                kwargs["titration_code__icontains"] = titration_code
+            samples = Sample.objects.filter(**kwargs).count()
+
+            return Response({'count': samples})
+        except:
+            return Response({'detail': 'Something went wrong, presearch is not performed!'},
+                            status=status.HTTP_400_BAD_REQUEST)
