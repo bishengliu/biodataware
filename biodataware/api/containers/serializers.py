@@ -336,6 +336,8 @@ class SearchSampleSerializer(serializers.Serializer):
     titration_code = serializers.CharField(required=False, allow_null=True, allow_blank=True)
     pathology_code = serializers.CharField(required=False, allow_null=True, allow_blank=True)
     tissue = serializers.CharField(required=False, allow_null=True, allow_blank=True)
+    description = serializers.CharField(required=False, allow_null=True, allow_blank=True)
+    attachment = serializers.CharField(required=False, allow_null=True, allow_blank=True)
 
 
 class SampleAttachmentInfoSerializer(serializers.Serializer):

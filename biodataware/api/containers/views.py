@@ -3544,6 +3544,14 @@ class SearchSamples(APIView):
             if tag is not None:
                 kwargs["tag__icontains"] = tag
 
+            description = data.get('description', '')
+            if description is not None:
+                kwargs["description__icontains"] = description
+
+            attachment = data.get('attachment', '')
+            if attachment is not None:
+                kwargs["sampleattachment__attachment__icontains"] = attachment
+
             freezing_date_from = data.get('freezing_date_from', "")
             if freezing_date_from is not None:
                 kwargs["freezing_date__gte"] = freezing_date_from
@@ -3660,6 +3668,14 @@ class PreSearchSamples(APIView):
             tag = data.get('tag', '')
             if tag is not None:
                 kwargs["tag__icontains"] = tag
+
+            description = data.get('description', '')
+            if description is not None:
+                kwargs["description__icontains"] = description
+
+            attachment = data.get('attachment', '')
+            if attachment is not None:
+                kwargs["sampleattachment__attachment__icontains"] = attachment
 
             freezing_date_from = data.get('freezing_date_from', "")
             if freezing_date_from is not None:
