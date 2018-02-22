@@ -3515,19 +3515,19 @@ class SearchSamples(APIView):
 
             # container
             container = data.get('container', -1)
-            type = data.get('type', '')
+            stype = data.get('type', '')
             occupied = data.get('occupied', 0)
 
             kwargs = {}
 
             if container != -1:
                 kwargs["box__container_id__exact"] = container
-            if type is not None and type != '':
-                if "|" in type:
-                    types = type.split("|")
+            if stype is not None:
+                if "|" in stype:
+                    types = stype.split("|")
                     kwargs["type__in"] = types
                 else:
-                    kwargs["type__iexact"] = type
+                    kwargs["type__iexact"] = stype
             if occupied == 0:
                 kwargs["occupied__iexact"] = 1
             if occupied == 1:
@@ -3640,19 +3640,19 @@ class PreSearchSamples(APIView):
 
             # container
             container = data.get('container', -1)
-            type = data.get('type', '')
+            stype = data.get('type', '')
             occupied = data.get('occupied', 0)
 
             kwargs = {}
 
             if container != -1:
                 kwargs["box__container_id__exact"] = container
-            if type is not None and type != '':
-                if "|" in type:
-                    types = type.split("|")
+            if stype is not None:
+                if "|" in stype:
+                    types = stype.split("|")
                     kwargs["type__in"] = types
                 else:
-                    kwargs["type__iexact"] = type
+                    kwargs["type__iexact"] = stype
             if occupied == 0:
                 kwargs["occupied__iexact"] = 1
             if occupied == 1:
