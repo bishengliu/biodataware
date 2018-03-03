@@ -3508,6 +3508,7 @@ class SearchSamples(APIView):
 
     def post(self, request):
         try:
+            user = request.user
             serializer = SearchSampleSerializer(data=request.data, partial=True)
             serializer.is_valid(raise_exception=True)
             data = serializer.data
@@ -3522,6 +3523,15 @@ class SearchSamples(APIView):
 
             if container != -1:
                 kwargs["box__container_id__exact"] = container
+            else:
+                # if user is the admin
+                if user.is_superuser:
+                    kwargs["box__container_id__exact"] = container
+                else:
+                    # only search container in my group
+                    groupresearchers = GroupResearcher.objects.all().filter(user_id=user.pk)
+                    group_ids = [g.group_id for g in groupresearchers]
+                    kwargs["box__container__groupcontainer__group_id__in"] = group_ids
             if stype is not None:
                 if "|" in stype:
                     types = stype.split("|")
@@ -3633,6 +3643,7 @@ class PreSearchSamples(APIView):
 
     def post(self, request):
         try:
+            user = request.user
             serializer = SearchSampleSerializer(data=request.data, partial=True)
             serializer.is_valid(raise_exception=True)
             data = serializer.data
@@ -3647,6 +3658,16 @@ class PreSearchSamples(APIView):
 
             if container != -1:
                 kwargs["box__container_id__exact"] = container
+            else:
+                # if user is the admin
+                if user.is_superuser:
+                    kwargs["box__container_id__exact"] = container
+                else:
+                    # only search container in my group
+                    groupresearchers = GroupResearcher.objects.all().filter(user_id=user.pk)
+                    group_ids = [g.group_id for g in groupresearchers]
+                    # containers = Container.objects.all().filter(groupcontainer__group_id__in=group_ids)
+                    kwargs["box__container__groupcontainer__group_id__in"] = group_ids
             if stype is not None:
                 if "|" in stype:
                     types = stype.split("|")
