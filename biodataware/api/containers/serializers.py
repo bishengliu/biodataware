@@ -251,7 +251,7 @@ class BoxDescriptionSerializer(serializers.Serializer):
 
 # box label
 class BoxLabelSerializer(serializers.Serializer):
-    label = serializers.CharField(required=False)
+    label = serializers.CharField(required=False, allow_null=True, allow_blank=True)
 
 
 # ######################################################## sample create and edit serializer ###########################
