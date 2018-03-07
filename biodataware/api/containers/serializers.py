@@ -246,7 +246,7 @@ class BoxRateSerializer(serializers.Serializer):
 
 # update description
 class BoxDescriptionSerializer(serializers.Serializer):
-    description = serializers.CharField(required=False)
+    description = serializers.CharField(required=False, allow_null=True, allow_blank=True)
 
 
 # box label
