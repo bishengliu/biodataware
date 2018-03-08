@@ -20,7 +20,7 @@ ALLOWED_HOSTS = ['*']
 # message level
 MESSAGE_LEVEL = 10  # DEBUG
 
-# STATIC_ROOT = os.path.join(APPS_DIR, 'static')
+STATIC_ROOT = os.path.join(APPS_DIR, 'static')
 
 # need to change this to restrict the access to the backend
 # https://github.com/ottoyiu/django-cors-headers/#configuration
