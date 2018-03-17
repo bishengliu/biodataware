@@ -280,17 +280,20 @@ class ContainerSampleUpload(APIView):
             # group_researcher
             group_rearcher = GroupResearcher()
             if pi_group is None:
-                # create
-                group_rearcher = GroupResearcher.objects.create(
-                    group_id=pi_group.pk,
-                    user_id=user.pk
-                )
+                return Response({'detail': 'permission denied!'},
+                                status=status.HTTP_400_BAD_REQUEST)
             else:
-                group_rearcher = GroupResearcher.object().all() \
+                group_rearcher = GroupResearcher.objects.all() \
                     .filter(group_id=pi_group.pk) \
                     .filter(user_id=user.pk) \
                     .first()
-
+                if group_rearcher is None:
+                    # create
+                    group_rearcher = GroupResearcher.objects.create(
+                        group_id=pi_group.pk,
+                        user_id=user.pk
+                    )
+            # posted data loop
             if data is not None:
                 for item in data:
                     # create box

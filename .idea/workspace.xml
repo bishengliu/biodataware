@@ -17,8 +17,8 @@
       <file leaf-file-name="views.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/biodataware/api/containers/views.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="370">
-              <caret line="278" column="12" lean-forward="false" selection-start-line="278" selection-start-column="12" selection-end-line="278" selection-end-column="75" />
+            <state relative-caret-position="192">
+              <caret line="283" column="67" lean-forward="true" selection-start-line="282" selection-start-column="16" selection-end-line="283" selection-end-column="67" />
               <folding>
                 <element signature="e#1016#5414#0" expanded="false" />
               </folding>
@@ -919,8 +919,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/biodataware/api/containers/views.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="370">
-          <caret line="278" column="12" lean-forward="false" selection-start-line="278" selection-start-column="12" selection-end-line="278" selection-end-column="75" />
+        <state relative-caret-position="192">
+          <caret line="283" column="67" lean-forward="true" selection-start-line="282" selection-start-column="16" selection-end-line="283" selection-end-column="67" />
           <folding>
             <element signature="e#1016#5414#0" expanded="false" />
           </folding>
