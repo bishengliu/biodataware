@@ -275,6 +275,23 @@ class ContainerSampleUpload(APIView):
             if not user.is_superuser:
                 self.check_object_permissions(request, obj)  # check the permission
 
+            # get current group
+            pi_group = Group.objects.all().filter(user_id=user.pk).first()
+            # group_researcher
+            group_rearcher = GroupResearcher()
+            if pi_group is None:
+                # create
+                group_rearcher = GroupResearcher.objects.create(
+                    group_id=pi_group.pk,
+                    user_id=user.pk
+                )
+                pass
+            else:
+                group_rearcher = GroupResearcher.object().all() \
+                    .filter(group_id=pi_group.pk) \
+                    .filter(user_id=user.pk) \
+                    .first()
+
             if data is not None:
                 for item in data:
                     # create box
@@ -307,7 +324,7 @@ class ContainerSampleUpload(APIView):
 
                         box_researcher = BoxResearcher.objects.create(
                             box=box,
-                            researcher_id=user.pk
+                            researcher_id=group_rearcher.pk
                         )
                         # box_researcher.save()
 
