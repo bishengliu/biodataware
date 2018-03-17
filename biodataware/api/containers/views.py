@@ -276,7 +276,7 @@ class ContainerSampleUpload(APIView):
                 self.check_object_permissions(request, obj)  # check the permission
 
             # get current group
-            pi_group = Group.objects.all().filter(user_id=user.pk).first()
+            pi_group = Group.objects.all().filter(email=user.email).first()
             # group_researcher
             group_rearcher = GroupResearcher()
             if pi_group is None:
@@ -285,7 +285,6 @@ class ContainerSampleUpload(APIView):
                     group_id=pi_group.pk,
                     user_id=user.pk
                 )
-                pass
             else:
                 group_rearcher = GroupResearcher.object().all() \
                     .filter(group_id=pi_group.pk) \
