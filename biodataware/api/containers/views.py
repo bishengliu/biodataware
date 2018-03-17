@@ -278,18 +278,18 @@ class ContainerSampleUpload(APIView):
             # get current group
             pi_group = Group.objects.all().filter(email=user.email).first()
             # group_researcher
-            group_rearcher = GroupResearcher()
+            group_researcher = GroupResearcher()
             if pi_group is None:
                 return Response({'detail': 'permission denied!'},
                                 status=status.HTTP_400_BAD_REQUEST)
             else:
-                group_rearcher = GroupResearcher.objects.all() \
+                group_researcher = GroupResearcher.objects.all() \
                     .filter(group_id=pi_group.pk) \
                     .filter(user_id=user.pk) \
                     .first()
-                if group_rearcher is None:
+                if group_researcher is None:
                     # create
-                    group_rearcher = GroupResearcher.objects.create(
+                    group_researcher = GroupResearcher.objects.create(
                         group_id=pi_group.pk,
                         user_id=user.pk
                     )
@@ -326,7 +326,7 @@ class ContainerSampleUpload(APIView):
 
                         box_researcher = BoxResearcher.objects.create(
                             box=box,
-                            researcher_id=group_rearcher.pk
+                            researcher_id=group_researcher.pk
                         )
                         # box_researcher.save()
 
@@ -595,10 +595,15 @@ class ShelfAlternative(APIView):
                 color=getattr(data, 'color', '#ffffff'),
                 description=getattr(data, 'description', '')
             )
-            box_researcher = BoxResearcher.objects.create(
-                box_id=box_container.pk,
-                researcher_id=user.pk
-            )
+            # first is the primary
+            primary_group_researcher = GroupResearcher.objects.all() \
+                .filter(user_id=user.pk) \
+                .first()
+            if primary_group_researcher is not None:
+                BoxResearcher.objects.create(
+                    box_id=box_container.pk,
+                    researcher_id=primary_group_researcher.pk
+                )
             return Response({'detail': 'Box add!'}, status=status.HTTP_200_OK)
         except:
             return Response({'detail': 'Box not added!'},
@@ -679,10 +684,15 @@ class Shelf(APIView):
                 color=getattr(data, 'color', '#ffffff'),
                 description=getattr(data, 'description', '')
             )
-            box_researcher = BoxResearcher.objects.create(
-                box_id=box_container.pk,
-                researcher_id=user.pk
-            )
+            # first is the primary
+            primary_group_researcher = GroupResearcher.objects.all() \
+                .filter(user_id=user.pk) \
+                .first()
+            if primary_group_researcher is not None:
+                BoxResearcher.objects.create(
+                    box_id=box_container.pk,
+                    researcher_id=primary_group_researcher.pk
+                )
             return Response({'detail': 'Box add!'}, status=status.HTTP_200_OK)
         except:
             return Response({'detail': 'Box not added!'},
@@ -712,19 +722,19 @@ class ContainerBoxList(APIView):
                     self.check_object_permissions(request, obj)  # check the permission
 
                 # get only the researchers of the group(s)
-                researcher_ids = []
+                groupresearcher_pks = []
                 group_ids = []
                 # get the current group id
                 groupresearchers = GroupResearcher.objects.all().filter(user_id=user.pk)
                 if groupresearchers:
                     group_ids = [g.group_id for g in groupresearchers]
                 # get all the researchers in the groups
-                researchers = GroupResearcher.objects.all().filter(group_id__in=group_ids)
-                if researchers:
-                    researcher_ids = [r.user_id for r in researchers]
+                groupresearchers = GroupResearcher.objects.all().filter(group_id__in=group_ids)
+                if groupresearchers:
+                    groupresearcher_pks = [r.pk for r in groupresearchers]
                     # get all the researchers in the group
                 boxes = BoxContainer.objects.all().filter(container_id=container.pk) \
-                        .filter(boxresearcher__researcher_id__in=researcher_ids)
+                        .filter(boxresearcher__researcher_id__in=groupresearcher_pks)
                 if boxes.count() > getattr(settings, "BOX_FULNESS_PROGRESS_VIEW", 10):
                     serializer = BoxSampleFullnessSerializer(boxes, many=True)
                     return Response(serializer.data)
@@ -781,11 +791,15 @@ class ContainerBoxList(APIView):
                 description=getattr(data, 'description', '')
             )
             box_container.save()
-            box_researcher = BoxResearcher.objects.create(
-                box_id=box_container.pk,
-                researcher_id=user.pk
-            )
-            box_researcher.save()
+            # first is the primary
+            primary_group_researcher = GroupResearcher.objects.all() \
+                .filter(user_id=user.pk) \
+                .first()
+            if primary_group_researcher is not None:
+                BoxResearcher.objects.create(
+                    box_id=box_container.pk,
+                    researcher_id=primary_group_researcher.pk
+                )
             return Response({'detail': 'Box add!'}, status=status.HTTP_200_OK)
         except:
             return Response({'detail': 'Box not added!'},
@@ -814,20 +828,20 @@ class ContainerFavoriteBoxList(APIView):
                 if not user.is_superuser:
                     self.check_object_permissions(request, obj)  # check the permission
                 # get only the researchers of the group(s)
-                researcher_ids = []
+                groupresearcher_pks = []
                 group_ids = []
                 # get the current group id
                 groupresearchers = GroupResearcher.objects.all().filter(user_id=user.pk)
                 if groupresearchers:
                     group_ids = [g.group_id for g in groupresearchers]
                 # get all the researchers in the groups
-                researchers = GroupResearcher.objects.all().filter(group_id__in=group_ids)
-                if researchers:
-                    researcher_ids = [r.user_id for r in researchers]
+                    groupresearchers = GroupResearcher.objects.all().filter(group_id__in=group_ids)
+                if groupresearchers:
+                    groupresearcher_pks = [r.pk for r in groupresearchers]
                 boxes = BoxContainer.objects.all() \
                     .filter(container_id=container.pk) \
                     .filter(rate__gte=1) \
-                    .filter(boxresearcher__researcher_id__in=researcher_ids)
+                    .filter(boxresearcher__researcher_id__in=groupresearcher_pks)
                 if boxes.count() > getattr(settings, "BOX_FULNESS_PROGRESS_VIEW", 10):
                     serializer = BoxSampleFullnessSerializer(boxes, many=True)
                     return Response(serializer.data)
@@ -897,7 +911,8 @@ class BoxAlternative(APIView):
             # get box researcher
             box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
             if box_researcher:
-                user = get_object_or_404(User, pk=box_researcher.researcher_id)
+                group_researcher = get_object_or_404(GroupResearcher, pk=box_researcher.researcher_id)
+                user = get_object_or_404(User, pk=group_researcher.user_id)
                 obj = {'user': user, 'container': container}
                 self.check_object_permissions(request, obj)  # check the permission
                 serializer = BoxSamplesSerializer(box)
@@ -936,7 +951,8 @@ class BoxAlternative(APIView):
             # get box researcher
             box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
             if box_researcher:
-                user = get_object_or_404(User, pk=box_researcher.researcher_id)
+                group_researcher = get_object_or_404(GroupResearcher, pk=box_researcher.researcher_id)
+                user = get_object_or_404(User, pk=group_researcher.user_id)
                 obj = {'user': user, 'container': container}
                 self.check_object_permissions(request, obj)  # check the permission
                 # check samples
@@ -981,7 +997,8 @@ class BoxAlternative(APIView):
             # get box researcher
             box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
             if box_researcher:
-                user = get_object_or_404(User, pk=box_researcher.researcher_id)
+                group_researcher = get_object_or_404(GroupResearcher, pk=box_researcher.researcher_id)
+                user = get_object_or_404(User, pk=group_researcher.user_id)
                 obj = {'user': user, 'container': container}
                 self.check_object_permissions(request, obj)  # check the permission
                 serializer = SampleCreateSerializer(data=request.data)
@@ -1096,7 +1113,8 @@ class Box(APIView):
             box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
             if not authUser.is_superuser:
                 if box_researcher is not None:
-                    user = get_object_or_404(User, pk=box_researcher.researcher_id)
+                    group_researcher = get_object_or_404(GroupResearcher, pk=box_researcher.researcher_id)
+                    user = get_object_or_404(User, pk=group_researcher.user_id)
                     obj = {'user': user, 'container': container}
                     self.check_object_permissions(request, obj)  # check the permission
                     serializer = BoxSamplesSerializer(box)
@@ -1141,7 +1159,8 @@ class Box(APIView):
             # get box researcher
             box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
             if authUser.is_superuser or box_researcher:
-                user = get_object_or_404(User, pk=box_researcher.researcher_id)
+                group_researcher = get_object_or_404(GroupResearcher, pk=box_researcher.researcher_id)
+                user = get_object_or_404(User, pk=group_researcher.user_id)
                 obj = {'user': user, 'container': container}
                 if not authUser.is_superuser:
                     self.check_object_permissions(request, obj)  # check the permission
@@ -1215,7 +1234,8 @@ class Box(APIView):
                 # get box researcher
                 box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
                 if box_researcher is not None:
-                    box_user = get_object_or_404(User, pk=box_researcher.researcher_id)
+                    group_researcher = get_object_or_404(GroupResearcher, pk=box_researcher.researcher_id)
+                    box_user = get_object_or_404(User, pk=group_researcher.user_id)
                     self.check_object_permissions(request, {'user': box_user, 'container': container})
 
             # loop slots
@@ -1359,7 +1379,8 @@ class BoxRate(APIView):
                 return Response({'detail': 'rate is updated!'},
                                 status=status.HTTP_200_OK)
             if box_researcher is not None:
-                user = get_object_or_404(User, pk=box_researcher.researcher_id)
+                group_researcher = get_object_or_404(GroupResearcher, pk=box_researcher.researcher_id)
+                user = get_object_or_404(User, pk=group_researcher.user_id)
                 obj = {'user': user, 'container': container}
                 self.check_object_permissions(request, obj)  # check the permission
                 box.save()
@@ -1412,7 +1433,8 @@ class BoxColor(APIView):
             # get box researcher
             box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
             if box_researcher is not None and not auth_user.is_superuser:
-                user = get_object_or_404(User, pk=box_researcher.researcher_id)
+                group_researcher = get_object_or_404(GroupResearcher, pk=box_researcher.researcher_id)
+                user = get_object_or_404(User, pk=group_researcher.user_id)
                 obj = {'user': user, 'container': container}
                 self.check_object_permissions(request, obj)  # check the permission
             box.save()
@@ -1464,7 +1486,8 @@ class BoxDescription(APIView):
             box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
             if not auth_user.is_superuser:
                 if box_researcher is not None:
-                    user = get_object_or_404(User, pk=box_researcher.researcher_id)
+                    group_researcher = get_object_or_404(GroupResearcher, pk=box_researcher.researcher_id)
+                    user = get_object_or_404(User, pk=group_researcher.user_id)
                     obj = {'user': user, 'container': container}
                     self.check_object_permissions(request, obj)  # check the permission
             box.save()
@@ -1515,7 +1538,8 @@ class BoxLabel(APIView):
             box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
             if not auth_user.is_superuser:
                 if box_researcher is not None:
-                    user = get_object_or_404(User, pk=box_researcher.researcher_id)
+                    group_researcher = get_object_or_404(GroupResearcher, pk=box_researcher.researcher_id)
+                    user = get_object_or_404(User, pk=group_researcher.user_id)
                     obj = {'user': user, 'container': container}
                     self.check_object_permissions(request, obj)  # check the permission
             box.save()
@@ -1585,7 +1609,8 @@ class MoveBox(APIView):
                         # get box researcher
                         ori_box_researcher = BoxResearcher.objects.all().filter(box_id=ori_box.pk).first()
                         if ori_box_researcher is not None:
-                            ori_box_user = get_object_or_404(User, pk=ori_box_researcher.researcher_id)
+                            ori_group_researcher = get_object_or_404(GroupResearcher, pk=ori_box_researcher.researcher_id)
+                            ori_box_user = get_object_or_404(User, pk=ori_group_researcher.user_id)
                             obj = {'user': ori_box_user, 'container': original_container}
                             self.check_object_permissions(request, obj)  # check the permission
                     # check the target box
@@ -1600,7 +1625,8 @@ class MoveBox(APIView):
                             # get box researcher
                             target_box_researcher = BoxResearcher.objects.all().filter(box_id=target_box.pk).first()
                             if target_box_researcher is not None:
-                                target_box_user = get_object_or_404(User, pk=target_box_researcher.researcher_id)
+                                target_group_researcher = get_object_or_404(GroupResearcher, pk=target_box_researcher.researcher_id)
+                                target_box_user = get_object_or_404(User, pk=target_group_researcher.user_id)
                                 obj = {'user': target_box_user, 'container': target_container}
                                 self.check_object_permissions(request, obj)  # check the permission
                         # check whether the boxes matches
@@ -1681,12 +1707,15 @@ class AddBox(APIView):
                         box_vertical=data.get('box_vertical', 1)
                     )
                     box.save()
-                    # add box researcher
-                    box_researcher = BoxResearcher.objects.create(
-                        box_id=box.pk,
-                        researcher_id=user.pk
-                    )
-                    box_researcher.save()
+                    # first is the primary
+                    primary_group_researcher = GroupResearcher.objects.all() \
+                        .filter(user_id=user.pk) \
+                        .first()
+                    if primary_group_researcher is not None:
+                        BoxResearcher.objects.create(
+                            box_id=box.pk,
+                            researcher_id=primary_group_researcher.pk
+                        )
                     return Response({'detail': 'box added!'}, status=status.HTTP_200_OK)
                 return Response({'detail': 'Something went wrong, failed to add the box!'},
                                 status=status.HTTP_400_BAD_REQUEST)
@@ -1727,7 +1756,8 @@ class SampleDetailAlternative(APIView):
             # get box researcher
             box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
             if box_researcher is not None:
-                box_owner = get_object_or_404(User, pk=box_researcher.researcher_id)
+                group_researcher = get_object_or_404(GroupResearcher, pk=box_researcher.researcher_id)
+                box_owner = get_object_or_404(User, pk=group_researcher.user_id)
                 # find the sample
                 match = re.match(r"([a-z]+)([0-9]+)", sp_id, re.I)
                 if match:
@@ -1783,7 +1813,8 @@ class SampleDetailAlternative(APIView):
             # get box researcher
             box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
             if box_researcher is not None:
-                box_owner = get_object_or_404(User, pk=box_researcher.researcher_id)
+                group_researcher = get_object_or_404(GroupResearcher, pk=box_researcher.researcher_id)
+                box_owner = get_object_or_404(User, pk=group_researcher.user_id)
                 # find the sample
                 match = re.match(r"([a-z]+)([0-9]+)", sp_id, re.I)
                 if match:
@@ -1847,7 +1878,8 @@ class SampleDetail(APIView):
             # get box researcher
             box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
             if box_researcher is not None:
-                box_owner = get_object_or_404(User, pk=box_researcher.researcher_id)
+                group_researcher = get_object_or_404(GroupResearcher, pk=box_researcher.researcher_id)
+                box_owner = get_object_or_404(User, pk=group_researcher.user_id)
                 # user = get_object_or_404(User, pk=box_researcher.researcher_id)
                 # obj = {'user': user, 'container': container}
                 # self.check_object_permissions(request, obj)  # check the permission
@@ -1909,7 +1941,8 @@ class SampleDetail(APIView):
             # get box researcher
             box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
             if box_researcher is not None:
-                box_owner = get_object_or_404(User, pk=box_researcher.researcher_id)
+                group_researcher = get_object_or_404(GroupResearcher, pk=box_researcher.researcher_id)
+                box_owner = get_object_or_404(User, pk=group_researcher.user_id)
                 # user = get_object_or_404(User, pk=box_researcher.researcher_id)
                 # obj = {'user': user, 'container': container}
                 # self.check_object_permissions(request, obj)  # check the permission
@@ -1976,7 +2009,8 @@ class SampleDetailUpdate(APIView):
             # get box researcher
             box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
             if box_researcher:
-                box_owner = get_object_or_404(User, pk=box_researcher.researcher_id)
+                group_researcher = get_object_or_404(GroupResearcher, pk=box_researcher.researcher_id)
+                box_owner = get_object_or_404(User, pk=group_researcher.user_id)
                 # find the sample
                 match = re.match(r"([a-z]+)([0-9]+)", sp_id, re.I)
                 if match:
@@ -2044,7 +2078,8 @@ class UpdateSamplePosition(APIView):
             if not auth_user.is_superuser:
                 box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
                 if box_researcher is not None:
-                    box_owner = get_object_or_404(User, pk=box_researcher.researcher_id)
+                    group_researcher = get_object_or_404(GroupResearcher, pk=box_researcher.researcher_id)
+                    box_owner = get_object_or_404(User, pk=group_researcher.user_id)
 
             # find the sample
             match = re.match(r"([a-z]+)([0-9]+)", sp_id, re.I)
@@ -2149,7 +2184,8 @@ class SampleSwitchPosition(APIView):
             box_owner = User()
             box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
             if box_researcher is not None:
-                box_owner = get_object_or_404(User, pk=box_researcher.researcher_id)
+                group_researcher = get_object_or_404(GroupResearcher, pk=box_researcher.researcher_id)
+                box_owner = get_object_or_404(User, pk=group_researcher.user_id)
 
             if first_match and second_match:
                 first_pos = first_match.groups()
@@ -2235,7 +2271,8 @@ class SwitchSample(APIView):
             first_box_owner = User()
             first_box_researcher = BoxResearcher.objects.all().filter(box_id=first_box.pk).first()
             if first_box_researcher is not None:
-                first_box_owner = get_object_or_404(User, pk=first_box_researcher.researcher_id)
+                first_group_researcher = get_object_or_404(GroupResearcher, pk=first_box_researcher.researcher_id)
+                first_box_owner = get_object_or_404(User, pk=first_group_researcher.user_id)
             # second container
             second_container_pk = data.get('second_container_pk', '')
             second_box_tower = data.get('second_box_tower', '')
@@ -2259,7 +2296,8 @@ class SwitchSample(APIView):
             second_box_owner = User()
             second_box_researcher = BoxResearcher.objects.all().filter(box_id=second_box.pk).first()
             if second_box_researcher is not None:
-                second_box_owner = get_object_or_404(User, pk=second_box_researcher.researcher_id)
+                second_group_researcher = get_object_or_404(GroupResearcher, pk=second_box_researcher.researcher_id)
+                second_box_owner = get_object_or_404(User, pk=second_group_researcher.user_id)
 
             # first sample
             first_sample = Sample.objects.all().filter(box_id=first_box.pk).filter(
@@ -2347,7 +2385,8 @@ class SampleAttachmentListAlternative(APIView):
             box_owner = User()
             box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
             if box_researcher is not None:
-                box_owner = get_object_or_404(User, pk=box_researcher.researcher_id)
+                group_researcher = get_object_or_404(GroupResearcher, pk=box_researcher.researcher_id)
+                box_owner = get_object_or_404(User, pk=group_researcher.user_id)
                 # obj = {'user': box_owner, 'container': container}
                 # self.check_object_permissions(request, obj)  # check the permission
                 # find the sample
@@ -2407,7 +2446,8 @@ class SampleAttachmentListAlternative(APIView):
             box_owner = User()
             box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
             if box_researcher is not None:
-                box_owner = get_object_or_404(User, pk=box_researcher.researcher_id)
+                group_researcher = get_object_or_404(GroupResearcher, pk=box_researcher.researcher_id)
+                box_owner = get_object_or_404(User, pk=group_researcher.user_id)
                 # find the sample
                 match = re.match(r"([a-z]+)([0-9]+)", sp_id, re.I)
                 if match:
@@ -2489,7 +2529,8 @@ class SampleAttachmentList(APIView):
             box_owner = User()
             box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
             if box_researcher is not None:
-                box_owner = get_object_or_404(User, pk=box_researcher.researcher_id)
+                group_researcher = get_object_or_404(GroupResearcher, pk=box_researcher.researcher_id)
+                box_owner = get_object_or_404(User, pk=group_researcher.user_id)
                 # find the sample
                 match = re.match(r"([a-z]+)([0-9]+)", sp_id, re.I)
                 if match:
@@ -2550,7 +2591,8 @@ class SampleAttachmentList(APIView):
             box_owner = User()
             box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
             if box_researcher is not None:
-                box_owner = get_object_or_404(User, pk=box_researcher.researcher_id)
+                group_researcher = get_object_or_404(GroupResearcher, pk=box_researcher.researcher_id)
+                box_owner = get_object_or_404(User, pk=group_researcher.user_id)
                 # find the sample
                 match = re.match(r"([a-z]+)([0-9]+)", sp_id, re.I)
                 if match:
@@ -2626,7 +2668,8 @@ class SampleAttachmentDetailAlternative(APIView):
             box_owner = User()
             box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
             if box_researcher is not None:
-                box_owner = get_object_or_404(User, pk=box_researcher.researcher_id)
+                group_researcher = get_object_or_404(GroupResearcher, pk=box_researcher.researcher_id)
+                box_owner = get_object_or_404(User, pk=group_researcher.user_id)
 
                 # find the sample
                 match = re.match(r"([a-z]+)([0-9]+)", sp_id, re.I)
@@ -2685,7 +2728,8 @@ class SampleAttachmentDetailAlternative(APIView):
             box_owner = User()
             box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
             if box_researcher is not None:
-                box_owner = get_object_or_404(User, pk=box_researcher.researcher_id)
+                group_researcher = get_object_or_404(GroupResearcher, pk=box_researcher.researcher_id)
+                box_owner = get_object_or_404(User, pk=group_researcher.user_id)
                 # find the sample
                 match = re.match(r"([a-z]+)([0-9]+)", sp_id, re.I)
                 if match:
@@ -2744,7 +2788,8 @@ class SampleAttachmentDetailAlternative(APIView):
             box_owner = User()
             box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
             if box_researcher is not None:
-                box_owner = get_object_or_404(User, pk=box_researcher.researcher_id)
+                group_researcher = get_object_or_404(GroupResearcher, pk=box_researcher.researcher_id)
+                box_owner = get_object_or_404(User, pk=group_researcher.user_id)
 
                 # find the sample
                 match = re.match(r"([a-z]+)([0-9]+)", sp_id, re.I)
@@ -2818,7 +2863,8 @@ class SampleAttachmentDetail(APIView):
             box_owner = User()
             box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
             if box_researcher is not None:
-                box_owner = get_object_or_404(User, pk=box_researcher.researcher_id)
+                group_researcher = get_object_or_404(GroupResearcher, pk=box_researcher.researcher_id)
+                box_owner = get_object_or_404(User, pk=group_researcher.user_id)
                 # find the sample
                 match = re.match(r"([a-z]+)([0-9]+)", sp_id, re.I)
                 if match:
@@ -2878,7 +2924,8 @@ class SampleAttachmentDetail(APIView):
             box_owner = User()
             box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
             if box_researcher is not None:
-                box_owner = get_object_or_404(User, pk=box_researcher.researcher_id)
+                group_researcher = get_object_or_404(GroupResearcher, pk=box_researcher.researcher_id)
+                box_owner = get_object_or_404(User, pk=group_researcher.user_id)
 
                 # find the sample
                 match = re.match(r"([a-z]+)([0-9]+)", sp_id, re.I)
@@ -2940,7 +2987,8 @@ class SampleAttachmentDetail(APIView):
             box_owner =User()
             box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
             if box_researcher is not None:
-                box_owner = get_object_or_404(User, pk=box_researcher.researcher_id)
+                group_researcher = get_object_or_404(GroupResearcher, pk=box_researcher.researcher_id)
+                box_owner = get_object_or_404(User, pk=group_researcher.user_id)
                 # find the sample
                 match = re.match(r"([a-z]+)([0-9]+)", sp_id, re.I)
                 if match:
@@ -3011,7 +3059,8 @@ class SampleTakeAlternative(APIView):
             box_owner = User()
             box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
             if box_researcher is not None:
-                box_owner = get_object_or_404(User, pk=box_researcher.researcher_id)
+                group_researcher = get_object_or_404(GroupResearcher, pk=box_researcher.researcher_id)
+                box_owner = get_object_or_404(User, pk=group_researcher.user_id)
                 # find the sample
                 match = re.match(r"([a-z]+)([0-9]+)", sp_id, re.I)
                 if match:
@@ -3077,7 +3126,8 @@ class SampleTake(APIView):
             box_owner = User()
             box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
             if box_researcher is not None:
-                box_owner = get_object_or_404(User, pk=box_researcher.researcher_id)
+                group_researcher = get_object_or_404(GroupResearcher, pk=box_researcher.researcher_id)
+                box_owner = get_object_or_404(User, pk=group_researcher.user_id)
                 # find the sample
                 match = re.match(r"([a-z]+)([0-9]+)", sp_id, re.I)
                 if match:
@@ -3141,7 +3191,8 @@ class SampleBackAlternative(APIView):
             box_owner = User()
             box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
             if box_researcher is not None:
-                box_owner = get_object_or_404(User, pk=box_researcher.researcher_id)
+                group_researcher = get_object_or_404(GroupResearcher, pk=box_researcher.researcher_id)
+                box_owner = get_object_or_404(User, pk=group_researcher.user_id)
                 # find the sample
                 match = re.match(r"([a-z]+)([0-9]+)", sp_id, re.I)
                 if match:
@@ -3212,7 +3263,8 @@ class SampleBack(APIView):
             box_owner = User()
             box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
             if box_researcher is not None:
-                box_owner = get_object_or_404(User, pk=box_researcher.researcher_id)
+                group_researcher = get_object_or_404(GroupResearcher, pk=box_researcher.researcher_id)
+                box_owner = get_object_or_404(User, pk=group_researcher.user_id)
                 # find the sample
                 match = re.match(r"([a-z]+)([0-9]+)", sp_id, re.I)
                 if match:
@@ -3281,7 +3333,8 @@ class SampleColorAlternative(APIView):
             box_owner = User()
             box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
             if box_researcher is not None:
-                box_owner = get_object_or_404(User, pk=box_researcher.researcher_id)
+                group_researcher = get_object_or_404(GroupResearcher, pk=box_researcher.researcher_id)
+                box_owner = get_object_or_404(User, pk=group_researcher.user_id)
                 # find the sample
                 match = re.match(r"([a-z]+)([0-9]+)", sp_id, re.I)
                 if match:
@@ -3350,7 +3403,8 @@ class SampleColor(APIView):
             box_owner = User()
             box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
             if box_researcher is not None:
-                box_owner = get_object_or_404(User, pk=box_researcher.researcher_id)
+                group_researcher = get_object_or_404(GroupResearcher, pk=box_researcher.researcher_id)
+                box_owner = get_object_or_404(User, pk=group_researcher.user_id)
 
                 # find the sample
                 match = re.match(r"([a-z]+)([0-9]+)", sp_id, re.I)
