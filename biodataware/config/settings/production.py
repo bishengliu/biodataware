@@ -50,8 +50,8 @@ SITE_NAME = 'BIOKU'
 
 # sendgrid
 EMAIL_USE_TLS = True
-DEFAULT_FROM_EMAIL = 'bishengliu36@gmail.com'
-SERVER_EMAIL = 'bishengliu36@gmail.com'
+DEFAULT_FROM_EMAIL = 'bliu@lumc.nl'
+SERVER_EMAIL = 'bliu@lumc.nl'
 EMAIL_HOST = 'smtp.sendgrid.net'
 EMAIL_PORT = 587
 EMAIL_HOST_USER = 'azure_a0bed7402d312ae0c71db9d57a71c67c@azure.com'
