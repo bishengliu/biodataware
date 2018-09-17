@@ -54,8 +54,10 @@ DEFAULT_FROM_EMAIL = 'bliu@lumc.nl'
 SERVER_EMAIL = 'bliu@lumc.nl'
 EMAIL_HOST = 'smtp.sendgrid.net'
 EMAIL_PORT = 587
-EMAIL_HOST_USER = 'azure_a0bed7402d312ae0c71db9d57a71c67c@azure.com'
-EMAIL_HOST_PASSWORD = 'boL5MRQUCtbM1K8'
+# EMAIL_HOST_USER = 'azure_a0bed7402d312ae0c71db9d57a71c67c@azure.com'
+# EMAIL_HOST_PASSWORD = 'boL5MRQUCtbM1K8'
+EMAIL_HOST_USER = 'bisheng'
+EMAIL_HOST_PASSWORD = 'Lbs198236'
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
 # DATABASE
