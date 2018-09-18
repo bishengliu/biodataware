@@ -22,7 +22,7 @@ from django.db.models import Q
 # for admin and manager get all the conatiners, otherwise only show current group containers
 class ContainerList(APIView):
     parser_classes = (JSONParser, FormParser, MultiPartParser,)
-    permission_classes = (permissions.IsAuthenticated, IsPIorReadOnly, )
+    permission_classes = (permissions.IsAuthenticated, IsPIorAssistantofUserOrReadOnly, )
 
     def get(self, request, format=None):
         try:
@@ -260,7 +260,7 @@ class ContainerDetail(APIView):
 
 # upload samples 2 a container
 class ContainerSampleUpload(APIView):
-    permission_classes = (permissions.IsAuthenticated, IsPIorReadOnly,)
+    permission_classes = (permissions.IsAuthenticated, IsPIorAssistantofUserOrReadOnly,)
 
     @transaction.atomic
     def post(self, request, pk, format=None):
@@ -407,7 +407,7 @@ class ContainerSampleUpload(APIView):
 
 # group containers list
 class GroupContainerList(APIView):
-    permission_classes = (permissions.IsAuthenticated, IsPIorReadOnly, )
+    permission_classes = (permissions.IsAuthenticated, IsPIorAssistantofUserOrReadOnly, )
 
     def get(self, request, ct_id, format=None):
         user = request.user
@@ -446,7 +446,7 @@ class GroupContainerList(APIView):
 
 # remove container from group
 class GroupContainerDetail(APIView):
-    permission_classes = (permissions.IsAuthenticated, IsPIorReadOnly, )
+    permission_classes = (permissions.IsAuthenticated, IsPIorAssistantofUserOrReadOnly, )
 
     def get(self, request, ct_id,  gp_id, format=None):
         user = request.user
@@ -1334,7 +1334,7 @@ class Box(APIView):
 
 # update box rate
 class BoxRate(APIView):
-    permission_classes = (permissions.IsAuthenticated, IsInGroupContanier, IsPIorAssistantorOwnerorReadOnly, )
+    permission_classes = (permissions.IsAuthenticated, IsInGroupContanier, )
 
     def put(self, request, ct_id, id, format=None):
         try:
@@ -1396,7 +1396,7 @@ class BoxRate(APIView):
 
 # update box color
 class BoxColor(APIView):
-    permission_classes = (permissions.IsAuthenticated, IsInGroupContanier, IsPIorAssistantorOwnerorReadOnly, )
+    permission_classes = (permissions.IsAuthenticated, IsInGroupContanier, )
 
     def put(self, request, ct_id, id, format=None):
         try:
@@ -1447,7 +1447,7 @@ class BoxColor(APIView):
 
 # update box description
 class BoxDescription(APIView):
-    permission_classes = (permissions.IsAuthenticated, IsInGroupContanier, IsPIorAssistantorOwnerorReadOnly, )
+    permission_classes = (permissions.IsAuthenticated, IsInGroupContanier, )
 
     def put(self, request, ct_id, id, format=None):
         try:
@@ -1500,7 +1500,7 @@ class BoxDescription(APIView):
 
 # update box label
 class BoxLabel(APIView):
-    permission_classes = (permissions.IsAuthenticated, IsInGroupContanier, IsPIorAssistantorOwnerorReadOnly, )
+    permission_classes = (permissions.IsAuthenticated, IsInGroupContanier, )
 
     def put(self, request, ct_id, id, format=None):
         try:
