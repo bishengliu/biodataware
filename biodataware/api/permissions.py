@@ -172,8 +172,8 @@ class IsPIorReadOnly(permissions.BasePermission):
         try:
             if request.method in permissions.SAFE_METHODS:
                 return True
-            authUser = request.user
-            if authUser.is_superuser:
+            auth_user = request.user
+            if auth_user.is_superuser:
                 return True
             user = obj['user']
             # first check whether the user is in any group
@@ -185,7 +185,7 @@ class IsPIorReadOnly(permissions.BasePermission):
                 role = Role.objects.all().filter(role__iexact='PI').first()
                 if not role:
                     return False
-                pi_role = UserRole.objects.all().filter(user_id=authUser.id).filter(role_id=role.id).first()
+                pi_role = UserRole.objects.all().filter(user_id=auth_user.id).filter(role_id=role.id).first()
                 if pi_role:
                     return True
             return False
@@ -235,8 +235,8 @@ class IsPIofUser(permissions.BasePermission):
 class IsPIofUserReadOnly(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
         try:
-            authUser = request.user
-            if authUser.is_superuser:
+            auth_user = request.user
+            if auth_user.is_superuser:
                 return True
             user = obj['user']
             # first check whether the user is in any group
@@ -250,11 +250,11 @@ class IsPIofUserReadOnly(permissions.BasePermission):
                 role = Role.objects.all().filter(role__iexact='PI').first()
                 if not role:
                     return False
-                pi_roles = UserRole.objects.all().filter(user_id=authUser.id).filter(role_id=role.id)
+                pi_roles = UserRole.objects.all().filter(user_id=auth_user.id).filter(role_id=role.id)
                 if not pi_roles:
                     return False
                 # check whether there is a group created for PI
-                pi_groups = Group.objects.all().filter(email__iexact=authUser.email)
+                pi_groups = Group.objects.all().filter(email__iexact=auth_user.email)
                 if pi_groups:
                     pi_group_ids = [g.id for g in pi_groups]
                     intersection = list(set(user_group_ids) & set(pi_group_ids))
@@ -363,6 +363,8 @@ class IsPIorAssistantofUserReadOnly(permissions.BasePermission):
 class IsPIorAssistantofUserOrReadOnly(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
         try:
+            if request.method in permissions.SAFE_METHODS:
+                return True
             auth_user = request.user
             if auth_user.is_authenticated():
                 if auth_user.is_superuser:
@@ -487,6 +489,8 @@ class IsPIorAssistantorOwner(permissions.BasePermission):
 class IsPIorAssistantorOwnerorReadOnly(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
         try:
+            if request.method in permissions.SAFE_METHODS:
+                return True
             if request.user.is_authenticated():
                 auth_user = request.user
                 if auth_user.is_superuser:
