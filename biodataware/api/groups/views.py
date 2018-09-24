@@ -1,3 +1,4 @@
+from django.db import transaction
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
@@ -329,6 +330,7 @@ class OneGroupResearcherDetail(APIView):
         except:
             return Response({'detail': 'something went wrong!'}, status=status.HTTP_400_BAD_REQUEST)
 
+    @transaction.atomic
     def delete(self, request, g_id, u_id, format=None):
         try:
             user = get_object_or_404(User, pk=u_id)
@@ -343,6 +345,10 @@ class OneGroupResearcherDetail(APIView):
                     group_researcher = GroupResearcher.objects.all().filter(user_id=u_id).filter(group_id=g_id).first()
                     if group_researcher:
                         group_researcher.delete()
+                        assistant = Assistant.objects.all().filter(user_id=u_id).filter(
+                                group_id=g_id).first()
+                        if assistant is not None:
+                            assistant.delete()
                     return Response({'detail': 'user removed from the group!'}, status=status.HTTP_200_OK)
             return Response({'detail': 'something went wrong!'}, status=status.HTTP_400_BAD_REQUEST)
         except:
@@ -375,6 +381,7 @@ class OneGroupAssistantList(APIView):
         except:
             return Response({'detail': 'something went wrong!'}, status=status.HTTP_400_BAD_REQUEST)
 
+    @transaction.atomic
     def post(self, request, pk, format=None):
         try:
             user = request.user
@@ -393,6 +400,12 @@ class OneGroupAssistantList(APIView):
                                         status=status.HTTP_400_BAD_REQUEST)
                     assistant = Assistant(**data)
                     assistant.save()
+                    # add into member
+                    member = GroupResearcher.objects.all().filter(user_id=data.get("user_id")).filter(
+                            group_id=data.get("group_id")).first()
+                    if member is None:
+                        group_researcher = GroupResearcher(**data)
+                        group_researcher.save()
                     return Response({'detail': 'assistant added to the group!'}, status=status.HTTP_200_OK)
             return Response({'detail': 'something went wrong!'}, status=status.HTTP_400_BAD_REQUEST)
         except:
