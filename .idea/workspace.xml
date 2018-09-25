@@ -2,7 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="e07c48b7-1c00-4eca-bd6a-d182d44a745f" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/biodataware/api/containers/serializers.py" beforeDir="false" afterPath="$PROJECT_DIR$/biodataware/api/containers/serializers.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/biodataware/api/containers/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/biodataware/api/containers/urls.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/biodataware/api/containers/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/biodataware/api/containers/views.py" afterDir="false" />
@@ -32,22 +31,22 @@
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
         <counts>
-          <entry key="py" value="19" />
+          <entry key="py" value="20" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.open">
         <counts>
-          <entry key="Python" value="19" />
+          <entry key="Python" value="20" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
-          <entry key="py" value="688" />
+          <entry key="py" value="1118" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
-          <entry key="Python" value="688" />
+          <entry key="Python" value="1118" />
         </counts>
       </usages-collector>
     </session>
@@ -57,8 +56,11 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/biodataware/api/containers/urls.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1326">
-              <caret line="79" column="11" selection-start-line="79" selection-start-column="11" selection-end-line="79" selection-end-column="11" />
+            <state relative-caret-position="381">
+              <caret line="120" column="16" selection-start-line="120" selection-start-column="8" selection-end-line="120" selection-end-column="16" />
+              <folding>
+                <element signature="e#0#32#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -66,8 +68,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/biodataware/api/containers/views.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="340">
-              <caret line="1618" lean-forward="true" selection-start-line="1618" selection-end-line="1618" />
+            <state relative-caret-position="-605">
+              <caret line="1619" column="43" selection-start-line="1619" selection-start-column="25" selection-end-line="1619" selection-end-column="43" />
               <folding>
                 <element signature="e#0#40#0" expanded="true" />
                 <element signature="e#53840#56008#0" />
@@ -77,33 +79,44 @@
                 <element signature="e#70381#72699#0" />
                 <element signature="e#72896#75281#0" />
                 <element signature="e#75332#77816#0" />
-                <element signature="e#78028#81072#0" />
+                <element signature="e#78011#80870#0" />
                 <element signature="e#81131#87808#0" />
                 <element signature="e#87863#90532#0" />
                 <element signature="e#90776#93780#0" />
                 <element signature="e#92147#93509#0" />
                 <element signature="e#93880#96946#0" />
-                <marker date="1537865365929" expanded="true" signature="77870:81044" ph="..." />
-                <marker date="1537865365929" expanded="true" signature="80907:81044" ph="..." />
+                <element signature="e#97011#104005#0" />
+                <element signature="e#104073#107464#0" />
+                <element signature="e#107540#112573#0" />
+                <element signature="e#112660#117754#0" />
+                <element signature="e#117823#123907#0" />
+                <element signature="e#117980#123907#0" />
+                <element signature="e#123983#131947#0" />
+                <element signature="e#131991#139731#0" />
+                <element signature="e#139788#150333#0" />
+                <element signature="e#139963#143143#0" />
+                <element signature="e#143226#146474#0" />
+                <element signature="e#146554#150333#0" />
+                <element signature="e#150379#161104#0" />
+                <element signature="e#150540#153784#0" />
+                <element signature="e#153853#157150#0" />
+                <element signature="e#157216#161104#0" />
+                <element signature="e#161168#164575#0" />
+                <element signature="e#161336#164575#0" />
+                <element signature="e#164763#168113#0" />
+                <element signature="e#168344#171993#0" />
+                <element signature="e#172181#175941#0" />
+                <element signature="e#176177#179562#0" />
+                <element signature="e#179751#183248#0" />
+                <element signature="e#183373#184663#0" />
+                <element signature="e#184702#185116#0" />
+                <element signature="e#185311#186909#0" />
+                <element signature="e#187166#189402#0" />
+                <element signature="e#189547#194622#0" />
+                <element signature="e#194771#199905#0" />
+                <marker date="1537867719271" expanded="true" signature="77870:84306" ph="..." />
+                <marker date="1537867719271" expanded="true" signature="80907:84306" ph="..." />
               </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/biodataware/containers/models.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1513">
-              <caret line="95" column="18" selection-start-line="95" selection-start-column="4" selection-end-line="95" selection-end-column="18" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/biodataware/samples/models.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1139">
-              <caret line="83" selection-start-line="83" selection-end-line="83" />
             </state>
           </provider>
         </entry>
@@ -111,10 +124,11 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/biodataware/api/containers/serializers.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="334">
-              <caret line="257" column="28" selection-start-line="257" selection-start-column="6" selection-end-line="257" selection-end-column="28" />
+            <state relative-caret-position="621">
+              <caret line="263" column="24" selection-start-line="263" selection-start-column="6" selection-end-line="263" selection-end-column="24" />
               <folding>
-                <marker date="1537862207973" expanded="true" signature="10914:11152" ph="..." />
+                <marker date="1537866849054" expanded="true" signature="10914:11307" ph="..." />
+                <marker date="1537866849054" expanded="true" signature="11214:11307" ph="..." />
               </folding>
             </state>
           </provider>
@@ -132,8 +146,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>IsInGroupContanier</find>
-      <find>GroupResearcher</find>
       <find>FileField</find>
       <find>upload_to</find>
       <find>containers</find>
@@ -162,6 +174,8 @@
       <find>UserSerializer</find>
       <find>IsPIorAssistantofUserOrReadOnly</find>
       <find>@transaction.atomic</find>
+      <find>owner</find>
+      <find>BoxOwner</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -220,17 +234,17 @@
         <option value="$PROJECT_DIR$/biodataware/api/permissions.py" />
         <option value="$PROJECT_DIR$/biodataware/api/groups/views.py" />
         <option value="$PROJECT_DIR$/biodataware/containers/models.py" />
-        <option value="$PROJECT_DIR$/biodataware/api/containers/urls.py" />
         <option value="$PROJECT_DIR$/biodataware/api/containers/serializers.py" />
+        <option value="$PROJECT_DIR$/biodataware/api/containers/urls.py" />
         <option value="$PROJECT_DIR$/biodataware/api/containers/views.py" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="36" />
-    <option name="y" value="-15" />
+    <option name="x" value="162" />
+    <option name="y" value="-8" />
     <option name="width" value="1936" />
-    <option name="height" value="1134" />
+    <option name="height" value="1096" />
   </component>
   <component name="ProjectLevelVcsManager">
     <ConfirmationsSetting value="2" id="Add" />
@@ -252,6 +266,19 @@
               <item name="biodataware" type="b2602c69:ProjectViewProjectNode" />
               <item name="biodataware" type="462c0819:PsiDirectoryNode" />
               <item name="biodataware" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="biodataware" type="b2602c69:ProjectViewProjectNode" />
+              <item name="biodataware" type="462c0819:PsiDirectoryNode" />
+              <item name="biodataware" type="462c0819:PsiDirectoryNode" />
+              <item name="api" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="biodataware" type="b2602c69:ProjectViewProjectNode" />
+              <item name="biodataware" type="462c0819:PsiDirectoryNode" />
+              <item name="biodataware" type="462c0819:PsiDirectoryNode" />
+              <item name="api" type="462c0819:PsiDirectoryNode" />
+              <item name="containers" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="biodataware" type="b2602c69:ProjectViewProjectNode" />
@@ -422,7 +449,7 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="1594" y="266" width="1936" height="1134" extended-state="0" />
+    <frame x="-8" y="-8" width="1936" height="1176" extended-state="6" />
     <editor active="true" />
     <layout>
       <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.16491044" />
@@ -430,7 +457,7 @@
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.32950193" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.18081918" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.26558006" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.1620326" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -628,13 +655,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/biodataware/groups/models.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1007">
-          <caret line="100" column="21" selection-start-line="100" selection-start-column="6" selection-end-line="100" selection-end-column="21" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/biodataware/templates/users/api_password_reset_email.html">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="152">
@@ -747,23 +767,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/biodataware/api/containers/urls.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1326">
-          <caret line="79" column="11" selection-start-line="79" selection-start-column="11" selection-end-line="79" selection-end-column="11" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/biodataware/api/containers/serializers.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="334">
-          <caret line="257" column="28" selection-start-line="257" selection-start-column="6" selection-end-line="257" selection-end-column="28" />
-          <folding>
-            <marker date="1537862207973" expanded="true" signature="10914:11152" ph="..." />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/biodataware/samples/models.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1139">
@@ -778,10 +781,38 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/biodataware/groups/models.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="667">
+          <caret line="101" column="9" selection-start-line="101" selection-start-column="4" selection-end-line="101" selection-end-column="9" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/biodataware/api/containers/serializers.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="621">
+          <caret line="263" column="24" selection-start-line="263" selection-start-column="6" selection-end-line="263" selection-end-column="24" />
+          <folding>
+            <marker date="1537866849054" expanded="true" signature="10914:11307" ph="..." />
+            <marker date="1537866849054" expanded="true" signature="11214:11307" ph="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/biodataware/api/containers/urls.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="381">
+          <caret line="120" column="16" selection-start-line="120" selection-start-column="8" selection-end-line="120" selection-end-column="16" />
+          <folding>
+            <element signature="e#0#32#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/biodataware/api/containers/views.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="340">
-          <caret line="1618" lean-forward="true" selection-start-line="1618" selection-end-line="1618" />
+        <state relative-caret-position="-605">
+          <caret line="1619" column="43" selection-start-line="1619" selection-start-column="25" selection-end-line="1619" selection-end-column="43" />
           <folding>
             <element signature="e#0#40#0" expanded="true" />
             <element signature="e#53840#56008#0" />
@@ -791,14 +822,43 @@
             <element signature="e#70381#72699#0" />
             <element signature="e#72896#75281#0" />
             <element signature="e#75332#77816#0" />
-            <element signature="e#78028#81072#0" />
+            <element signature="e#78011#80870#0" />
             <element signature="e#81131#87808#0" />
             <element signature="e#87863#90532#0" />
             <element signature="e#90776#93780#0" />
             <element signature="e#92147#93509#0" />
             <element signature="e#93880#96946#0" />
-            <marker date="1537865365929" expanded="true" signature="77870:81044" ph="..." />
-            <marker date="1537865365929" expanded="true" signature="80907:81044" ph="..." />
+            <element signature="e#97011#104005#0" />
+            <element signature="e#104073#107464#0" />
+            <element signature="e#107540#112573#0" />
+            <element signature="e#112660#117754#0" />
+            <element signature="e#117823#123907#0" />
+            <element signature="e#117980#123907#0" />
+            <element signature="e#123983#131947#0" />
+            <element signature="e#131991#139731#0" />
+            <element signature="e#139788#150333#0" />
+            <element signature="e#139963#143143#0" />
+            <element signature="e#143226#146474#0" />
+            <element signature="e#146554#150333#0" />
+            <element signature="e#150379#161104#0" />
+            <element signature="e#150540#153784#0" />
+            <element signature="e#153853#157150#0" />
+            <element signature="e#157216#161104#0" />
+            <element signature="e#161168#164575#0" />
+            <element signature="e#161336#164575#0" />
+            <element signature="e#164763#168113#0" />
+            <element signature="e#168344#171993#0" />
+            <element signature="e#172181#175941#0" />
+            <element signature="e#176177#179562#0" />
+            <element signature="e#179751#183248#0" />
+            <element signature="e#183373#184663#0" />
+            <element signature="e#184702#185116#0" />
+            <element signature="e#185311#186909#0" />
+            <element signature="e#187166#189402#0" />
+            <element signature="e#189547#194622#0" />
+            <element signature="e#194771#199905#0" />
+            <marker date="1537867719271" expanded="true" signature="77870:84306" ph="..." />
+            <marker date="1537867719271" expanded="true" signature="80907:84306" ph="..." />
           </folding>
         </state>
       </provider>

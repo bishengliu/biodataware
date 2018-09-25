@@ -1615,7 +1615,67 @@ class BoxOwner(APIView):
     permissions = (permissions.IsAuthenticated, IsInGroupContanier,)
 
     def put(self, request, ct_id, id, format=None):
-        pass
+        try:
+            auth_user = request.user
+            serializer = BoxOwnerSerializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            data = serializer.data
+            container = get_object_or_404(Container, pk=int(ct_id))
+            id_list = id.split("-")
+            tw_id = int(id_list[0])
+            sf_id = int(id_list[1])
+            bx_id = int(id_list[2])
+            if int(tw_id) > int(container.tower) or int(tw_id) < 0:
+                return Response({'detail': 'tower does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+
+            if int(sf_id) > int(container.shelf) or int(sf_id) < 0:
+                return Response({'detail': 'shelf does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+            if int(bx_id) > int(container.box) or int(bx_id) < 0:
+                return Response({'detail': 'Box does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+            # box
+            box = BoxContainer.objects.all() \
+                .filter(container_id=int(ct_id)) \
+                .filter(tower=int(tw_id)) \
+                .filter(shelf=int(sf_id)) \
+                .filter(box=int(bx_id)) \
+                .first()
+            if box is None:
+                return Response({'detail': 'box does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+            # check the new owner in the group or not
+            researcher = get_object_or_404(User, pk=int(data['owner_pk']))
+            if researcher is not None:
+                group_researcher = get_object_or_404(GroupResearcher, pk=researcher.pk)
+                user = get_object_or_404(User, pk=group_researcher.user_id)
+                obj = {'user': user, 'container': container}
+                self.check_object_permissions(request, obj)  # check the permission
+            # only apply the first researcher
+            box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
+            if box_researcher is None:
+                # create new
+                BoxResearcher.objects.create(
+                    box_id=box.pk,
+                    researcher_id=researcher.pk
+                )
+                return Response({'detail': 'box owner changed!'},
+                                status=status.HTTP_200_OK)
+            else:
+                box_researcher.researcher_id = researcher.pk
+                if not auth_user.is_superuser:
+                    if box_researcher is not None:
+                        group_researcher = get_object_or_404(GroupResearcher, pk=box_researcher.researcher_id)
+                        user = get_object_or_404(User, pk=group_researcher.user_id)
+                        obj = {'user': user, 'container': container}
+                        self.check_object_permissions(request, obj)  # check the permission
+                box_researcher.save()
+                return Response({'detail': 'box owner changed!'},
+                                status=status.HTTP_200_OK)
+        except:
+            return Response({'detail': 'Something went wrong, box owner not changed!'},
+                            status=status.HTTP_400_BAD_REQUEST)
 
 
 # move container box
@@ -3002,7 +3062,6 @@ class SampleAttachmentDetail(APIView):
                     sample = Sample.objects.all().filter(box_id=box.pk).filter(vposition__iexact=pos[0]).filter(
                         hposition=pos[1]).first()
                     if sample is not None:
-
                         if auth_user is not box_owner:
                             # get sample1 owner
                             sample_researcher = SampleResearcher.objects.all().filter(sample_id=sample.pk).first()

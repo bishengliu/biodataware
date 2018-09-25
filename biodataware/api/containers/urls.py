@@ -115,6 +115,12 @@ urlpatterns = [
     url(r'^(?P<ct_id>[0-9]+)/(?P<id>[0-9]+\-[0-9]+\-[0-9]+)/dimension/$',
         BoxDimension.as_view(),
         name='container-box-dimension'),
+
+    # update box owner
+    url(r'^(?P<ct_id>[0-9]+)/(?P<id>[0-9]+\-[0-9]+\-[0-9]+)/owner/$',
+        BoxOwner.as_view(),
+        name='container-box-owner'),
+
     # =====================================================sample detail================================================
     # edit sample
     # /12/3/4/A12/

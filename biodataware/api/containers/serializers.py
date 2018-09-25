@@ -259,6 +259,12 @@ class BoxDimensionSerializer(serializers.Serializer):
     box_vertical = serializers.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(99)], required=True)
     box_horizontal = serializers.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(99)], required=True)
 
+
+# box owner
+class BoxOwnerSerializer(serializers.Serializer):
+    owner_pk = serializers.IntegerField(validators=[MinValueValidator(0)], required=True)
+
+
 # ######################################################## sample create and edit serializer ###########################
 # add a new sample
 
