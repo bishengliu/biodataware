@@ -1160,7 +1160,7 @@ class Box(APIView):
                 if not authUser.is_superuser:
                     self.check_object_permissions(request, obj)  # check the permission
                 # check samples
-                if box.sample_set:
+                if box.sample_set.count() > 0:
                     return Response({'detail': 'Cannot delete this box, there are samples in the box!'},
                                     status=status.HTTP_400_BAD_REQUEST)
                 box.delete()
