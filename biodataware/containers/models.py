@@ -111,8 +111,11 @@ class BoxContainer(models.Model):
             user_ids = []
             for br in br_set.values('researcher'):
                 boxresearcher_ids.append(br['researcher'])
+                User = get_user_model()
+                users = User.objects.all().filter(pk__in=user_ids)
+                return users
             if boxresearcher_ids is not None:
-                group_researchers = GroupResearcher.objects.all().filter(pk__in=boxresearcher_ids)
+                group_researchers = GroupResearcher.objects.all().filter(user_id__in=boxresearcher_ids)
                 if group_researchers is not None:
                     for u in group_researchers:
                         user_ids.append(u.user_id)

@@ -326,7 +326,7 @@ class ContainerSampleUpload(APIView):
 
                         box_researcher = BoxResearcher.objects.create(
                             box=box,
-                            researcher_id=group_researcher.pk
+                            researcher_id=user.pk
                         )
                         # box_researcher.save()
 
@@ -731,7 +731,7 @@ class ContainerBoxList(APIView):
                 # get all the researchers in the groups
                 groupresearchers = GroupResearcher.objects.all().filter(group_id__in=group_ids)
                 if groupresearchers:
-                    groupresearcher_pks = [r.pk for r in groupresearchers]
+                    groupresearcher_pks = [r.user_id for r in groupresearchers]
                     # get all the researchers in the group
                 boxes = BoxContainer.objects.all().filter(container_id=container.pk)\
                     .filter(boxresearcher__researcher_id__in=groupresearcher_pks)
@@ -837,7 +837,7 @@ class ContainerFavoriteBoxList(APIView):
                 # get all the researchers in the groups
                     groupresearchers = GroupResearcher.objects.all().filter(group_id__in=group_ids)
                 if groupresearchers:
-                    groupresearcher_pks = [r.pk for r in groupresearchers]
+                    groupresearcher_pks = [r.user_id for r in groupresearchers]
                 boxes = BoxContainer.objects.all() \
                     .filter(container_id=container.pk) \
                     .filter(rate__gte=1) \
@@ -1825,7 +1825,7 @@ class AddBox(APIView):
                     if primary_group_researcher is not None:
                         BoxResearcher.objects.create(
                             box_id=box.pk,
-                            researcher_id=primary_group_researcher.pk
+                            researcher_id=user.pk
                         )
                     return Response({'detail': 'box added!'}, status=status.HTTP_200_OK)
                 return Response({'detail': 'Something went wrong, failed to add the box!'},

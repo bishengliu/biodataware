@@ -200,6 +200,7 @@ class BoxSamplesSerializer(serializers.ModelSerializer):
 class BoxSampleFullnessSerializer(serializers.ModelSerializer):
     researchers = UserSerializer(many=True, read_only=True, source='researcher_objs')
     # researchers = BoxResearcherSerializer(many=True, read_only=True, source='boxresearcher_set')
+    # researchers = BoxResearcherSerializer(many=True, read_only=True, source='boxresearcher_set')
     # samples = SampleSerializer(many=True, read_only=True, source='sample_set')
 
     class Meta:
