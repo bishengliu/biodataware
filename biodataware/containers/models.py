@@ -106,24 +106,13 @@ class BoxContainer(models.Model):
 
     def researcher_objs(self):
         br_set = self.boxresearcher_set
-        if br_set:
+        if br_set is not None:
             boxresearcher_ids = []
-            user_ids = []
             for br in br_set.values('researcher'):
                 boxresearcher_ids.append(br['researcher'])
-                User = get_user_model()
-                users = User.objects.all().filter(pk__in=user_ids)
-                return users
-            if boxresearcher_ids is not None:
-                group_researchers = GroupResearcher.objects.all().filter(user_id__in=boxresearcher_ids)
-                if group_researchers is not None:
-                    for u in group_researchers:
-                        user_ids.append(u.user_id)
-                    if user_ids:
-                        # get all user ids
-                        User = get_user_model()
-                        users = User.objects.all().filter(pk__in=user_ids)
-                        return users
+            User = get_user_model()
+            users = User.objects.all().filter(pk__in=boxresearcher_ids)
+            return users
         return None
 
     def sample_count(self):
