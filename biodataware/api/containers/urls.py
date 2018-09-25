@@ -111,6 +111,10 @@ urlpatterns = [
         BoxLabel.as_view(),
         name='container-box-label'),
 
+    # update box dimension
+    url(r'^(?P<ct_id>[0-9]+)/(?P<id>[0-9]+\-[0-9]+\-[0-9]+)/dimension/$',
+        BoxDimension.as_view(),
+        name='container-box-dimension'),
     # =====================================================sample detail================================================
     # edit sample
     # /12/3/4/A12/

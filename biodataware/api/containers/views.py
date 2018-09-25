@@ -1550,6 +1550,74 @@ class BoxLabel(APIView):
                             status=status.HTTP_400_BAD_REQUEST)
 
 
+# update box dimension
+class BoxDimension(APIView):
+    permissions = (permissions.IsAuthenticated, IsInGroupContanier, )
+
+    def put(self, request, ct_id, id, format=None):
+        try:
+            auth_user = request.user
+            serializer = BoxDimensionSerializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            data = serializer.data
+            container = get_object_or_404(Container, pk=int(ct_id))
+            id_list = id.split("-")
+            tw_id = int(id_list[0])
+            sf_id = int(id_list[1])
+            bx_id = int(id_list[2])
+            if int(tw_id) > int(container.tower) or int(tw_id) < 0:
+                return Response({'detail': 'tower does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+
+            if int(sf_id) > int(container.shelf) or int(sf_id) < 0:
+                return Response({'detail': 'shelf does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+            if int(bx_id) > int(container.box) or int(bx_id) < 0:
+                return Response({'detail': 'Box does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+            # box
+            box = BoxContainer.objects.all() \
+                .filter(container_id=int(ct_id)) \
+                .filter(tower=int(tw_id)) \
+                .filter(shelf=int(sf_id)) \
+                .filter(box=int(bx_id)) \
+                .first()
+            if box is None:
+                return Response({'detail': 'box does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+            box.box_vertical = data['box_vertical']
+            box.box_horizontal = data['box_horizontal']
+            # validate samples
+            # samples = box.sample_set \
+            #    .filter(Q(box_vertical__gte=box.box_vertical) | Q(box_horizontal_gte=box.box_horizontal)) \
+            #    .filter(occupied=1)
+            # if samples.count() > 0:
+            #    return Response({'detail': 'the box layout must include all the existing samples!'},
+            #                    status=status.HTTP_400_BAD_REQUEST)
+            # get box researcher
+            box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
+            if not auth_user.is_superuser:
+                if box_researcher is not None:
+                    group_researcher = get_object_or_404(GroupResearcher, pk=box_researcher.researcher_id)
+                    user = get_object_or_404(User, pk=group_researcher.user_id)
+                    obj = {'user': user, 'container': container}
+                    self.check_object_permissions(request, obj)  # check the permission
+            box.save()
+            return Response({'detail': 'box dimension is updated!'},
+                            status=status.HTTP_200_OK)
+        except:
+            return Response({'detail': 'Something went wrong, box dimension not changed!'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+
+# update box owner
+class BoxOwner(APIView):
+    permissions = (permissions.IsAuthenticated, IsInGroupContanier,)
+
+    def put(self, request, ct_id, id, format=None):
+        pass
+
+
 # move container box
 class MoveBox(APIView):
     permission_classes = (permissions.IsAuthenticated, IsInGroupContanier,)

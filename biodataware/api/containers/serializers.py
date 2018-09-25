@@ -254,6 +254,11 @@ class BoxLabelSerializer(serializers.Serializer):
     label = serializers.CharField(required=False, allow_null=True, allow_blank=True)
 
 
+# bos dimension
+class BoxDimensionSerializer(serializers.Serializer):
+    box_vertical = serializers.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(99)], required=True)
+    box_horizontal = serializers.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(99)], required=True)
+
 # ######################################################## sample create and edit serializer ###########################
 # add a new sample
 
