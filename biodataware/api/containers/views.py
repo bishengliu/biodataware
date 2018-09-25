@@ -1647,11 +1647,9 @@ class BoxOwner(APIView):
                                 status=status.HTTP_400_BAD_REQUEST)
             # check the new owner in the group or not
             researcher = get_object_or_404(User, pk=int(data['owner_pk']))
-            if researcher is not None:
-                group_researcher = get_object_or_404(GroupResearcher, pk=researcher.pk)
-                user = get_object_or_404(User, pk=group_researcher.user_id)
-                obj = {'user': user, 'container': container}
-                self.check_object_permissions(request, obj)  # check the permission
+            obj = {'user': researcher, 'container': container}
+            self.check_object_permissions(request, obj)  # check the permission
+
             # only apply the first researcher
             box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
             if box_researcher is None:
@@ -1663,13 +1661,11 @@ class BoxOwner(APIView):
                 return Response({'detail': 'box owner changed!'},
                                 status=status.HTTP_200_OK)
             else:
-                box_researcher.researcher_id = researcher.pk
                 if not auth_user.is_superuser:
-                    if box_researcher is not None:
-                        group_researcher = get_object_or_404(GroupResearcher, pk=box_researcher.researcher_id)
-                        user = get_object_or_404(User, pk=group_researcher.user_id)
-                        obj = {'user': user, 'container': container}
-                        self.check_object_permissions(request, obj)  # check the permission
+                    user = get_object_or_404(User, pk=box_researcher.researcher_id)
+                    obj = {'user': user, 'container': container}
+                    self.check_object_permissions(request, obj)  # check the permission
+                box_researcher.researcher_id = researcher.pk
                 box_researcher.save()
                 return Response({'detail': 'box owner changed!'},
                                 status=status.HTTP_200_OK)
