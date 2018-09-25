@@ -733,8 +733,8 @@ class ContainerBoxList(APIView):
                 if groupresearchers:
                     groupresearcher_pks = [r.pk for r in groupresearchers]
                     # get all the researchers in the group
-                boxes = BoxContainer.objects.all().filter(container_id=container.pk) \
-                        .filter(boxresearcher__researcher_id__in=groupresearcher_pks)
+                boxes = BoxContainer.objects.all().filter(container_id=container.pk)\
+                    .filter(boxresearcher__researcher_id__in=groupresearcher_pks)
                 if boxes.count() > getattr(settings, "BOX_FULNESS_PROGRESS_VIEW", 10):
                     serializer = BoxSampleFullnessSerializer(boxes, many=True)
                     return Response(serializer.data)
@@ -1598,8 +1598,7 @@ class BoxDimension(APIView):
             box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
             if not auth_user.is_superuser:
                 if box_researcher is not None:
-                    group_researcher = get_object_or_404(GroupResearcher, pk=box_researcher.researcher_id)
-                    user = get_object_or_404(User, pk=group_researcher.user_id)
+                    user = get_object_or_404(User, pk=box_researcher.researcher_id)
                     obj = {'user': user, 'container': container}
                     self.check_object_permissions(request, obj)  # check the permission
             box.save()
