@@ -65,7 +65,7 @@ class CSample(models.Model):
 # minimal sample attr for all types, see above
 class CSampleMinimalAttr(models.Model):
     attr_required = models.BooleanField(default=True)
-    attr_name = models.CharField(max_length=130)
+    attr_name = models.CharField(max_length=130, unique=True)
     attr_label = models.CharField(max_length=130)
     attr_value_type = models.CharField(max_length=130)  # 0: string, 1, digit; 2, decimal
     attr_value_text_max_length = models.IntegerField(validators=[MinValueValidator(0)], null=True,

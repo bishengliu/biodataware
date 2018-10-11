@@ -109,7 +109,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>hposition</find>
       <find>addbox</find>
       <find>has_glycerol_stock</find>
       <find>DecimalField</find>
@@ -139,6 +138,7 @@
       <find>BoxSamplesSerializer</find>
       <find>UserSerializer</find>
       <find>BoxSampleFullnessSerializer</find>
+      <find>sample</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
