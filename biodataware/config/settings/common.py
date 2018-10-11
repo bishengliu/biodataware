@@ -56,6 +56,7 @@ LOCAL_APPS = [
     'groups.apps.GroupsConfig',
     'containers.apps.ContainersConfig',
     'samples.apps.SamplesConfig',
+    'csamples.apps.CsamplesConfig',
     'api.apps.ApiConfig',
 ]
 
