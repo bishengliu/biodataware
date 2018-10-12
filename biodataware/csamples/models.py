@@ -73,6 +73,9 @@ class CSampleMinimalAttr(models.Model):
     attr_value_decimal_total_digit = models.IntegerField(validators=[MinValueValidator(0)], null=True, blank=True)
     attr_value_decimal_point = models.IntegerField(validators=[MinValueValidator(0)], null=True, blank=True)
 
+    def __str__(self):
+        return self.attr_name
+
 
 # sample top extra attrs
 class CSampleAttr(models.Model):
@@ -88,6 +91,9 @@ class CSampleAttr(models.Model):
     attr_order = models.IntegerField()
     has_sub_attr = models.BooleanField(default=False)
 
+    def __str__(self):
+        return self.attr_name
+
 
 # sample sub attrs
 class CSampleSubAttr(models.Model):
@@ -102,13 +108,20 @@ class CSampleSubAttr(models.Model):
     attr_required = models.BooleanField(default=False)
     attr_order = models.IntegerField()
 
+    def __str__(self):
+        return self.attr_name
+
 
 # sample data match attrs
 class CSampleData(models.Model):
     csample = models.ForeignKey(CSample, on_delete=models.CASCADE)
     csample_attr = models.ForeignKey(CSampleAttr, on_delete=models.CASCADE)
-    csample_sub_attr_value_part1 = models.TextField(null=True, blank=True)
-    csample_sub_attr_value_part2 = models.TextField(null=True, blank=True)
+    csample_attr_value_part1 = models.TextField(null=True, blank=True)
+    csample_attr_value_part2 = models.TextField(null=True, blank=True)
+
+    def __str__(self):
+        return self.csample.name + ': ' + self.csample_attr + '/' \
+               + self.csample_attr_value_part1 + self.csample_attr_value_part2
 
 
 # sample subdata match sub attrs
@@ -117,6 +130,10 @@ class CSampleSubData(models.Model):
     csample_sub_attr = models.ForeignKey(CSampleSubAttr, on_delete=models.CASCADE)
     csample_sub_attr_value_part1 = models.TextField(null=True, blank=True)
     csample_sub_attr_value_part2 = models.TextField(null=True, blank=True)
+
+    def __str__(self):
+        return self.csample.name + ': ' + self.csample_sub_attr + '/' \
+               + self.csample_sub_attr_value_part1 + self.csample_sub_attr_value_part2
 
 
 # upload handler
