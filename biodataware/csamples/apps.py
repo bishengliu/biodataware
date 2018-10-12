@@ -9,18 +9,43 @@ class CsamplesConfig(AppConfig):
         from .models import CSampleMinimalAttr
         mini_string_attrs = ["storage_date", "name", "date_out", "date_in", "color", "occupied", "vposition", "hposition"]
         mini_integer_attr = ["csample_type_id", "box_id"]
-
+        not_required_attrs = ["storage_date", "date_out", "color"]
         for sattr in mini_string_attrs:
-            sample_attr = CSampleMinimalAttr.objects.all().filter(attr_name___exact=sattr)
+            sample_attr = CSampleMinimalAttr.objects.all().filter(attr_name__exact=sattr)
             if not sample_attr:
-                CSampleMinimalAttr.objects.create(attr_required=False,
-                                                  attr_name=sattr,
-                                                  attr_label=sattr,
-                                                  attr_value_type=0,
-                                                  attr_value_text_max_length=0,  # no limit
-                                                  attr_value_decimal_total_digit=0,  # not needed
-                                                  attr_value_decimal_point=0)  # no needed
+                if sattr in not_required_attrs:
+                    CSampleMinimalAttr.objects.create(attr_required=False,
+                                                      attr_name=sattr,
+                                                      attr_label=sattr,
+                                                      attr_value_type=0,  # string
+                                                      attr_value_text_max_length=0,  # no limit
+                                                      attr_value_decimal_total_digit=0,  # not needed
+                                                      attr_value_decimal_point=0)  # not needed
+                else:
+                    CSampleMinimalAttr.objects.create(attr_required=True,
+                                                      attr_name=sattr,
+                                                      attr_label=sattr,
+                                                      attr_value_type=0,  # string
+                                                      attr_value_text_max_length=0,  # no limit
+                                                      attr_value_decimal_total_digit=0,  # not needed
+                                                      attr_value_decimal_point=0)  # not needed
         for iattr in mini_integer_attr:
-            sample_attr = CSampleMinimalAttr.objects.all().filter(attr_name___exact=iattr)
+            sample_attr = CSampleMinimalAttr.objects.all().filter(attr_name__exact=iattr)
             if not sample_attr:
-                pass
+                if iattr in not_required_attrs:
+                    CSampleMinimalAttr.objects.create(attr_required=False,
+                                                      attr_name=iattr,
+                                                      attr_label=iattr,
+                                                      attr_value_type=1,  # integer
+                                                      attr_value_text_max_length=0,  # not needed
+                                                      attr_value_decimal_total_digit=0,  # not needed
+                                                      attr_value_decimal_point=0)  # not needed
+                else:
+                    CSampleMinimalAttr.objects.create(attr_required=True,
+                                                      attr_name=iattr,
+                                                      attr_label=iattr,
+                                                      attr_value_type=1,  # integer
+                                                      attr_value_text_max_length=0,  # not needed
+                                                      attr_value_decimal_total_digit=0,  # not needed
+                                                      attr_value_decimal_point=0)  # not needed
+
