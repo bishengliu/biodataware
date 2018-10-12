@@ -12,7 +12,7 @@ import os
 
 
 # sample types
-class CSampleType(models.Model):
+class CType(models.Model):
     type = models.CharField(max_length=100, unique=True)
     description = models.TextField(null=True, blank=True)
 
@@ -22,7 +22,7 @@ class CSampleType(models.Model):
 
 # sample
 class CSample(models.Model):
-    csample_type = models.ForeignKey(CSampleType, on_delete=models.CASCADE)
+    ctype = models.ForeignKey(CType, on_delete=models.CASCADE)
     box = models.ForeignKey(BoxContainer, on_delete=models.CASCADE)
     hposition = models.CharField(max_length=10)  # h position
     vposition = models.CharField(max_length=10)  # v position
@@ -63,7 +63,7 @@ class CSample(models.Model):
 
 
 # minimal sample attr for all types, see above
-class CSampleMinimalAttr(models.Model):
+class CTypeMinimalAttr(models.Model):
     attr_required = models.BooleanField(default=True)
     attr_name = models.CharField(max_length=130, unique=True)
     attr_label = models.CharField(max_length=130)
@@ -78,8 +78,8 @@ class CSampleMinimalAttr(models.Model):
 
 
 # sample top extra attrs
-class CSampleAttr(models.Model):
-    csample = models.ForeignKey(CSample, on_delete=models.CASCADE)
+class CTypeAttr(models.Model):
+    ctype = models.ForeignKey(CType, on_delete=models.CASCADE)
     attr_name = models.CharField(max_length=130)
     attr_label = models.CharField(max_length=130)
     attr_value_type = models.CharField(max_length=130)  # 0: string, 1, digit; 2, decimal
@@ -96,8 +96,8 @@ class CSampleAttr(models.Model):
 
 
 # sample sub attrs
-class CSampleSubAttr(models.Model):
-    parent_attr = models.ForeignKey(CSampleAttr, on_delete=models.CASCADE)
+class CTypeSubAttr(models.Model):
+    parent_attr = models.ForeignKey(CTypeAttr, on_delete=models.CASCADE)
     attr_name = models.CharField(max_length=130)
     attr_label = models.CharField(max_length=130)
     attr_value_type = models.CharField(max_length=130)  # 0: string, 1, digit; 2, decimal
@@ -115,25 +115,25 @@ class CSampleSubAttr(models.Model):
 # sample data match attrs
 class CSampleData(models.Model):
     csample = models.ForeignKey(CSample, on_delete=models.CASCADE)
-    csample_attr = models.ForeignKey(CSampleAttr, on_delete=models.CASCADE)
-    csample_attr_value_part1 = models.TextField(null=True, blank=True)
-    csample_attr_value_part2 = models.TextField(null=True, blank=True)
+    ctype_attr = models.ForeignKey(CTypeAttr, on_delete=models.CASCADE)
+    ctype_attr_value_part1 = models.TextField(null=True, blank=True)
+    ctype_attr_value_part2 = models.TextField(null=True, blank=True)
 
     def __str__(self):
-        return self.csample.name + ': ' + self.csample_attr + '/' \
-               + self.csample_attr_value_part1 + self.csample_attr_value_part2
+        return self.csample.name + ': ' + self.ctype_attr + '/' \
+               + self.ctype_attr_value_part1 + self.ctype_attr_value_part2
 
 
 # sample subdata match sub attrs
 class CSampleSubData(models.Model):
     csample = models.ForeignKey(CSample, on_delete=models.CASCADE)
-    csample_sub_attr = models.ForeignKey(CSampleSubAttr, on_delete=models.CASCADE)
-    csample_sub_attr_value_part1 = models.TextField(null=True, blank=True)
-    csample_sub_attr_value_part2 = models.TextField(null=True, blank=True)
+    ctype_sub_attr = models.ForeignKey(CTypeSubAttr, on_delete=models.CASCADE)
+    ctype_sub_attr_value_part1 = models.TextField(null=True, blank=True)
+    ctype_sub_attr_value_part2 = models.TextField(null=True, blank=True)
 
     def __str__(self):
-        return self.csample.name + ': ' + self.csample_sub_attr + '/' \
-               + self.csample_sub_attr_value_part1 + self.csample_sub_attr_value_part2
+        return self.csample.name + ': ' + self.ctype_sub_attr + '/' \
+               + self.ctype_sub_attr_value_part1 + self.ctype_sub_attr_value_part2
 
 
 # upload handler
