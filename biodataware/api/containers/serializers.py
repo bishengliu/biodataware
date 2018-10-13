@@ -12,6 +12,7 @@ from api.users.serializers import UserSerializer
 from django.core.validators import MaxValueValidator, MinValueValidator
 
 
+# ==============for containers and boxes ===============================
 class BoxResearcherSerializer(serializers.ModelSerializer):
     researcher = UserSerializer(source='user', many=False, read_only=True)
 
@@ -139,7 +140,7 @@ class ContainerBoxCreateSerializer(serializers.ModelSerializer):
         fields = ('tower', 'shelf', 'box_vertical', 'box_horizontal', 'box', 'color', 'description')
 
 
-# ======for sample =====================
+# ======for sample ========================================================
 class SampleAttachmentSerializer(serializers.ModelSerializer):
     # sample = serializers.StringRelatedField()
 
@@ -210,7 +211,7 @@ class BoxSampleFullnessSerializer(serializers.ModelSerializer):
 # ======for sample =====================
 
 
-class ConatainerSerializer(serializers.ModelSerializer):
+class ContainerSerializer(serializers.ModelSerializer):
     # groups = GroupContainerSerializer(many=True, read_only=True, source='groupcontainer_set')
     groups = GroupSerializer(many=True, read_only=True, source='group_objs')
 

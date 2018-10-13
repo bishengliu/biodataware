@@ -34,14 +34,14 @@ class ContainerList(APIView):
             # show all the containers if pi or assistant is also the manager
             if user.is_superuser:
                 containers = Container.objects.all()
-                serializer = ConatainerSerializer(containers, many=True)
+                serializer = ContainerSerializer(containers, many=True)
                 return Response(serializer.data)
             else:
                 # get the group id of the current user
                 groupresearchers = GroupResearcher.objects.all().filter(user_id=user.pk)
                 group_ids = [g.group_id for g in groupresearchers]
                 containers = Container.objects.all().filter(groupcontainer__group_id__in=group_ids)
-                serializer = ConatainerSerializer(containers, many=True)
+                serializer = ContainerSerializer(containers, many=True)
                 return Response(serializer.data)
         except:
             return Response({'detail': 'Something went wrong!'},
@@ -136,7 +136,7 @@ class ContainerSearch(APIView):
             if key == 'name' and value:
                 container = containers.filter(name__iexact=value).first()
                 if container:
-                    return Response({'matched': True, 'container': ConatainerSerializer(container).data})
+                    return Response({'matched': True, 'container': ContainerSerializer(container).data})
             return Response({'matched': False, 'group': ''})
         except:
             return Response({'detail': 'Something went wrong!'}, status=status.HTTP_400_BAD_REQUEST)
@@ -154,7 +154,7 @@ class ContainerDetail(APIView):
         if not user.is_superuser:
             self.check_object_permissions(request, obj)  # check the permission
         if user.is_superuser:
-            serializer = ConatainerSerializer(container)
+            serializer = ContainerSerializer(container)
             return Response(serializer.data)
         else:
             # check which group has/have the container
@@ -163,7 +163,7 @@ class ContainerDetail(APIView):
                 group_container_ids = [gc.group_id for gc in group_containers]
                 if len(group_container_ids) > 0:
                     if isInGroups(user, group_container_ids):
-                        serializer = ConatainerSerializer(container)
+                        serializer = ContainerSerializer(container)
                         return Response(serializer.data)
         return Response({'detail': 'permission denied!'}, status=status.HTTP_400_BAD_REQUEST)
 
