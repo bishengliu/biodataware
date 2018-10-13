@@ -4,7 +4,7 @@ from .models import *
 
 
 class CTypeAdmin(admin.ModelAdmin):
-    list_display = ['type', 'description']
+    list_display = ['type', 'group', 'public', 'description']
 
     def type(self, obj):
         try:
@@ -13,6 +13,22 @@ class CTypeAdmin(admin.ModelAdmin):
             return None
 
     type.short_description = 'Type'
+
+    def group(self, obj):
+        try:
+            return obj.group.group_name
+        except:
+            return None
+
+    group.short_description = 'Group'
+
+    def public(self, obj):
+        try:
+            return obj.public
+        except:
+            return None
+
+    public.short_description = 'Public'
 
     def description(self, obj):
         try:
@@ -27,7 +43,7 @@ admin.site.register(CType, CTypeAdmin)
 
 
 class CSampleAdmin(admin.ModelAdmin):
-    list_display = ['container', 'container_box', 'ctype', 'name', 'position', 'storage_date',
+    list_display = ['name', 'container', 'container_box', 'ctype', 'position', 'storage_date',
                     'attachment', 'researcher', 'occupied', 'date_out', 'description']
 
     def ctype(self, obj):
@@ -193,7 +209,7 @@ admin.site.register(CTypeMinimalAttr, CTypeMinimalAttrAdmin)
 
 
 class CTypeAttrAdmin(admin.ModelAdmin):
-    list_display = ['ctype', 'attr_name', 'attr_label', 'attr_value_type', 'attr_value_text_max_length',
+    list_display = ['attr_name', 'attr_label', 'ctype', 'attr_value_type', 'attr_value_text_max_length',
                     'attr_value_decimal_total_digit', 'attr_value_decimal_point', 'attr_required', 'attr_order', 'has_sub_attr']
 
     def ctype(self, obj):
@@ -360,7 +376,7 @@ admin.site.register(CTypeSubAttr, CTypeSubAttrAdmin)
 
 
 class CSampleDataAdmin(admin.ModelAdmin):
-    list_display = ['container', 'container_box', 'ctype', 'csample', 'ctype_attr', 'ctype_attr_value_part1', 'ctype_attr_value_part2']
+    list_display = ['csample', 'container', 'container_box', 'ctype', 'ctype_attr', 'ctype_attr_value_part1', 'ctype_attr_value_part2']
 
     def container_box(self, obj):
         try:
@@ -422,7 +438,7 @@ admin.site.register(CSampleData, CSampleDataAdmin)
 
 
 class CSampleSubDataAdmin(admin.ModelAdmin):
-    list_display = ['container', 'container_box', 'ctype', 'csample', 'ctype_sub_attr', 'ctype_sub_attr_value_part1', 'ctype_sub_attr_value_part2']
+    list_display = ['csample', 'container', 'container_box', 'ctype', 'ctype_sub_attr', 'ctype_sub_attr_value_part1', 'ctype_sub_attr_value_part2']
 
     def container_box(self, obj):
         try:
@@ -485,7 +501,7 @@ admin.site.register(CSampleSubData, CSampleSubDataAdmin)
 
 
 class CSampleVirusTitrationAdmin(admin.ModelAdmin):
-    list_display = ['container', 'container_box', 'ctype', 'name', 'titration_titer', 'titration_unit', 'titration_cell_type',
+    list_display = ['csample', 'container', 'container_box', 'ctype', 'titration_titer', 'titration_unit', 'titration_cell_type',
                     'titration_code', 'titration_date', 'description']
 
     def container_box(self, obj):
@@ -512,13 +528,13 @@ class CSampleVirusTitrationAdmin(admin.ModelAdmin):
 
     ctype.short_description = 'Type'
 
-    def name(self, obj):
+    def csample(self, obj):
         try:
             return obj.csample.name
         except:
             return None
 
-    name.short_description = 'Name'
+    csample.short_description = 'Name'
 
     def titration_titer(self, obj):
         try:
@@ -573,7 +589,7 @@ admin.site.register(CSampleVirusTitration, CSampleVirusTitrationAdmin)
 
 
 class CSampleAttachmentAdmin(admin.ModelAdmin):
-    list_display = ['container', 'container_box', 'ctype', 'name', 'attachment', 'description']
+    list_display = ['csample', 'container', 'container_box', 'ctype', 'attachment', 'description']
 
     def container_box(self, obj):
         try:
@@ -599,13 +615,13 @@ class CSampleAttachmentAdmin(admin.ModelAdmin):
 
     ctype.short_description = 'Type'
 
-    def name(self, obj):
+    def csample(self, obj):
         try:
             return obj.csample.name
         except:
             return None
 
-    name.short_description = 'Name'
+    csample.short_description = 'Name'
 
     def attachment(self, obj):
         try:
@@ -629,7 +645,7 @@ admin.site.register(CSampleAttachment, CSampleAttachmentAdmin)
 
 
 class CSampleResearcherAdmin(admin.ModelAdmin):
-    list_display = ['container', 'container_box', 'ctype', 'name', 'researcher']
+    list_display = ['csample', 'container', 'container_box', 'ctype', 'researcher']
 
     def container_box(self, obj):
         try:
@@ -655,13 +671,13 @@ class CSampleResearcherAdmin(admin.ModelAdmin):
 
     ctype.short_description = 'Type'
 
-    def name(self, obj):
+    def csample(self, obj):
         try:
             return obj.csample.name
         except:
             return None
 
-    name.short_description = 'Name'
+    csample.short_description = 'Name'
 
     def researcher(self, obj):
         try:

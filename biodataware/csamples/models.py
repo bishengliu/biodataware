@@ -1,6 +1,7 @@
 from django.db import models
 from users.models import User
 from containers.models import BoxContainer, Container
+from groups.models import Group
 from django.core.validators import MinValueValidator
 
 # Receive the pre_delete signal and delete the file associated with the model instance.
@@ -14,6 +15,8 @@ import os
 # sample types
 class CType(models.Model):
     type = models.CharField(max_length=100, unique=True)
+    group = models.ForeignKey(Group, on_delete=models.CASCADE)
+    is_public = models.BooleanField(default=False)
     description = models.TextField(null=True, blank=True)
 
     def __str__(self):
