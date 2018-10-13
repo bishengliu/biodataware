@@ -2,13 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="e07c48b7-1c00-4eca-bd6a-d182d44a745f" name="Default" comment="">
-      <change type="DELETED" beforePath="$PROJECT_DIR$/biodataware/csamples/migrations/0001_initial.py" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/biodataware/csamples/migrations/0002_auto_20181012_1559.py" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/biodataware/csamples/migrations/0003_auto_20181012_1559.py" afterPath="" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/biodataware/config/db.sqlite3" afterPath="$PROJECT_DIR$/biodataware/config/db.sqlite3" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/biodataware.iml" afterPath="$PROJECT_DIR$/.idea/biodataware.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/biodataware/csamples/admin.py" afterPath="$PROJECT_DIR$/biodataware/csamples/admin.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/biodataware/csamples/apps.py" afterPath="$PROJECT_DIR$/biodataware/csamples/apps.py" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -61,22 +57,36 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="models.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="models.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/biodataware/csamples/models.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="447">
-              <caret line="63" column="0" lean-forward="true" selection-start-line="63" selection-start-column="0" selection-end-line="63" selection-end-column="0" />
-              <folding />
+            <state relative-caret-position="647">
+              <caret line="99" column="15" lean-forward="false" selection-start-line="99" selection-start-column="4" selection-end-line="99" selection-end-column="15" />
+              <folding>
+                <element signature="e#690#2390#0" expanded="false" />
+              </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="apps.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/biodataware/csamples/apps.py">
+      <file leaf-file-name="admin.py" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/biodataware/csamples/admin.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="76">
-              <caret line="4" column="20" lean-forward="false" selection-start-line="4" selection-start-column="12" selection-end-line="4" selection-end-column="20" />
-              <folding />
+            <state relative-caret-position="601">
+              <caret line="287" column="42" lean-forward="false" selection-start-line="287" selection-start-column="42" selection-end-line="287" selection-end-column="42" />
+              <folding>
+                <element signature="e#0#32#0" expanded="true" />
+                <element signature="e#143#497#0" expanded="false" />
+                <element signature="e#3435#3512#0" expanded="false" />
+                <element signature="e#3600#3731#0" expanded="false" />
+                <element signature="e#3777#3860#0" expanded="false" />
+                <element signature="e#3976#4070#0" expanded="false" />
+                <element signature="e#4212#4310#0" expanded="false" />
+                <element signature="e#4454#4546#0" expanded="false" />
+                <element signature="e#4662#4743#0" expanded="false" />
+                <element signature="e#5493#5624#0" expanded="false" />
+                <element signature="e#9599#11164#0" expanded="false" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -180,18 +190,18 @@
         <option value="$PROJECT_DIR$/biodataware/api/containers/views.py" />
         <option value="$PROJECT_DIR$/biodataware/config/settings/common.py" />
         <option value="$PROJECT_DIR$/biodataware/roles/apps.py" />
-        <option value="$PROJECT_DIR$/biodataware/csamples/apps.py" />
-        <option value="$PROJECT_DIR$/biodataware/csamples/admin.py" />
-        <option value="$PROJECT_DIR$/biodataware/csamples/models.py" />
         <option value="$PROJECT_DIR$/biodataware/csamples/migrations/__init__.py" />
+        <option value="$PROJECT_DIR$/biodataware/csamples/apps.py" />
+        <option value="$PROJECT_DIR$/biodataware/csamples/models.py" />
+        <option value="$PROJECT_DIR$/biodataware/csamples/admin.py" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="85" />
-    <option name="y" value="36" />
-    <option name="width" value="1841" />
-    <option name="height" value="1355" />
+    <option name="x" value="15" />
+    <option name="y" value="22" />
+    <option name="width" value="2359" />
+    <option name="height" value="1408" />
   </component>
   <component name="ProjectLevelVcsManager">
     <ConfirmationsSetting value="2" id="Add" />
@@ -254,28 +264,6 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="csamples" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="biodataware" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="biodataware" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="biodataware" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="csamples" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="migrations" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -503,17 +491,18 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="85" y="36" width="1841" height="1355" extended-state="0" />
+    <frame x="15" y="22" width="2359" height="1408" extended-state="0" />
+    <editor active="true" />
     <layout>
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.21464506" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.16644993" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.34027222" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.20122887" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.27112135" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
       <window_info id="Data View" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
@@ -567,7 +556,9 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1197">
           <caret line="63" column="0" lean-forward="true" selection-start-line="63" selection-start-column="0" selection-end-line="63" selection-end-column="0" />
-          <folding />
+          <folding>
+            <element signature="e#690#2390#0" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -818,16 +809,6 @@
       </provider>
     </entry>
     <entry file="file://D:/biodatawareenv/Lib/site-packages/django/db/models/fields/__init__.py" />
-    <entry file="file://$PROJECT_DIR$/biodataware/csamples/admin.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="85">
-          <caret line="5" column="0" lean-forward="false" selection-start-line="5" selection-start-column="0" selection-end-line="236" selection-end-column="0" />
-          <folding>
-            <element signature="e#0#32#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/biodataware/csamples/migrations/__init__.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
@@ -846,17 +827,39 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/biodataware/csamples/apps.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="76">
-          <caret line="4" column="20" lean-forward="false" selection-start-line="4" selection-start-column="12" selection-end-line="4" selection-end-column="20" />
+        <state relative-caret-position="418">
+          <caret line="22" column="76" lean-forward="false" selection-start-line="22" selection-start-column="52" selection-end-line="22" selection-end-column="76" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/biodataware/csamples/models.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="447">
-          <caret line="63" column="0" lean-forward="true" selection-start-line="63" selection-start-column="0" selection-end-line="63" selection-end-column="0" />
-          <folding />
+        <state relative-caret-position="647">
+          <caret line="99" column="15" lean-forward="false" selection-start-line="99" selection-start-column="4" selection-end-line="99" selection-end-column="15" />
+          <folding>
+            <element signature="e#690#2390#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/biodataware/csamples/admin.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="601">
+          <caret line="287" column="42" lean-forward="false" selection-start-line="287" selection-start-column="42" selection-end-line="287" selection-end-column="42" />
+          <folding>
+            <element signature="e#0#32#0" expanded="true" />
+            <element signature="e#143#497#0" expanded="false" />
+            <element signature="e#3435#3512#0" expanded="false" />
+            <element signature="e#3600#3731#0" expanded="false" />
+            <element signature="e#3777#3860#0" expanded="false" />
+            <element signature="e#3976#4070#0" expanded="false" />
+            <element signature="e#4212#4310#0" expanded="false" />
+            <element signature="e#4454#4546#0" expanded="false" />
+            <element signature="e#4662#4743#0" expanded="false" />
+            <element signature="e#5493#5624#0" expanded="false" />
+            <element signature="e#9599#11164#0" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>

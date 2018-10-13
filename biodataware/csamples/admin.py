@@ -28,7 +28,7 @@ admin.site.register(CType, CTypeAdmin)
 
 class CSampleAdmin(admin.ModelAdmin):
     list_display = ['ctype', 'container', 'container_box', 'name', 'position', 'storage_date',
-                    'description', 'attachment', 'researcher', 'occupied', 'date_out']
+                    'attachment', 'researcher', 'occupied', 'date_out', 'description']
 
     def ctype(self, obj):
         try:
@@ -130,35 +130,307 @@ admin.site.register(CSample, CSampleAdmin)
 
 
 class CTypeMinimalAttrAdmin(admin.ModelAdmin):
-    pass
+    list_display = ['attr_name', 'attr_label', 'attr_value_type', 'attr_value_text_max_length',
+                    'attr_value_decimal_total_digit', 'attr_value_decimal_point', 'attr_required']
 
+    def attr_name(self, obj):
+        try:
+            return obj.attr_name
+        except:
+            return None
+
+    attr_name.short_description = 'Attr Name'
+
+    def attr_label(self, obj):
+        try:
+            return obj.attr_label
+        except:
+            return None
+
+        attr_label.short_description = 'Attr Label'
+
+    def attr_value_type(self, obj):
+        try:
+            return obj.attr_value_type
+        except:
+            return None
+
+    attr_value_type.short_description = 'Attr Value Type'
+
+    def attr_value_text_max_length(self, obj):
+        try:
+            return obj.attr_value_text_max_length
+        except:
+            return None
+
+    attr_value_text_max_length.short_description = 'Attr Text Value Max Length'
+
+    def attr_value_decimal_total_digit(self, obj):
+        try:
+            return obj.attr_value_decimal_total_digit
+        except:
+            return None
+
+    attr_value_decimal_total_digit.short_description = 'Attr Decimal Value Total Digit'
+
+    def attr_value_decimal_point(self, obj):
+        try:
+            return obj.attr_value_decimal_point
+        except:
+            return None
+
+    attr_value_decimal_point.short_description = 'Attr Decimal Points'
+
+    def attr_required(self, obj):
+        try:
+            return obj.attr_required
+        except:
+            return None
+
+    attr_required.short_description = 'Attr Required'
 
 admin.site.register(CTypeMinimalAttr, CTypeMinimalAttrAdmin)
 
 
 class CTypeAttrAdmin(admin.ModelAdmin):
-    pass
+    list_display = ['ctype', 'attr_name', 'attr_label', 'attr_value_type', 'attr_value_text_max_length',
+                    'attr_value_decimal_total_digit', 'attr_value_decimal_point', 'attr_required', 'attr_order', 'has_sub_attr']
 
+    def ctype(self, obj):
+        try:
+            return obj.ctype.type
+        except:
+            return None
+
+    ctype.short_description = 'Type'
+
+    def attr_name(self, obj):
+        try:
+            return obj.attr_name
+        except:
+            return None
+
+    attr_name.short_description = 'Attr Name'
+
+    def attr_label(self, obj):
+        try:
+            return obj.attr_label
+        except:
+            return None
+
+    attr_label.short_description = 'Attr Label'
+
+    def attr_value_type(self, obj):
+        try:
+            return obj.attr_value_type
+        except:
+            return None
+
+    attr_value_type.short_description = 'Attr Value Type'
+
+    def attr_value_text_max_length(self, obj):
+        try:
+            return obj.attr_value_text_max_length
+        except:
+            return None
+
+    attr_value_text_max_length.short_description = 'Attr Text Value Max Length'
+
+    def attr_value_decimal_total_digit(self, obj):
+        try:
+            return obj.attr_value_decimal_total_digit
+        except:
+            return None
+
+    attr_value_decimal_total_digit.short_description = 'Attr Decimal Value Total Digit'
+
+    def attr_value_decimal_point(self, obj):
+        try:
+            return obj.attr_value_decimal_point
+        except:
+            return None
+
+    attr_value_decimal_point.short_description = 'Attr Decimal Points'
+
+    def attr_required(self, obj):
+        try:
+            return obj.attr_required
+        except:
+            return None
+
+    attr_required.short_description = 'Attr Required'
+
+    def attr_order(self, obj):
+        try:
+            return obj.attr_order
+        except:
+            return None
+
+    attr_order.short_description = 'Attr Order'
+
+    def has_sub_attr(self, obj):
+        try:
+            return obj.has_sub_attr
+        except:
+            return None
+
+    has_sub_attr.short_description = 'Has SubAttr'
 
 admin.site.register(CTypeAttr, CTypeAttrAdmin)
 
 
 class CTypeSubAttrAdmin(admin.ModelAdmin):
-    pass
+    list_display = ['parent_attr', 'attr_name', 'attr_label', 'attr_value_type', 'attr_value_text_max_length',
+                    'attr_value_decimal_total_digit', 'attr_value_decimal_point', 'attr_required', 'attr_order']
+
+    def parent_attr(self, obj):
+        try:
+            return obj.ctypeattr.attr_name
+        except:
+            return None
+
+    parent_attr.short_description = 'Parent Attr'
+
+    def attr_name(self, obj):
+        try:
+            return obj.attr_name
+        except:
+            return None
+
+    attr_name.short_description = 'Attr Name'
+
+    def attr_label(self, obj):
+        try:
+            return obj.attr_label
+        except:
+            return None
+
+    attr_label.short_description = 'Attr Label'
+
+    def attr_value_type(self, obj):
+        try:
+            return obj.attr_value_type
+        except:
+            return None
+
+    attr_value_type.short_description = 'Attr Value Type'
+
+    def attr_value_text_max_length(self, obj):
+        try:
+            return obj.attr_value_text_max_length
+        except:
+            return None
+
+    attr_value_text_max_length.short_description = 'Attr Text Value Max Length'
+
+    def attr_value_decimal_total_digit(self, obj):
+        try:
+            return obj.attr_value_decimal_total_digit
+        except:
+            return None
+
+    attr_value_decimal_total_digit.short_description = 'Attr Decimal Value Total Digit'
+
+    def attr_value_decimal_point(self, obj):
+        try:
+            return obj.attr_value_decimal_point
+        except:
+            return None
+
+    attr_value_decimal_point.short_description = 'Attr Decimal Points'
+
+    def attr_required(self, obj):
+        try:
+            return obj.attr_required
+        except:
+            return None
+
+    attr_required.short_description = 'Attr Required'
+
+    def attr_order(self, obj):
+        try:
+            return obj.attr_order
+        except:
+            return None
+
+    attr_order.short_description = 'Attr Order'
 
 
 admin.site.register(CTypeSubAttr, CTypeSubAttrAdmin)
 
 
 class CSampleDataAdmin(admin.ModelAdmin):
-    pass
+    list_display = ['csample', 'ctype_attr', 'ctype_attr_value_part1', 'ctype_attr_value_part2']
 
+    def csample(self, obj):
+        try:
+            return obj.csample.name
+        except:
+            return None
+
+    csample.short_description = 'name'
+
+    def ctype_attr(self, obj):
+        try:
+            return obj.ctypeattr.attr_name
+        except:
+            return None
+
+    ctype_attr.short_description = 'Attr'
+
+    def ctype_attr_value_part1(self, obj):
+        try:
+            return obj.ctype_attr_value_part1
+        except:
+            return None
+
+    ctype_attr_value_part1.short_description = 'Value_Part1'
+
+    def ctype_attr_value_part2(self, obj):
+        try:
+            return obj.ctype_attr_value_part2
+        except:
+            return None
+
+    ctype_attr_value_part2.short_description = 'Value_Part2'
 
 admin.site.register(CSampleData, CSampleDataAdmin)
 
 
 class CSampleSubDataAdmin(admin.ModelAdmin):
-    pass
+    list_display = ['csample', 'ctype_sub_attr', 'ctype_sub_attr_value_part1', 'ctype_sub_attr_value_part2']
+
+    def csample(self, obj):
+        try:
+            return obj.csample.name
+        except:
+            return None
+
+    csample.short_description = 'name'
+
+    def ctype_sub_attr(self, obj):
+        try:
+            return obj.ctypesubattr.attr_name
+        except:
+            return None
+
+    ctype_sub_attr.short_description = 'SubAttr'
+
+    def ctype_sub_attr_value_part1(self, obj):
+        try:
+            return obj.ctype_sub_attr_value_part1
+        except:
+            return None
+
+    ctype_sub_attr_value_part1.short_description = 'Value_Part1'
+
+    def ctype_sub_attr_value_part2(self, obj):
+        try:
+            return obj.ctype_sub_attr_value_part2
+        except:
+            return None
+
+    ctype_sub_attr_value_part2.short_description = 'Value_Part2'
 
 
 admin.site.register(CSampleSubData, CSampleSubDataAdmin)
