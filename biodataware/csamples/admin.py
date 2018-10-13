@@ -27,7 +27,7 @@ admin.site.register(CType, CTypeAdmin)
 
 
 class CSampleAdmin(admin.ModelAdmin):
-    list_display = ['ctype', 'container', 'container_box', 'name', 'position', 'storage_date',
+    list_display = ['container', 'container_box', 'ctype', 'name', 'position', 'storage_date',
                     'attachment', 'researcher', 'occupied', 'date_out', 'description']
 
     def ctype(self, obj):
@@ -360,7 +360,23 @@ admin.site.register(CTypeSubAttr, CTypeSubAttrAdmin)
 
 
 class CSampleDataAdmin(admin.ModelAdmin):
-    list_display = ['csample', 'ctype_attr', 'ctype_attr_value_part1', 'ctype_attr_value_part2']
+    list_display = ['container', 'container_box', 'ctype', 'csample', 'ctype_attr', 'ctype_attr_value_part1', 'ctype_attr_value_part2']
+
+    def container_box(self, obj):
+        try:
+            return str(obj.box.tower) + '-' + str(obj.box.shelf) + '-' + str(obj.box.box)
+        except:
+            return None
+
+    container_box.short_description = 'Box'
+
+    def container(self, obj):
+        try:
+            return obj.box.container.name
+        except:
+            return None
+
+    container.short_description = 'Container'
 
     def csample(self, obj):
         try:
@@ -369,6 +385,14 @@ class CSampleDataAdmin(admin.ModelAdmin):
             return None
 
     csample.short_description = 'name'
+
+    def ctype(self, obj):
+        try:
+            return obj.csample.ctype.type
+        except:
+            return None
+
+    ctype.short_description = 'Type'
 
     def ctype_attr(self, obj):
         try:
@@ -398,7 +422,23 @@ admin.site.register(CSampleData, CSampleDataAdmin)
 
 
 class CSampleSubDataAdmin(admin.ModelAdmin):
-    list_display = ['csample', 'ctype_sub_attr', 'ctype_sub_attr_value_part1', 'ctype_sub_attr_value_part2']
+    list_display = ['container', 'container_box', 'ctype', 'csample', 'ctype_sub_attr', 'ctype_sub_attr_value_part1', 'ctype_sub_attr_value_part2']
+
+    def container_box(self, obj):
+        try:
+            return str(obj.box.tower) + '-' + str(obj.box.shelf) + '-' + str(obj.box.box)
+        except:
+            return None
+
+    container_box.short_description = 'Box'
+
+    def container(self, obj):
+        try:
+            return obj.box.container.name
+        except:
+            return None
+
+    container.short_description = 'Container'
 
     def csample(self, obj):
         try:
@@ -407,6 +447,14 @@ class CSampleSubDataAdmin(admin.ModelAdmin):
             return None
 
     csample.short_description = 'name'
+
+    def ctype(self, obj):
+        try:
+            return obj.csample.ctype.type
+        except:
+            return None
+
+    ctype.short_description = 'Type'
 
     def ctype_sub_attr(self, obj):
         try:
@@ -437,16 +485,32 @@ admin.site.register(CSampleSubData, CSampleSubDataAdmin)
 
 
 class CSampleVirusTitrationAdmin(admin.ModelAdmin):
-    list_display = ['type', 'name', 'titration_titer', 'titration_unit', 'titration_cell_type',
+    list_display = ['container', 'container_box', 'ctype', 'name', 'titration_titer', 'titration_unit', 'titration_cell_type',
                     'titration_code', 'titration_date', 'description']
 
-    def type(self, obj):
+    def container_box(self, obj):
         try:
-            return obj.csample.csample_type.type
+            return str(obj.box.tower) + '-' + str(obj.box.shelf) + '-' + str(obj.box.box)
         except:
             return None
 
-    type.short_description = 'Type'
+    container_box.short_description = 'Box'
+
+    def container(self, obj):
+        try:
+            return obj.box.container.name
+        except:
+            return None
+
+    container.short_description = 'Container'
+
+    def ctype(self, obj):
+        try:
+            return obj.csample.ctype.type
+        except:
+            return None
+
+    ctype.short_description = 'Type'
 
     def name(self, obj):
         try:
@@ -506,3 +570,59 @@ class CSampleVirusTitrationAdmin(admin.ModelAdmin):
 
 
 admin.site.register(CSampleVirusTitration, CSampleVirusTitrationAdmin)
+
+
+class CSampleAttachmentAdmin(admin.ModelAdmin):
+    list_display = ['container', 'container_box', 'ctype', 'name', 'attachment', 'description']
+
+    def container_box(self, obj):
+        try:
+            return str(obj.box.tower) + '-' + str(obj.box.shelf) + '-' + str(obj.box.box)
+        except:
+            return None
+
+    container_box.short_description = 'Box'
+
+    def container(self, obj):
+        try:
+            return obj.box.container.name
+        except:
+            return None
+
+    container.short_description = 'Container'
+
+    def ctype(self, obj):
+        try:
+            return obj.csample.ctype.type
+        except:
+            return None
+
+    ctype.short_description = 'Type'
+
+    def name(self, obj):
+        try:
+            return obj.csample.name
+        except:
+            return None
+
+    name.short_description = 'Name'
+
+    def attachment(self, obj):
+        try:
+            output = ''
+            output += '<a href="' + obj.attachment.url + '" class="" alt="' + obj.label + '"><i></i><span>' + obj.label + '</span></a>' + '<br/>'
+            return mark_safe(output)
+        except:
+            return None
+
+    attachment.short_description = 'Attachment'
+
+    def description(self, obj):
+        try:
+            return obj.description
+        except:
+            return None
+
+    description.short_description = 'Description'
+
+admin.site.register(CSampleAttachment, CSampleAttachmentAdmin)

@@ -82,7 +82,7 @@ class CTypeAttr(models.Model):
     ctype = models.ForeignKey(CType, on_delete=models.CASCADE)
     attr_name = models.CharField(max_length=130)
     attr_label = models.CharField(max_length=130)
-    attr_value_type = models.CharField(max_length=130)  # 0: string, 1, digit; 2, decimal
+    attr_value_type = models.CharField(max_length=130)  # 0: string, 1, digit; 2, decimal; 3 has sub attr
     attr_value_text_max_length = models.IntegerField(validators=[MinValueValidator(0)], null=True,
                                                      blank=True)  # only for string or text field
     attr_value_decimal_total_digit = models.IntegerField(validators=[MinValueValidator(0)], null=True, blank=True)
@@ -100,7 +100,7 @@ class CTypeSubAttr(models.Model):
     parent_attr = models.ForeignKey(CTypeAttr, on_delete=models.CASCADE)
     attr_name = models.CharField(max_length=130)
     attr_label = models.CharField(max_length=130)
-    attr_value_type = models.CharField(max_length=130)  # 0: string, 1, digit; 2, decimal
+    attr_value_type = models.CharField(max_length=130)  # 0: string, 1, digit; 2, decimal; 3 has sub attr
     attr_value_text_max_length = models.IntegerField(validators=[MinValueValidator(0)], null=True,
                                                      blank=True)  # only for string or text field
     attr_value_decimal_total_digit = models.IntegerField(validators=[MinValueValidator(0)], null=True, blank=True)
