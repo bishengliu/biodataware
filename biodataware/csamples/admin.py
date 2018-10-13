@@ -626,3 +626,49 @@ class CSampleAttachmentAdmin(admin.ModelAdmin):
     description.short_description = 'Description'
 
 admin.site.register(CSampleAttachment, CSampleAttachmentAdmin)
+
+
+class CSampleResearcherAdmin(admin.ModelAdmin):
+    list_display = ['container', 'container_box', 'ctype', 'name', 'researcher']
+
+    def container_box(self, obj):
+        try:
+            return str(obj.box.tower) + '-' + str(obj.box.shelf) + '-' + str(obj.box.box)
+        except:
+            return None
+
+    container_box.short_description = 'Box'
+
+    def container(self, obj):
+        try:
+            return obj.box.container.name
+        except:
+            return None
+
+    container.short_description = 'Container'
+
+    def ctype(self, obj):
+        try:
+            return obj.csample.ctype.type
+        except:
+            return None
+
+    ctype.short_description = 'Type'
+
+    def name(self, obj):
+        try:
+            return obj.csample.name
+        except:
+            return None
+
+    name.short_description = 'Name'
+
+    def researcher(self, obj):
+        try:
+            return obj.researcher.username + ' (' + obj.researcher.email + ')'
+        except:
+            return None
+
+    researcher.short_description = 'Researcher'
+
+admin.site.register(CSampleResearcher, CSampleResearcherAdmin)
