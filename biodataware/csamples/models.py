@@ -88,7 +88,7 @@ class CTypeAttr(models.Model):
     attr_value_decimal_total_digit = models.IntegerField(validators=[MinValueValidator(0)], null=True, blank=True)
     attr_value_decimal_point = models.IntegerField(validators=[MinValueValidator(0)], null=True, blank=True)
     attr_required = models.BooleanField(default=False)
-    attr_order = models.IntegerField()
+    attr_order = models.IntegerField(null=True, blank=True)
     has_sub_attr = models.BooleanField(default=False)
 
     def __str__(self):
@@ -106,7 +106,7 @@ class CTypeSubAttr(models.Model):
     attr_value_decimal_total_digit = models.IntegerField(validators=[MinValueValidator(0)], null=True, blank=True)
     attr_value_decimal_point = models.IntegerField(validators=[MinValueValidator(0)], null=True, blank=True)
     attr_required = models.BooleanField(default=False)
-    attr_order = models.IntegerField()
+    attr_order = models.IntegerField(null=True, blank=True)
 
     def __str__(self):
         return self.attr_name
