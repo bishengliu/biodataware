@@ -7,7 +7,7 @@ import re
 
 
 # =================== ctypes =================
-class CTypeListSerializer(serializers.ModelSerializer):
+class CTypeSerializer(serializers.ModelSerializer):
     group = GroupSerializer()
 
     class Meta:
