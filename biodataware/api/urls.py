@@ -11,6 +11,8 @@ urlpatterns = [
     url(r'^groups/', include('api.groups.urls', namespace='api_groups')),
     # containers
     url(r'^containers/', include('api.containers.urls', namespace='api_containers')),
+    # ctypes
+    url(r'^ctypes/', include('api.ctypes.urls', namespace='api_ctypes')),
     # docs ui
     url(r'^docs/', get_swagger_view(title='API Docs')),
 ]

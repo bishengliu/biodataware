@@ -1,7 +1,6 @@
 from django.conf.urls import url
 from .views import *
 
-
 urlpatterns = [
     # ===================================================container list for admin=======================================
     url(r'^$', ContainerList.as_view(), name='containers'),  # container-towers
