@@ -14,10 +14,13 @@ import os
 
 # sample types
 class CType(models.Model):
-    type = models.CharField(max_length=100, unique=True)
-    group = models.ForeignKey(Group, on_delete=models.CASCADE)
+    type = models.CharField(max_length=100)
+    group = models.ForeignKey(Group, on_delete=models.CASCADE, null=True, blank=True)
     is_public = models.BooleanField(default=False)
     description = models.TextField(null=True, blank=True)
+
+    class Meta:
+        unique_together = ('type', 'group')
 
     def __str__(self):
         return self.type
