@@ -310,3 +310,61 @@ class CTypeAttrDetail(APIView):
         except:
             return Response({'detail': 'Something went wrong, failed to remove the attr of the material type!'},
                             status=status.HTTP_400_BAD_REQUEST)
+
+
+class CTypeSubAttrList(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get(self, request, pk, attr_pk, format=None):
+        try:
+            user = request.user
+            ctype = get_object_or_404(CType, pk=pk)
+            ctype_attr = get_object_or_404(CTypeAttr, pk=attr_pk)
+            serializer = CTypeAttrSerializer(ctype_attr)
+            if ctype.is_public is True or user.is_superuser:
+                return Response(serializer.data)
+            else:
+                groupresearchers = GroupResearcher.objects.all().filter(user_id=user.pk)
+                group_ids = [g.group_id for g in groupresearchers]
+                if ctype.group_id in group_ids:
+                    return Response(serializer.data)
+                else:
+                    return Response({'detail': 'The material type is not public!'},
+                                    status=status.HTTP_400_BAD_REQUEST)
+        except:
+            return Response({'detail': 'Something went wrong, failed to retrieve the attr of the material type!'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+    def post(self, request, pk, attr_pk, format=None):
+        pass
+
+
+class CTypeSubAttrDetail(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get(self, request, pk, attr_pk, subattr_pk, format=None):
+        try:
+            user = request.user
+            ctype = get_object_or_404(CType, pk=pk)
+            ctype_attr = get_object_or_404(CTypeAttr, pk=attr_pk)
+            ctype_subattr = get_object_or_404(CTypeAttr, pk=subattr_pk)
+            serializer = CTypeSubAttrSerializer(ctype_attr)
+            if ctype.is_public is True or user.is_superuser:
+                return Response(serializer.data)
+            else:
+                groupresearchers = GroupResearcher.objects.all().filter(user_id=user.pk)
+                group_ids = [g.group_id for g in groupresearchers]
+                if ctype.group_id in group_ids:
+                    return Response(serializer.data)
+                else:
+                    return Response({'detail': 'The material type is not public!'},
+                                    status=status.HTTP_400_BAD_REQUEST)
+        except:
+            return Response({'detail': 'Something went wrong, failed to retrieve the subattr of the material type!'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+    def put(self, request, pk, attr_pk, subattr_pk, format=None):
+        pass
+
+    def delete(self, request, pk, attr_pk, subattr_pk, format=None):
+        pass

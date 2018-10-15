@@ -6,6 +6,14 @@ import re
 
 
 # =================== ctypes =================
+# class CTypeMinimalAttrList(serializers.ModelSerializer):
+#
+#     class Meta:
+#         model = CTypeMinimalAttr
+#         fields = ('attr_name', 'attr_label', 'attr_value_type', 'attr_value_text_max_length',
+#                   'attr_value_decimal_total_digit', 'attr_value_decimal_point', 'attr_required')
+
+
 class CTypeSubAttrSerializer(serializers.ModelSerializer):
 
     class Meta:
@@ -93,3 +101,4 @@ class CTypeAttrCreateEditSerializer(serializers.ModelSerializer):
     #             msg = _("attr already in the type!")
     #             raise serializers.ValidationError(msg)
     #     return data
+
