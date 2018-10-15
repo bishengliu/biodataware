@@ -145,67 +145,67 @@ class CSampleAdmin(admin.ModelAdmin):
 admin.site.register(CSample, CSampleAdmin)
 
 
-class CTypeMinimalAttrAdmin(admin.ModelAdmin):
-    list_display = ['attr_name', 'attr_label', 'attr_value_type', 'attr_value_text_max_length',
-                    'attr_value_decimal_total_digit', 'attr_value_decimal_point', 'attr_required']
-
-    def attr_name(self, obj):
-        try:
-            return obj.attr_name
-        except:
-            return None
-
-    attr_name.short_description = 'Attr Name'
-
-    def attr_label(self, obj):
-        try:
-            return obj.attr_label
-        except:
-            return None
-
-        attr_label.short_description = 'Attr Label'
-
-    def attr_value_type(self, obj):
-        try:
-            return obj.attr_value_type
-        except:
-            return None
-
-    attr_value_type.short_description = 'Attr Value Type'
-
-    def attr_value_text_max_length(self, obj):
-        try:
-            return obj.attr_value_text_max_length
-        except:
-            return None
-
-    attr_value_text_max_length.short_description = 'Attr Text Value Max Length'
-
-    def attr_value_decimal_total_digit(self, obj):
-        try:
-            return obj.attr_value_decimal_total_digit
-        except:
-            return None
-
-    attr_value_decimal_total_digit.short_description = 'Attr Decimal Value Total Digit'
-
-    def attr_value_decimal_point(self, obj):
-        try:
-            return obj.attr_value_decimal_point
-        except:
-            return None
-
-    attr_value_decimal_point.short_description = 'Attr Decimal Points'
-
-    def attr_required(self, obj):
-        try:
-            return obj.attr_required
-        except:
-            return None
-
-    attr_required.short_description = 'Attr Required'
-
-admin.site.register(CTypeMinimalAttr, CTypeMinimalAttrAdmin)
+# class CTypeMinimalAttrAdmin(admin.ModelAdmin):
+#     list_display = ['attr_name', 'attr_label', 'attr_value_type', 'attr_value_text_max_length',
+#                     'attr_value_decimal_total_digit', 'attr_value_decimal_point', 'attr_required']
+#
+#     def attr_name(self, obj):
+#         try:
+#             return obj.attr_name
+#         except:
+#             return None
+#
+#     attr_name.short_description = 'Attr Name'
+#
+#     def attr_label(self, obj):
+#         try:
+#             return obj.attr_label
+#         except:
+#             return None
+#
+#         attr_label.short_description = 'Attr Label'
+#
+#     def attr_value_type(self, obj):
+#         try:
+#             return obj.attr_value_type
+#         except:
+#             return None
+#
+#     attr_value_type.short_description = 'Attr Value Type'
+#
+#     def attr_value_text_max_length(self, obj):
+#         try:
+#             return obj.attr_value_text_max_length
+#         except:
+#             return None
+#
+#     attr_value_text_max_length.short_description = 'Attr Text Value Max Length'
+#
+#     def attr_value_decimal_total_digit(self, obj):
+#         try:
+#             return obj.attr_value_decimal_total_digit
+#         except:
+#             return None
+#
+#     attr_value_decimal_total_digit.short_description = 'Attr Decimal Value Total Digit'
+#
+#     def attr_value_decimal_point(self, obj):
+#         try:
+#             return obj.attr_value_decimal_point
+#         except:
+#             return None
+#
+#     attr_value_decimal_point.short_description = 'Attr Decimal Points'
+#
+#     def attr_required(self, obj):
+#         try:
+#             return obj.attr_required
+#         except:
+#             return None
+#
+#     attr_required.short_description = 'Attr Required'
+#
+# admin.site.register(CTypeMinimalAttr, CTypeMinimalAttrAdmin)
 
 
 class CTypeAttrAdmin(admin.ModelAdmin):

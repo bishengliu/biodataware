@@ -68,19 +68,19 @@ class CSample(models.Model):
         return str(self.box.tower) + '-' + str(self.box.shelf) + '-' + str(self.box.box)
 
 
-# minimal sample attr for all types, see above
-class CTypeMinimalAttr(models.Model):
-    attr_required = models.BooleanField(default=True)
-    attr_name = models.CharField(max_length=130, unique=True)
-    attr_label = models.CharField(max_length=130)
-    attr_value_type = models.CharField(max_length=130)  # 0: string, 1, digit; 2, decimal
-    attr_value_text_max_length = models.IntegerField(validators=[MinValueValidator(0)], null=True,
-                                                     blank=True)  # only for string or text field
-    attr_value_decimal_total_digit = models.IntegerField(validators=[MinValueValidator(0)], null=True, blank=True)
-    attr_value_decimal_point = models.IntegerField(validators=[MinValueValidator(0)], null=True, blank=True)
-
-    def __str__(self):
-        return self.attr_name
+# # minimal sample attr for all types, see above
+# class CTypeMinimalAttr(models.Model):
+#     attr_required = models.BooleanField(default=True)
+#     attr_name = models.CharField(max_length=130, unique=True)
+#     attr_label = models.CharField(max_length=130)
+#     attr_value_type = models.CharField(max_length=130)  # 0: string, 1, digit; 2, decimal
+#     attr_value_text_max_length = models.IntegerField(validators=[MinValueValidator(0)], null=True,
+#                                                      blank=True)  # only for string or text field
+#     attr_value_decimal_total_digit = models.IntegerField(validators=[MinValueValidator(0)], null=True, blank=True)
+#     attr_value_decimal_point = models.IntegerField(validators=[MinValueValidator(0)], null=True, blank=True)
+#
+#     def __str__(self):
+#         return self.attr_name
 
 
 # sample top extra attrs
