@@ -102,3 +102,34 @@ class CTypeAttrCreateEditSerializer(serializers.ModelSerializer):
     #             raise serializers.ValidationError(msg)
     #     return data
 
+
+class CtyepSubAttrCreateEditSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = CTypeSubAttr
+        fields = ('pk', 'parent_attr_id', 'attr_name', 'attr_label', 'attr_value_type', 'attr_value_text_max_length',
+                  'attr_value_decimal_total_digit', 'attr_value_decimal_point', 'attr_required', 'attr_order')
+
+    def validate_attr_name(self, value):
+        try:
+            attr_name_pattern = re.compile("^[a-zA-Z_-][a-zA-Z0-9_-]*$")
+            if not attr_name_pattern.search(value):
+                msg = _("Attr name must only contain only letters, numbers (not at the beginning), \"-\" or \"_\"")
+                raise serializers.ValidationError(msg)
+            else:
+                return value
+        except:
+            msg = _("Attr name validation failed!")
+            raise serializers.ValidationError(msg)
+
+    def validate_attr_label(self, value):
+        try:
+            attr_label_pattern = re.compile("^[a-zA-Z_-][a-zA-Z0-9_-]*$")
+            if not attr_label_pattern.search(value):
+                msg = _("Attr label must only contain only letters, numbers (not at the beginning), \"-\" or \"_\"")
+                raise serializers.ValidationError(msg)
+            else:
+                return value
+        except:
+            msg = _("Attr label validation failed!")
+            raise serializers.ValidationError(msg)

@@ -191,18 +191,24 @@ class CTypeAttrList(APIView):
             serializer.is_valid(raise_exception=True)
             data = request.data
             ctype = get_object_or_404(CType, pk=pk)
-            if user.is_superuser:
-                CTypeAttr.objects.create(**data)
-                return Response({'detail': 'the attr added to the type!'}, status=status.HTTP_200_OK)
-            else:
-                groupresearchers = GroupResearcher.objects.all().filter(user_id=user.pk)
-                group_ids = [g.group_id for g in groupresearchers]
-                if ctype.group_id not in group_ids:
-                    return Response({'detail': 'Something went wrong, modification to the material type not allowed!'},
-                                    status=status.HTTP_400_BAD_REQUEST)
-                else:
+            ctype_id = data.get('ctype_id')
+            if ctype_id == ctype.pk:
+                if user.is_superuser:
                     CTypeAttr.objects.create(**data)
                     return Response({'detail': 'the attr added to the type!'}, status=status.HTTP_200_OK)
+                else:
+                    groupresearchers = GroupResearcher.objects.all().filter(user_id=user.pk)
+                    group_ids = [g.group_id for g in groupresearchers]
+                    if ctype.group_id not in group_ids:
+                        return Response(
+                            {'detail': 'Something went wrong, modification to the material type not allowed!'},
+                            status=status.HTTP_400_BAD_REQUEST)
+                    else:
+                        CTypeAttr.objects.create(**data)
+                        return Response({'detail': 'the attr added to the type!'}, status=status.HTTP_200_OK)
+            else:
+                return Response({'detail': 'Something went wrong, failed to add the attr to the material type!'},
+                                status=status.HTTP_400_BAD_REQUEST)
         except:
             return Response({'detail': 'Something went wrong, failed to add the attr to the material type!'},
                             status=status.HTTP_400_BAD_REQUEST)
@@ -336,7 +342,33 @@ class CTypeSubAttrList(APIView):
                             status=status.HTTP_400_BAD_REQUEST)
 
     def post(self, request, pk, attr_pk, format=None):
-        pass
+        try:
+            user = request.user
+            serializer = CtyepSubAttrCreateEditSerializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            data = request.data
+            ctype = get_object_or_404(CType, pk=pk)
+            ctype_attr = get_object_or_404(CTypeAttr, pk=attr_pk)
+            if ctype_attr.pk == int(data.get('parent_attr_id')):
+                if user.is_superuser:
+                    CTypeSubAttr.objects.create(**data)
+                    return Response({'detail': 'the subattr added to the type!'}, status=status.HTTP_200_OK)
+                else:
+                    groupresearchers = GroupResearcher.objects.all().filter(user_id=user.pk)
+                    group_ids = [g.group_id for g in groupresearchers]
+                    if ctype.group_id not in group_ids:
+                        return Response(
+                            {'detail': 'Something went wrong, modification to the attr not allowed!'},
+                            status=status.HTTP_400_BAD_REQUEST)
+                    else:
+                        CTypeSubAttr.objects.create(**data)
+                        return Response({'detail': 'the subattr added to the type!'}, status=status.HTTP_200_OK)
+            else:
+                return Response({'detail': 'Something went wrong, failed to add the sub attr to the main attr!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+        except:
+            return Response({'detail': 'Something went wrong, failed to add the sub attr to the main attr!'},
+                            status=status.HTTP_400_BAD_REQUEST)
 
 
 class CTypeSubAttrDetail(APIView):
@@ -347,8 +379,8 @@ class CTypeSubAttrDetail(APIView):
             user = request.user
             ctype = get_object_or_404(CType, pk=pk)
             ctype_attr = get_object_or_404(CTypeAttr, pk=attr_pk)
-            ctype_subattr = get_object_or_404(CTypeAttr, pk=subattr_pk)
-            serializer = CTypeSubAttrSerializer(ctype_attr)
+            ctype_subattr = get_object_or_404(CTypeSubAttr, pk=subattr_pk)
+            serializer = CTypeSubAttrSerializer(ctype_subattr)
             if ctype.is_public is True or user.is_superuser:
                 return Response(serializer.data)
             else:
@@ -364,7 +396,77 @@ class CTypeSubAttrDetail(APIView):
                             status=status.HTTP_400_BAD_REQUEST)
 
     def put(self, request, pk, attr_pk, subattr_pk, format=None):
-        pass
+        try:
+            user = request.user
+            serializer = CtyepSubAttrCreateEditSerializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            data = request.data
+            ctype = get_object_or_404(CType, pk=pk)
+            ctype_attr = get_object_or_404(CTypeAttr, pk=attr_pk)
+            ctype_subattr = get_object_or_404(CTypeSubAttr, pk=subattr_pk)
+            if int(data.get('parent_attr_id')) == int(attr_pk) and int(data.get('pk')) == int(subattr_pk):
+                if user.is_superuser:
+                    ctype_subattr.attr_name = data.get('attr_name', None)
+                    ctype_subattr.attr_label = data.get('attr_label', None)
+                    ctype_subattr.attr_value_type = data.get('attr_value_type', None)
+                    ctype_subattr.attr_value_text_max_length = data.get('attr_value_text_max_length', None)
+                    ctype_subattr.attr_value_decimal_total_digit = data.get('attr_value_decimal_total_digit', None)
+                    ctype_subattr.attr_value_decimal_point = data.get('attr_value_decimal_point', None)
+                    ctype_subattr.attr_required = data.get('attr_required', False)
+                    ctype_subattr.attr_order = data.get('attr_order', 0)
+                    ctype_subattr.save()
+                    return Response({'detail': 'the subattr updated to the type!'}, status=status.HTTP_200_OK)
+                else:
+                    groupresearchers = GroupResearcher.objects.all().filter(user_id=user.pk)
+                    group_ids = [g.group_id for g in groupresearchers]
+                    if ctype.group_id in group_ids:
+                        ctype_subattr.attr_name = data.get('attr_name', None)
+                        ctype_subattr.attr_label = data.get('attr_label', None)
+                        ctype_subattr.attr_value_type = data.get('attr_value_type', None)
+                        ctype_subattr.attr_value_text_max_length = data.get('attr_value_text_max_length', None)
+                        ctype_subattr.attr_value_decimal_total_digit = data.get('attr_value_decimal_total_digit', None)
+                        ctype_subattr.attr_value_decimal_point = data.get('attr_value_decimal_point', None)
+                        ctype_subattr.attr_required = data.get('attr_required', False)
+                        ctype_subattr.attr_order = data.get('attr_order', 0)
+                        ctype_subattr.save()
+                        return Response({'detail': 'the subattr updated to the type!'}, status=status.HTTP_200_OK)
+                    else:
+                        return Response({'detail': 'The material type is not public!'},
+                                        status=status.HTTP_400_BAD_REQUEST)
+            else:
+                return Response({'detail': 'Something went wrong, failed to update the subattr of the material type!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+        except:
+            return Response({'detail': 'Something went wrong, failed to update the subattr of the material type!'},
+                            status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, pk, attr_pk, subattr_pk, format=None):
-        pass
+        try:
+            user = request.user
+            ctype = get_object_or_404(CType, pk=pk)
+            ctype_attr = get_object_or_404(CTypeAttr, pk=attr_pk)
+            ctype_subattr = get_object_or_404(CTypeSubAttr, pk=subattr_pk)
+            csample_subdata = CSampleSubData.objects.all() \
+                .filter(csample__ctype_id=pk) \
+                .filter(ctype_sub_attr_id=subattr_pk) \
+                .first()
+            if csample_subdata is not None:
+                return Response({'detail': 'The subattr is used, deletion not allowed!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+            else:
+                if user.is_superuser:
+                    ctype_subattr.delete()
+                    return Response({'detail': 'the subattr deleted!'}, status=status.HTTP_200_OK)
+                else:
+                    groupresearchers = GroupResearcher.objects.all().filter(user_id=user.pk)
+                    group_ids = [g.group_id for g in groupresearchers]
+                    if ctype.group_id in group_ids:
+                        ctype_subattr.delete()
+                        return Response({'detail': 'the subattr deleted!'}, status=status.HTTP_200_OK)
+                    else:
+                        return Response(
+                            {'detail': 'The material type was created by other group, deletion not allowed!'},
+                            status=status.HTTP_400_BAD_REQUEST)
+        except:
+            return Response({'detail': 'Something went wrong, failed to remove the subattr of the material type!'},
+                            status=status.HTTP_400_BAD_REQUEST)
