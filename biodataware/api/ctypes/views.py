@@ -160,3 +160,153 @@ class CTypeDetail(APIView):
             return Response({'detail': 'Something went wrong, failed to remove the material type!'},
                             status=status.HTTP_400_BAD_REQUEST)
 
+
+class CTypeAttrList(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
+    # get the attr list
+    def get(self, request, pk, format=None):
+        try:
+            user = request.user
+            ctype = get_object_or_404(CType, pk=pk)
+            serializer = CTypeSerializer(ctype)
+            if ctype.is_public is True or user.is_superuser:
+                return Response(serializer.data)
+            else:
+                groupresearchers = GroupResearcher.objects.all().filter(user_id=user.pk)
+                group_ids = [g.group_id for g in groupresearchers]
+                if ctype.group_id in group_ids:
+                    return Response(serializer.data)
+                else:
+                    return Response({'detail': 'The material type is not public!'},
+                                    status=status.HTTP_400_BAD_REQUEST)
+        except:
+            return Response({'detail': 'Something went wrong, failed to retrieve the attrs of the material type!'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+    def post(self, request, pk, format=None):
+        try:
+            user = request.user
+            serializer = CTypeAttrCreateEditSerializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            data = request.data
+            ctype = get_object_or_404(CType, pk=pk)
+            if user.is_superuser:
+                CTypeAttr.objects.create(**data)
+                return Response({'detail': 'the attr added to the type!'}, status=status.HTTP_200_OK)
+            else:
+                groupresearchers = GroupResearcher.objects.all().filter(user_id=user.pk)
+                group_ids = [g.group_id for g in groupresearchers]
+                if ctype.group_id not in group_ids:
+                    return Response({'detail': 'Something went wrong, modification to the material type not allowed!'},
+                                    status=status.HTTP_400_BAD_REQUEST)
+                else:
+                    CTypeAttr.objects.create(**data)
+                    return Response({'detail': 'the attr added to the type!'}, status=status.HTTP_200_OK)
+        except:
+            return Response({'detail': 'Something went wrong, failed to add the attr to the material type!'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+
+class CTypeAttrDetail(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
+    # get an attr detail
+    def get(self, request, pk, attr_pk, format=None):
+        try:
+            user = request.user
+            ctype = get_object_or_404(CType, pk=pk)
+            ctype_attr = get_object_or_404(CTypeAttr, pk=attr_pk)
+            serializer = CTypeAttrSerializer(ctype_attr)
+            if ctype.is_public is True or user.is_superuser:
+                return Response(serializer.data)
+            else:
+                groupresearchers = GroupResearcher.objects.all().filter(user_id=user.pk)
+                group_ids = [g.group_id for g in groupresearchers]
+                if ctype.group_id in group_ids:
+                    return Response(serializer.data)
+                else:
+                    return Response({'detail': 'The material type is not public!'},
+                                    status=status.HTTP_400_BAD_REQUEST)
+        except:
+            return Response({'detail': 'Something went wrong, failed to retrieve the attr of the material type!'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+    # put attr
+    def put(self, request, pk, attr_pk, format=None):
+        try:
+            user = request.user
+            serializer = CTypeAttrCreateEditSerializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            data = request.data
+            ctype = get_object_or_404(CType, pk=pk)
+            ctype_attr = get_object_or_404(CTypeAttr, pk=attr_pk)
+            ctype_id = data.get('ctype_id')
+            attr_id = data.get('pk')
+            if int(ctype_id) == int(pk) and int(attr_id) == int(attr_pk):
+                if user.is_superuser:
+                    ctype_attr.attr_name = data.get('attr_name', None)
+                    ctype_attr.attr_label = data.get('attr_label', None)
+                    ctype_attr.attr_value_type = data.get('attr_value_type', None)
+                    ctype_attr.attr_value_text_max_length = data.get('attr_value_text_max_length', None)
+                    ctype_attr.attr_value_decimal_total_digit = data.get('attr_value_decimal_total_digit', None)
+                    ctype_attr.attr_value_decimal_point = data.get('attr_value_decimal_point', None)
+                    ctype_attr.attr_required = data.get('attr_required', False)
+                    ctype_attr.attr_order = data.get('attr_order', 0)
+                    ctype_attr.has_sub_attr = data.get('has_sub_attr', False)
+                    ctype_attr.save()
+                    return Response({'detail': 'the attr updated to the type!'}, status=status.HTTP_200_OK)
+                else:
+                    groupresearchers = GroupResearcher.objects.all().filter(user_id=user.pk)
+                    group_ids = [g.group_id for g in groupresearchers]
+                    if ctype.group_id in group_ids:
+                        ctype_attr.attr_name = data.get('attr_name', None)
+                        ctype_attr.attr_label = data.get('attr_label', None)
+                        ctype_attr.attr_value_type = data.get('attr_value_type', None)
+                        ctype_attr.attr_value_text_max_length = data.get('attr_value_text_max_length', None)
+                        ctype_attr.attr_value_decimal_total_digit = data.get('attr_value_decimal_total_digit', None)
+                        ctype_attr.attr_value_decimal_point = data.get('attr_value_decimal_point', None)
+                        ctype_attr.attr_required = data.get('attr_required', False)
+                        ctype_attr.attr_order = data.get('attr_order', 0)
+                        ctype_attr.has_sub_attr = data.get('has_sub_attr', False)
+                        ctype_attr.save()
+                        return Response({'detail': 'the attr updated to the type!'}, status=status.HTTP_200_OK)
+                    else:
+                        return Response({'detail': 'The material type is not public!'},
+                                        status=status.HTTP_400_BAD_REQUEST)
+            else:
+                return Response({'detail': 'Something went wrong, failed to update the attr of the material type!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+        except:
+            return Response({'detail': 'Something went wrong, failed to update the attr of the material type!'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+    # delete an attr
+    def delete(self, request, pk, attr_pk, format=None):
+        try:
+            user = request.user
+            ctype = get_object_or_404(CType, pk=pk)
+            ctype_attr = get_object_or_404(CTypeAttr, pk=attr_pk)
+            csample_data = CSampleData.objects.all() \
+                .filter(csample__ctype_id=pk) \
+                .filter(ctype_attr_id=attr_pk) \
+                .first()
+            if csample_data is not None:
+                return Response({'detail': 'The attr is used, deletion not allowed!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+            else:
+                if user.is_superuser:
+                    ctype_attr.delete()
+                    return Response({'detail': 'the attr deleted!'}, status=status.HTTP_200_OK)
+                else:
+                    groupresearchers = GroupResearcher.objects.all().filter(user_id=user.pk)
+                    group_ids = [g.group_id for g in groupresearchers]
+                    if ctype.group_id in group_ids:
+                        ctype_attr.delete()
+                        return Response({'detail': 'the attr deleted!'}, status=status.HTTP_200_OK)
+                    else:
+                        return Response({'detail': 'The material type was created by other group, deletion not allowed!'},
+                                        status=status.HTTP_400_BAD_REQUEST)
+        except:
+            return Response({'detail': 'Something went wrong, failed to remove the attr of the material type!'},
+                            status=status.HTTP_400_BAD_REQUEST)
