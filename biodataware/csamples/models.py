@@ -186,18 +186,18 @@ def csample_attachment_delete(sender, instance, **kwargs):
         instance.attachment.delete(False)
 
 
-# only for viruses
-class CSampleVirusTitration(models.Model):
-    csample = models.ForeignKey(CSample, on_delete=models.CASCADE)
-    titration_titer = models.CharField(max_length=50, null=True, blank=True)
-    titration_unit = models.CharField(max_length=50, null=True, blank=True)
-    titration_cell_type = models.CharField(max_length=50, null=True, blank=True)
-    titration_code = models.CharField(max_length=50, null=True, blank=True)
-    titration_date = models.DateField(default=datetime.now, null=True, blank=True)
-    description = models.TextField(null=True, blank=True)
-
-    def __str__(self):
-        return self.titration_titer + self.titration_unit + ' (' + self.titration_date + ')'
+# # only for viruses
+# class CSampleVirusTitration(models.Model):
+#     csample = models.ForeignKey(CSample, on_delete=models.CASCADE)
+#     titration_titer = models.CharField(max_length=50, null=True, blank=True)
+#     titration_unit = models.CharField(max_length=50, null=True, blank=True)
+#     titration_cell_type = models.CharField(max_length=50, null=True, blank=True)
+#     titration_code = models.CharField(max_length=50, null=True, blank=True)
+#     titration_date = models.DateField(default=datetime.now, null=True, blank=True)
+#     description = models.TextField(null=True, blank=True)
+#
+#     def __str__(self):
+#         return self.titration_titer + self.titration_unit + ' (' + self.titration_date + ')'
 
 
 # sample to researcher

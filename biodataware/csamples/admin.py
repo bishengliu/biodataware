@@ -500,92 +500,92 @@ class CSampleSubDataAdmin(admin.ModelAdmin):
 admin.site.register(CSampleSubData, CSampleSubDataAdmin)
 
 
-class CSampleVirusTitrationAdmin(admin.ModelAdmin):
-    list_display = ['csample', 'container', 'container_box', 'ctype', 'titration_titer', 'titration_unit', 'titration_cell_type',
-                    'titration_code', 'titration_date', 'description']
-
-    def container_box(self, obj):
-        try:
-            return str(obj.box.tower) + '-' + str(obj.box.shelf) + '-' + str(obj.box.box)
-        except:
-            return None
-
-    container_box.short_description = 'Box'
-
-    def container(self, obj):
-        try:
-            return obj.box.container.name
-        except:
-            return None
-
-    container.short_description = 'Container'
-
-    def ctype(self, obj):
-        try:
-            return obj.csample.ctype.type
-        except:
-            return None
-
-    ctype.short_description = 'Type'
-
-    def csample(self, obj):
-        try:
-            return obj.csample.name
-        except:
-            return None
-
-    csample.short_description = 'Name'
-
-    def titration_titer(self, obj):
-        try:
-            return obj.titration_titer
-        except:
-            return None
-
-    titration_titer.short_description = 'Titer'
-
-    def titration_unit(self, obj):
-        try:
-            return obj.titration_unit
-        except:
-            return None
-
-    titration_unit.short_description = 'Unit'
-
-    def titration_cell_type(self, obj):
-        try:
-            return obj.titration_cell_type
-        except:
-            return None
-
-    titration_cell_type.short_description = 'Cell Type'
-
-    def titration_code(self, obj):
-        try:
-            return obj.titration_code
-        except:
-            return None
-
-    titration_code.short_description = 'Titration Code'
-
-    def titration_date(self, obj):
-        try:
-            return obj.titration_date
-        except:
-            return None
-
-    titration_date.short_description = 'Titration Date'
-
-    def description(self, obj):
-        try:
-            return obj.description
-        except:
-            return None
-
-    description.short_description = 'Description'
-
-
-admin.site.register(CSampleVirusTitration, CSampleVirusTitrationAdmin)
+# class CSampleVirusTitrationAdmin(admin.ModelAdmin):
+#     list_display = ['csample', 'container', 'container_box', 'ctype', 'titration_titer', 'titration_unit', 'titration_cell_type',
+#                     'titration_code', 'titration_date', 'description']
+#
+#     def container_box(self, obj):
+#         try:
+#             return str(obj.box.tower) + '-' + str(obj.box.shelf) + '-' + str(obj.box.box)
+#         except:
+#             return None
+#
+#     container_box.short_description = 'Box'
+#
+#     def container(self, obj):
+#         try:
+#             return obj.box.container.name
+#         except:
+#             return None
+#
+#     container.short_description = 'Container'
+#
+#     def ctype(self, obj):
+#         try:
+#             return obj.csample.ctype.type
+#         except:
+#             return None
+#
+#     ctype.short_description = 'Type'
+#
+#     def csample(self, obj):
+#         try:
+#             return obj.csample.name
+#         except:
+#             return None
+#
+#     csample.short_description = 'Name'
+#
+#     def titration_titer(self, obj):
+#         try:
+#             return obj.titration_titer
+#         except:
+#             return None
+#
+#     titration_titer.short_description = 'Titer'
+#
+#     def titration_unit(self, obj):
+#         try:
+#             return obj.titration_unit
+#         except:
+#             return None
+#
+#     titration_unit.short_description = 'Unit'
+#
+#     def titration_cell_type(self, obj):
+#         try:
+#             return obj.titration_cell_type
+#         except:
+#             return None
+#
+#     titration_cell_type.short_description = 'Cell Type'
+#
+#     def titration_code(self, obj):
+#         try:
+#             return obj.titration_code
+#         except:
+#             return None
+#
+#     titration_code.short_description = 'Titration Code'
+#
+#     def titration_date(self, obj):
+#         try:
+#             return obj.titration_date
+#         except:
+#             return None
+#
+#     titration_date.short_description = 'Titration Date'
+#
+#     def description(self, obj):
+#         try:
+#             return obj.description
+#         except:
+#             return None
+#
+#     description.short_description = 'Description'
+#
+#
+# admin.site.register(CSampleVirusTitration, CSampleVirusTitrationAdmin)
 
 
 class CSampleAttachmentAdmin(admin.ModelAdmin):
