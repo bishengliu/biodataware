@@ -84,14 +84,29 @@ class CTypeValidation(APIView):
         try:
             name = request.data.get('name', '')
             group_id = int(request.data.get('group_pk', -1))
+            excluded_pk = int(request.data.get('excluded_pk', -1))
+            ctype = CType()
             if group_id == -1:
-                ctype = CType.objects.all().filter(type__iexact=name).first()
-                if ctype is not None:
-                    Response({'matched': True})
+                if excluded_pk > 0:
+                    ctype = CType.objects.all()\
+                        .filter(type__iexact=name).first()
+                else:
+                    ctype = CType.objects.all()\
+                        .exclude(pk=excluded_pk)\
+                        .filter(type__iexact=name).first()
             else:
-                ctype = CType.objects.all().filter(type__iexact=name).filter(group_id=group_id).first()
-                if ctype is not None:
-                    Response({'matched': True})
+                if excluded_pk > 0:
+                    ctype = CType.objects.all()\
+                        .exclude(pk=excluded_pk)\
+                        .filter(type__iexact=name)\
+                        .filter(group_id=group_id).first()
+                else:
+                    ctype = CType.objects.all()\
+                        .filter(type__iexact=name)\
+                        .filter(group_id=group_id).first()
+
+            if ctype is not None:
+                return Response({'matched': True})
             return Response({'matched': False})
         except:
             return Response({'matched': True})
