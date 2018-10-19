@@ -78,6 +78,25 @@ class CTypeList(APIView):
                             status=status.HTTP_400_BAD_REQUEST)
 
 
+class CTypeValidation(APIView):
+
+    def post(self, request, format=None):
+        try:
+            name = request.data.get('name', '')
+            group_id = int(request.data.get('group_pk', -1))
+            if group_id == -1:
+                ctype = CType.objects.all().filter(type__iexact=name).first()
+                if ctype is not None:
+                    Response({'matched': True})
+            else:
+                ctype = CType.objects.all().filter(type__iexact=name).filter(group_id=group_id).first()
+                if ctype is not None:
+                    Response({'matched': True})
+            return Response({'matched': False})
+        except:
+            return Response({'matched': True})
+
+
 class CTypeDetail(APIView):
     permission_classes = (permissions.IsAuthenticated,)
 

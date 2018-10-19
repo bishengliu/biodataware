@@ -4,6 +4,8 @@ from .views import *
 urlpatterns = [
     # ctypes list and new ctype
     url(r'^$', CTypeList.as_view(), name='ctype-list'),
+    # validate type name validate_name
+    url(r'^validate_name/$', CTypeValidation.as_view(), name='ctype-validation'),
     # get minial attrs for any types
     url(r'^(?P<pk>[0-9]+)/$', CTypeDetail.as_view(), name='ctype-detail'),
     url(r'^(?P<pk>[0-9]+)/attrs/$', CTypeAttrList.as_view(), name='ctype-attrs'),
