@@ -104,7 +104,6 @@ class CTypeValidation(APIView):
                     ctype = CType.objects.all()\
                         .filter(type__iexact=name)\
                         .filter(group_id=group_id).first()
-
             if ctype is not None:
                 return Response({'matched': True})
             return Response({'matched': False})
@@ -246,6 +245,30 @@ class CTypeAttrList(APIView):
         except:
             return Response({'detail': 'Something went wrong, failed to add the attr to the material type!'},
                             status=status.HTTP_400_BAD_REQUEST)
+
+
+class CTypeAttrValidation(APIView):
+
+    def post(self, request, pk, format=None):
+        try:
+            name = request.data.get('name', '')
+            ctype_pk = int(request.data.get('ctype_pk', -1))
+            excluded_pk = int(request.data.get('excluded_pk', -1))
+            cattr = CTypeAttr()
+            if excluded_pk > 0:
+                cattr = CTypeAttr.objects.all() \
+                    .filter(ctype_id=ctype_pk) \
+                    .filter(attr_name__iexact=name).first()
+            else:
+                cattr = CTypeAttr.objects.all() \
+                    .exclude(pk=excluded_pk) \
+                    .filter(ctype_id=ctype_pk) \
+                    .filter(attr_name__iexact=name).first()
+            if cattr is not None:
+                return Response({'matched': True})
+            return Response({'matched': False})
+        except:
+            return Response({'matched': True})
 
 
 class CTypeAttrDetail(APIView):
@@ -403,6 +426,31 @@ class CTypeSubAttrList(APIView):
         except:
             return Response({'detail': 'Something went wrong, failed to add the sub attr to the main attr!'},
                             status=status.HTTP_400_BAD_REQUEST)
+
+
+class CTypeSubAttrValidation(APIView):
+
+    def post(self, request, pk, attr_pk, format=None):
+        try:
+            name = request.data.get('name', '')
+            ctype_pk = int(request.data.get('ctype_pk', -1))
+            attr_pk = int(request.data.get('attr_pk', -1))
+            excluded_pk = int(request.data.get('excluded_pk', -1))
+            subattr = CTypeSubAttr()
+            if excluded_pk > 0:
+                subattr = CTypeSubAttr.objects.all() \
+                    .filter(parent_attr_id=ctype_pk) \
+                    .filter(attr_name__iexact=name).first()
+            else:
+                subattr = CTypeSubAttr.objects.all() \
+                    .exclude(pk=excluded_pk) \
+                    .filter(parent_attr_id=attr_pk) \
+                    .filter(attr_name__iexact=name).first()
+            if subattr is not None:
+                return Response({'matched': True})
+            return Response({'matched': False})
+        except:
+            return Response({'matched': True})
 
 
 class CTypeSubAttrDetail(APIView):
