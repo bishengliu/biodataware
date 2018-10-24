@@ -68,8 +68,12 @@ class Container(models.Model):
         if self.boxcontainer_set is not None:
             count_sample = 0
             for box in self.boxcontainer_set.all():
-                if box.sample_set is not None:
-                    count_sample = count_sample + box.sample_set.count()
+                if settings.USE_CSAMPLE:
+                    if box.csample_set is not None:
+                        count_sample = count_sample + box.csample_set.count()
+                else:
+                    if box.sample_set is not None:
+                        count_sample = count_sample + box.sample_set.count()
             return count_sample
         return 0
 
@@ -116,9 +120,14 @@ class BoxContainer(models.Model):
         return None
 
     def sample_count(self):
-        sp_set = self.sample_set
-        if sp_set:
-            return str(sp_set.count())
+        if settings.USE_CSAMPLE:
+            sp_set = self.csample_set
+            if sp_set:
+                return str(sp_set.count())
+        else:
+            sp_set = self.sample_set
+            if sp_set:
+                return str(sp_set.count())
         return str(0)
 
 

@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 from rest_framework import permissions, status
 from .serializers import *
+from ._csample_serializers import *
 from helpers.acl import isInGroups, isPIorAssistantofGroup
 from django.db import transaction
 from containers.models import Container, GroupContainer, BoxContainer, BoxResearcher
@@ -544,10 +545,18 @@ class ShelfAlternative(APIView):
                 return Response({'detail': 'shelf does not exist!'},
                                 status=status.HTTP_400_BAD_REQUEST)
             # get the box of the shelf
-            boxes = BoxContainer.objects.all().filter(container_id=int(ct_id)).filter(tower=int(tw_id)).filter(
+            boxes = BoxContainer.objects.all()\
+                .filter(container_id=int(ct_id))\
+                .filter(tower=int(tw_id)).filter(
                 shelf=int(sf_id))
-            serializer = BoxSamplesSerializer(boxes, many=True)
-            return Response(serializer.data)
+            if settings.USE_CSAMPLE:
+                serializer = BoxCSamplesSerializer(boxes, many=True)
+                return Response(serializer.data)
+            else:
+                serializer = BoxSamplesSerializer(boxes, many=True)
+                return Response(serializer.data)
+
+
         except:
             return Response({'detail': 'Something went wrong!!'},
                             status=status.HTTP_400_BAD_REQUEST)
@@ -633,9 +642,16 @@ class Shelf(APIView):
             return Response({'detail': 'shelf does not exist!'},
                             status=status.HTTP_400_BAD_REQUEST)
         # get the box of the shelf
-        boxes = BoxContainer.objects.all().filter(container_id=int(ct_id)).filter(tower=int(tw_id)).filter(shelf=int(sf_id))
-        serializer = BoxSamplesSerializer(boxes, many=True)
-        return Response(serializer.data)
+        boxes = BoxContainer.objects.all()\
+            .filter(container_id=int(ct_id))\
+            .filter(tower=int(tw_id))\
+            .filter(shelf=int(sf_id))
+        if settings.USE_CSAMPLE:
+            serializer = BoxCSamplesSerializer(boxes, many=True)
+            return Response(serializer.data)
+        else:
+            serializer = BoxSamplesSerializer(boxes, many=True)
+            return Response(serializer.data)
 
     @transaction.atomic
     def post(self, request, ct_id, id, format=None):
@@ -714,8 +730,12 @@ class ContainerBoxList(APIView):
                 if boxes.count() > getattr(settings, "BOX_FULNESS_PROGRESS_VIEW", 10):
                     serializer = BoxSampleFullnessSerializer(boxes, many=True)
                     return Response(serializer.data)
-                serializer = BoxSamplesSerializer(boxes, many=True)
-                return Response(serializer.data)
+                if settings.USE_CSAMPLE:
+                    serializer = BoxCSamplesSerializer(boxes, many=True)
+                    return Response(serializer.data)
+                else:
+                    serializer = BoxSamplesSerializer(boxes, many=True)
+                    return Response(serializer.data)
             else:
                 obj = {'user': user, 'container': container}
                 if not user.is_superuser:
@@ -738,8 +758,12 @@ class ContainerBoxList(APIView):
                 if boxes.count() > getattr(settings, "BOX_FULNESS_PROGRESS_VIEW", 10):
                     serializer = BoxSampleFullnessSerializer(boxes, many=True)
                     return Response(serializer.data)
-                serializer = BoxSamplesSerializer(boxes, many=True)
-                return Response(serializer.data)
+                if settings.USE_CSAMPLE:
+                    serializer = BoxCSamplesSerializer(boxes, many=True)
+                    return Response(serializer.data)
+                else:
+                    serializer = BoxSamplesSerializer(boxes, many=True)
+                    return Response(serializer.data)
         except:
             return Response({'detail': 'Something went wrong!'},
                             status=status.HTTP_400_BAD_REQUEST)
@@ -821,8 +845,12 @@ class ContainerFavoriteBoxList(APIView):
                 if boxes.count() > getattr(settings, "BOX_FULNESS_PROGRESS_VIEW", 10):
                     serializer = BoxSampleFullnessSerializer(boxes, many=True)
                     return Response(serializer.data)
-                serializer = BoxSamplesSerializer(boxes, many=True)
-                return Response(serializer.data)
+                if settings.USE_CSAMPLE:
+                    serializer = BoxCSamplesSerializer(boxes, many=True)
+                    return Response(serializer.data)
+                else:
+                    serializer = BoxSamplesSerializer(boxes, many=True)
+                    return Response(serializer.data)
             else:
                 obj = {'user': user, 'container': container}
                 if not user.is_superuser:
@@ -845,8 +873,12 @@ class ContainerFavoriteBoxList(APIView):
                 if boxes.count() > getattr(settings, "BOX_FULNESS_PROGRESS_VIEW", 10):
                     serializer = BoxSampleFullnessSerializer(boxes, many=True)
                     return Response(serializer.data)
-                serializer = BoxSamplesSerializer(boxes, many=True)
-                return Response(serializer.data)
+                if settings.USE_CSAMPLE:
+                    serializer = BoxCSamplesSerializer(boxes, many=True)
+                    return Response(serializer.data)
+                else:
+                    serializer = BoxSamplesSerializer(boxes, many=True)
+                    return Response(serializer.data)
         except:
             return Response({'detail': 'Something went wrong!'},
                             status=status.HTTP_400_BAD_REQUEST)
@@ -868,8 +900,12 @@ class ContainerAllBoxList(APIView):
             if boxes.count() > getattr(settings, "BOX_FULNESS_PROGRESS_VIEW", 10):
                 serializer = BoxSampleFullnessSerializer(boxes, many=True)
                 return Response(serializer.data)
-            serializer = BoxSamplesSerializer(boxes, many=True)
-            return Response(serializer.data)
+            if settings.USE_CSAMPLE:
+                serializer = BoxCSamplesSerializer(boxes, many=True)
+                return Response(serializer.data)
+            else:
+                serializer = BoxSamplesSerializer(boxes, many=True)
+                return Response(serializer.data)
         except:
             return Response({'detail': 'Something went wrong!'},
                             status=status.HTTP_400_BAD_REQUEST)
@@ -1113,12 +1149,20 @@ class Box(APIView):
                     user = get_object_or_404(User, pk=box_researcher.researcher_id)
                     obj = {'user': user, 'container': container}
                     self.check_object_permissions(request, obj)  # check the permission
-                    serializer = BoxSamplesSerializer(box)
-                    return Response(serializer.data)
+                    if settings.USE_CSAMPLE:
+                        serializer = BoxCSamplesSerializer(box)
+                        return Response(serializer.data)
+                    else:
+                        serializer = BoxSamplesSerializer(box)
+                        return Response(serializer.data)
                 return Response({'detail': 'Permission denied!'},
                                 status=status.HTTP_400_BAD_REQUEST)
-            serializer = BoxSamplesSerializer(box)
-            return Response(serializer.data)
+            if settings.USE_CSAMPLE:
+                serializer = BoxCSamplesSerializer(box)
+                return Response(serializer.data)
+            else:
+                serializer = BoxSamplesSerializer(box)
+                return Response(serializer.data)
         except:
             return Response({'detail': 'Something went wrong!'},
                     status=status.HTTP_400_BAD_REQUEST)

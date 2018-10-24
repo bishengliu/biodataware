@@ -206,7 +206,8 @@ class BoxSampleFullnessSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = BoxContainer
-        fields = ('pk', 'label', 'box_position', 'box_vertical', 'box_horizontal', 'tower', 'shelf', 'box', 'code39', 'qrcode', 'color', 'rate', 'description', 'sample_count', 'researchers')
+        fields = ('pk', 'label', 'box_position', 'box_vertical', 'box_horizontal', 'tower', 'shelf', 'box',
+                  'code39', 'qrcode', 'color', 'rate', 'description', 'sample_count', 'researchers')
 
 # ======for sample =====================
 

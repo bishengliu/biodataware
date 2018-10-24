@@ -243,3 +243,6 @@ BOX_FULNESS_PROGRESS_VIEW = 10
 # EMAIL_HOST_PASSWORD = 'test123##'
 # EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
+# use CSAMPLE
+USE_CSAMPLE = True
+
