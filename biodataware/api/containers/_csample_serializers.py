@@ -25,7 +25,7 @@ class CSampleSubDataSerializer(serializers.ModelSerializer):
     ctype_sub_attr = CTypeSubAttrSerializer()
 
     class Meta:
-        model = CSampleData
+        model = CSampleSubData
         fields = ('pk', 'csample_id', 'ctype_sub_attr_id', 'ctype_sub_attr', 'ctype_sub_attr_value_part1', 'ctype_sub_attr_value_part2')
 
 
