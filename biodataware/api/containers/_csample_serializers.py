@@ -43,12 +43,12 @@ class CSampleSerializer(serializers.ModelSerializer):
     researchers = UserSerializer(many=True, read_only=True, source='researcher_objs')
     ctype = CTypeSerializer()
     csample_data = CSampleDataSerializer(many=True, read_only=True, source='csampledata_set')
-    cample_subdata = CSampleSubDataSerializer(many=True, read_only=True, source='csamplesubdata_set')
+    csample_subdata = CSampleSubDataSerializer(many=True, read_only=True, source='csamplesubdata_set')
 
     class Meta:
         model = CSample
         fields = ('pk', 'ctype_id', 'vposition', 'hposition', 'position', 'date_in', 'name', 'storage_date',
-                  'box', 'box_id', 'date_out', 'occupied', 'color', 'attachments', 'ctype', 'csample_data', 'cample_subdata',
+                  'box', 'box_id', 'date_out', 'occupied', 'color', 'attachments', 'ctype', 'csample_data', 'csample_subdata',
                   'researchers', 'container_id', 'container', 'box_position')
 
 

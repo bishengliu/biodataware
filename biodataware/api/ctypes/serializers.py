@@ -15,10 +15,11 @@ import re
 
 
 class CTypeSubAttrSerializer(serializers.ModelSerializer):
+    parent_attr = serializers.StringRelatedField()
 
     class Meta:
         model = CTypeSubAttr
-        fields = ('pk', 'parent_attr_id', 'attr_name', 'attr_label', 'attr_value_type', 'attr_value_text_max_length',
+        fields = ('pk', 'parent_attr_id', 'parent_attr', 'attr_name', 'attr_label', 'attr_value_type', 'attr_value_text_max_length',
                   'attr_value_decimal_total_digit', 'attr_value_decimal_point', 'attr_required', 'attr_order')
 
 
