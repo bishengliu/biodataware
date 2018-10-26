@@ -132,7 +132,7 @@ class CSampleData(models.Model):
     ctype_attr_value_part2 = models.TextField(null=True, blank=True)
 
     def __str__(self):
-        return self.csample.name + ': ' + self.ctype_attr + '/' \
+        return self.csample.name + ': ' + self.ctype_attr.attr_label + '/' \
                + self.ctype_attr_value_part1 + self.ctype_attr_value_part2
 
 
@@ -144,7 +144,7 @@ class CSampleSubData(models.Model):
     ctype_sub_attr_value_part2 = models.TextField(null=True, blank=True)
 
     def __str__(self):
-        return self.csample.name + ': ' + self.ctype_sub_attr + '/' \
+        return self.csample.name + ': ' + self.ctype_sub_attr.attr_label + '/' \
                + self.ctype_sub_attr_value_part1 + self.ctype_sub_attr_value_part2
 
 
