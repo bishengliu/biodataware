@@ -39,7 +39,7 @@ class CSampleAttachmentSerializer(serializers.ModelSerializer):
 
 class CSampleSerializer(serializers.ModelSerializer):
     box = serializers.StringRelatedField()
-    attachments = CSampleAttachmentSerializer(many=True, read_only=True, source='sampleattachment_set')
+    attachments = CSampleAttachmentSerializer(many=True, read_only=True, source='csampleattachment_set')
     researchers = UserSerializer(many=True, read_only=True, source='researcher_objs')
     ctype = CTypeSerializer()
     csample_data = CSampleDataSerializer(many=True, read_only=True, source='csampledata_set')
