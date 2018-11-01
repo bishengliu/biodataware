@@ -2542,10 +2542,10 @@ class SwitchSample(APIView):
                                 status=status.HTTP_400_BAD_REQUEST)
             # box researcher
             first_box_owner = User()
-            first_box_researcher = BoxResearcher.objects.all().filter(box_id=first_box.pk).first()
+            first_box_researcher = BoxResearcher.objects.all()\
+                .filter(box_id=first_box.pk).first()
             if first_box_researcher is not None:
-                first_group_researcher = get_object_or_404(GroupResearcher, pk=first_box_researcher.researcher_id)
-                first_box_owner = get_object_or_404(User, pk=first_group_researcher.user_id)
+                first_box_owner = get_object_or_404(User, pk=first_box_researcher.researcher_id)
             # second container
             second_container_pk = data.get('second_container_pk', '')
             second_box_tower = data.get('second_box_tower', '')
@@ -2567,59 +2567,118 @@ class SwitchSample(APIView):
 
             # box researcher
             second_box_owner = User()
-            second_box_researcher = BoxResearcher.objects.all().filter(box_id=second_box.pk).first()
+            second_box_researcher = BoxResearcher.objects.all()\
+                .filter(box_id=second_box.pk).first()
             if second_box_researcher is not None:
-                second_group_researcher = get_object_or_404(GroupResearcher, pk=second_box_researcher.researcher_id)
-                second_box_owner = get_object_or_404(User, pk=second_group_researcher.user_id)
+                second_box_owner = get_object_or_404(User, pk=second_box_researcher.researcher_id)
+            if not settings.USE_CSAMPLE:
+                # first sample
+                first_sample = Sample.objects.all()\
+                    .filter(box_id=first_box.pk)\
+                    .filter(vposition__iexact=first_sample_vposition)\
+                    .filter(hposition=int(first_sample_hposition))\
+                    .filter(occupied__iexact=1).first()
+                # second sample
+                second_sample = Sample.objects.all()\
+                    .filter(box_id=second_box.pk)\
+                    .filter(vposition__iexact=second_sample_vposition)\
+                    .filter(hposition=int(second_sample_hposition))\
+                    .filter(occupied__iexact=1).first()
+                if first_sample is None and second_sample is None:
+                    return Response({'detail': 'both samples are not found!'},
+                                    status=status.HTTP_400_BAD_REQUEST)
+                # switch box container pk
+                first_box.container_id = second_container_pk
+                first_box.save()
+                second_box.container_id = first_container_pk
+                second_box.save()
 
-            # first sample
-            first_sample = Sample.objects.all().filter(box_id=first_box.pk).filter(
-                        vposition__iexact=first_sample_vposition).filter(
-                        hposition=int(first_sample_hposition)).filter(occupied__iexact=1).first()
-            # second sample
-            second_sample = Sample.objects.all().filter(box_id=second_box.pk).filter(
-                vposition__iexact=second_sample_vposition).filter(
-                hposition=int(second_sample_hposition)).filter(occupied__iexact=1).first()
-            if first_sample is None and second_sample is None:
-                return Response({'detail': 'both samples are not found!'},
-                                status=status.HTTP_400_BAD_REQUEST)
-            # switch box container pk
-            first_box.container_id = second_container_pk
-            first_box.save()
-            second_box.container_id = first_container_pk
-            second_box.save()
+                if first_sample is not None:
+                    if auth_user is not first_box_owner:
+                        # get sample1 owner
+                        sample_researcher = SampleResearcher.objects.all() \
+                            .filter(sample_id=first_sample.pk).first()
+                        if sample_researcher is not None:
+                            sample_owner = get_object_or_404(User, pk=sample_researcher.researcher_id)
+                            if sample_owner is not None:
+                                obj = {'user': sample_owner, 'container': first_container}
+                                self.check_object_permissions(request, obj)  # check the permission
 
-            if first_sample is not None:
+                    # switch sample box pk
+                    first_sample.box_id = second_box.pk
+                    first_sample.vposition = second_sample_vposition
+                    first_sample.hposition = second_sample_hposition
+                    first_sample.save()
+                if second_sample is not None:
+                    if auth_user is not second_box_owner:
+                        # get sample1 owner
+                        sample_researcher = SampleResearcher.objects.all() \
+                            .filter(sample_id=second_sample.pk).first()
+                        if sample_researcher is not None:
+                            sample_owner = get_object_or_404(User, pk=sample_researcher.researcher_id)
+                            if sample_owner is not None:
+                                obj = {'user': sample_owner, 'container': second_container}
+                                self.check_object_permissions(request, obj)  # check the permission
+                    second_sample.box_id = first_box.pk
+                    second_sample.vposition = first_sample_vposition
+                    second_sample.hposition = first_sample_hposition
+                    second_sample.save()
+                return Response({'detail': 'sample positions switched!'},
+                                status=status.HTTP_200_OK)
+            else:
+                # first sample
+                first_sample = CSample.objects.all()\
+                    .filter(box_id=first_box.pk)\
+                    .filter(vposition__iexact=first_sample_vposition)\
+                    .filter(hposition=int(first_sample_hposition))\
+                    .filter(occupied__iexact=1).first()
+                # second sample
+                second_sample = CSample.objects.all()\
+                    .filter(box_id=second_box.pk)\
+                    .filter(vposition__iexact=second_sample_vposition)\
+                    .filter(hposition=int(second_sample_hposition))\
+                    .filter(occupied__iexact=1).first()
+                if first_sample is None and second_sample is None:
+                    return Response({'detail': 'both samples are not found!'},
+                                    status=status.HTTP_400_BAD_REQUEST)
+                # switch box container pk
+                first_box.container_id = second_container_pk
+                first_box.save()
+                second_box.container_id = first_container_pk
+                second_box.save()
 
-                if auth_user is not first_box_owner:
-                    # get sample1 owner
-                    sample_researcher = SampleResearcher.objects.all().filter(sample_id=first_sample.pk).first()
-                    sample_owner = get_object_or_404(User, pk=sample_researcher.researcher_id)
-                    if sample_owner is not None:
-                        obj = {'user': sample_owner, 'container': first_container}
-                        self.check_object_permissions(request, obj)  # check the permission
+                if first_sample is not None:
+                    if auth_user is not first_box_owner:
+                        # get sample1 owner
+                        sample_researcher = CSampleResearcher.objects.all() \
+                            .filter(csample_id=first_sample.pk).first()
+                        if sample_researcher is not None:
+                            sample_owner = get_object_or_404(User, pk=sample_researcher.researcher_id)
+                            if sample_owner is not None:
+                                obj = {'user': sample_owner, 'container': first_container}
+                                self.check_object_permissions(request, obj)  # check the permission
 
-                # switch sample box pk
-                first_sample.box_id = second_box.pk
-                first_sample.vposition = second_sample_vposition
-                first_sample.hposition = second_sample_hposition
-                first_sample.save()
-            if second_sample is not None:
-
-                if auth_user is not second_box_owner:
-                    # get sample1 owner
-                    sample_researcher = SampleResearcher.objects.all().filter(sample_id=second_sample.pk).first()
-                    sample_owner = get_object_or_404(User, pk=sample_researcher.researcher_id)
-                    if sample_owner is not None:
-                        obj = {'user': sample_owner, 'container': second_container}
-                        self.check_object_permissions(request, obj)  # check the permission
-
-                second_sample.box_id = first_box.pk
-                second_sample.vposition = first_sample_vposition
-                second_sample.hposition = first_sample_hposition
-                second_sample.save()
-            return Response({'detail': 'sample positions switched!'},
-                            status=status.HTTP_200_OK)
+                    # switch sample box pk
+                    first_sample.box_id = second_box.pk
+                    first_sample.vposition = second_sample_vposition
+                    first_sample.hposition = second_sample_hposition
+                    first_sample.save()
+                if second_sample is not None:
+                    if auth_user is not second_box_owner:
+                        # get sample1 owner
+                        sample_researcher = CSampleResearcher.objects.all() \
+                            .filter(csample_id=second_sample.pk).first()
+                        if sample_researcher is not None:
+                            sample_owner = get_object_or_404(User, pk=sample_researcher.researcher_id)
+                            if sample_owner is not None:
+                                obj = {'user': sample_owner, 'container': second_container}
+                                self.check_object_permissions(request, obj)  # check the permission
+                    second_sample.box_id = first_box.pk
+                    second_sample.vposition = first_sample_vposition
+                    second_sample.hposition = first_sample_hposition
+                    second_sample.save()
+                return Response({'detail': 'sample positions switched!'},
+                                status=status.HTTP_200_OK)
         except:
             return Response({'detail': 'Something went wrong!'},
                             status=status.HTTP_400_BAD_REQUEST)
