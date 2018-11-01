@@ -1,0 +1,18 @@
+<component name="InspectionProjectProfileManager">
+  <profile version="1.0">
+    <option name="myName" value="Project Default" />
+    <inspection_tool class="PyUnresolvedReferencesInspection" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="ignoredIdentifiers">
+        <list>
+          <option value="samples.models.Sample.*" />
+          <option value="groups.models.GroupResearcher.*" />
+          <option value="csamples.models.CSampleResearcher.*" />
+          <option value="containers.models.BoxContainer.*" />
+          <option value="containers.models.BoxResearcher.*" />
+          <option value="containers.models.GroupContainer.*" />
+          <option value="containers.models.Container.*" />
+        </list>
+      </option>
+    </inspection_tool>
+  </profile>
+</component>
