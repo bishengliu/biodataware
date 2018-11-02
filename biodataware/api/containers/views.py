@@ -3491,29 +3491,55 @@ class SampleTake(APIView):
             box_owner = User()
             box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
             if box_researcher is not None:
-                group_researcher = get_object_or_404(GroupResearcher, pk=box_researcher.researcher_id)
-                box_owner = get_object_or_404(User, pk=group_researcher.user_id)
+                box_owner = get_object_or_404(User, pk=box_researcher.researcher_id)
                 # find the sample
                 match = re.match(r"([a-z]+)([0-9]+)", sp_id, re.I)
                 if match:
                     pos = match.groups()
-                    sample = Sample.objects.all().filter(box_id=box.pk).filter(vposition__iexact=pos[0]).filter(
-                        hposition=pos[1]).filter(occupied__iexact=1).first()
-                    if sample is not None:
-
-                        if auth_user is not box_owner:
-                            # get sample1 owner
-                            sample_researcher = SampleResearcher.objects.all().filter(sample_id=sample.pk).first()
-                            sample_owner = get_object_or_404(User, pk=sample_researcher.researcher_id)
-                            if sample_owner is not None:
-                                obj = {'user': sample_owner, 'container': container}
-                                self.check_object_permissions(request, obj)  # check the permission
-
-                        sample.occupied = False
-                        sample.date_out = datetime.datetime.now()
-                        sample.save()
-                        return Response({'detail': 'sample is taken out!'},
-                                        status=status.HTTP_200_OK)
+                    if not settings.USE_CSAMPLE:
+                        sample = Sample.objects.all()\
+                            .filter(box_id=box.pk)\
+                            .filter(vposition__iexact=pos[0])\
+                            .filter(hposition=pos[1])\
+                            .filter(occupied__iexact=1)\
+                            .first()
+                        if sample is not None:
+                            if auth_user is not box_owner:
+                                # get sample1 owner
+                                sample_researcher = SampleResearcher.objects.all()\
+                                    .filter(sample_id=sample.pk).first()
+                                if sample_researcher is not None:
+                                    sample_owner = get_object_or_404(User, pk=sample_researcher.researcher_id)
+                                    if sample_owner is not None:
+                                        obj = {'user': sample_owner, 'container': container}
+                                        self.check_object_permissions(request, obj)  # check the permission
+                            sample.occupied = False
+                            sample.date_out = datetime.datetime.now()
+                            sample.save()
+                            return Response({'detail': 'sample is taken out!'},
+                                            status=status.HTTP_200_OK)
+                    else:
+                        sample = CSample.objects.all() \
+                            .filter(box_id=box.pk) \
+                            .filter(vposition__iexact=pos[0]) \
+                            .filter(hposition=pos[1]) \
+                            .filter(occupied__iexact=1) \
+                            .first()
+                        if sample is not None:
+                            if auth_user is not box_owner:
+                                # get sample1 owner
+                                sample_researcher = CSampleResearcher.objects.all() \
+                                    .filter(csample_id=sample.pk).first()
+                                if sample_researcher is not None:
+                                    sample_owner = get_object_or_404(User, pk=sample_researcher.researcher_id)
+                                    if sample_owner is not None:
+                                        obj = {'user': sample_owner, 'container': container}
+                                        self.check_object_permissions(request, obj)  # check the permission
+                            sample.occupied = False
+                            sample.date_out = datetime.datetime.now()
+                            sample.save()
+                            return Response({'detail': 'sample is taken out!'},
+                                            status=status.HTTP_200_OK)
                 return Response({'detail': 'sample does not exist!'},
                                 status=status.HTTP_400_BAD_REQUEST)
             return Response({'detail': 'Permission denied!'},
@@ -3628,34 +3654,75 @@ class SampleBack(APIView):
             box_owner = User()
             box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
             if box_researcher is not None:
-                group_researcher = get_object_or_404(GroupResearcher, pk=box_researcher.researcher_id)
-                box_owner = get_object_or_404(User, pk=group_researcher.user_id)
+                box_owner = get_object_or_404(User, pk=box_researcher.researcher_id)
                 # find the sample
                 match = re.match(r"([a-z]+)([0-9]+)", sp_id, re.I)
                 if match:
                     pos = match.groups()
-                    sample = Sample.objects.all().filter(box_id=box.pk).filter(vposition__iexact=pos[0]).filter(
-                        hposition=pos[1]).filter(occupied__iexact=0).first()
-                    occuped_sample = Sample.objects.all().filter(box_id=box.pk).filter(vposition__iexact=pos[0]).filter(
-                        hposition=pos[1]).filter(occupied__iexact=1).first()
-                    if occuped_sample is not None:
-                        return Response({'detail': 'slot has been occupied, failed to put sample back!'},
-                                        status=status.HTTP_400_BAD_REQUEST)
-                    if sample is not None:
-
-                        if auth_user is not box_owner:
-                            # get sample1 owner
-                            sample_researcher = SampleResearcher.objects.all().filter(sample_id=sample.pk).first()
-                            sample_owner = get_object_or_404(User, pk=sample_researcher.researcher_id)
-                            if sample_owner is not None:
-                                obj = {'user': sample_owner, 'container': container}
-                                self.check_object_permissions(request, obj)  # check the permission
-
-                        sample.occupied = True
-                        sample.date_out = None
-                        sample.save()
-                        return Response({'detail': 'sample is put back!'},
-                                        status=status.HTTP_200_OK)
+                    if not settings.USE_CSAMPLE:
+                        sample = Sample.objects.all()\
+                            .filter(box_id=box.pk)\
+                            .filter(vposition__iexact=pos[0])\
+                            .filter(hposition=pos[1])\
+                            .filter(occupied__iexact=0)\
+                            .first()
+                        occuped_sample = Sample.objects.all()\
+                            .filter(box_id=box.pk)\
+                            .filter(vposition__iexact=pos[0])\
+                            .filter(hposition=pos[1])\
+                            .filter(occupied__iexact=1)\
+                            .first()
+                        if occuped_sample is not None:
+                            return Response({'detail': 'slot has been occupied, failed to put sample back!'},
+                                            status=status.HTTP_400_BAD_REQUEST)
+                        if sample is not None:
+                            if auth_user is not box_owner:
+                                # get sample1 owner
+                                sample_researcher = SampleResearcher.objects.all()\
+                                    .filter(sample_id=sample.pk)\
+                                    .first()
+                                if sample_researcher is not None:
+                                    sample_owner = get_object_or_404(User, pk=sample_researcher.researcher_id)
+                                    if sample_owner is not None:
+                                        obj = {'user': sample_owner, 'container': container}
+                                        self.check_object_permissions(request, obj)  # check the permission
+                            sample.occupied = True
+                            sample.date_out = None
+                            sample.save()
+                            return Response({'detail': 'sample is put back!'},
+                                            status=status.HTTP_200_OK)
+                    else:
+                        sample = CSample.objects.all() \
+                            .filter(box_id=box.pk) \
+                            .filter(vposition__iexact=pos[0]) \
+                            .filter(hposition=pos[1]) \
+                            .filter(occupied__iexact=0) \
+                            .first()
+                        occuped_sample = CSample.objects.all() \
+                            .filter(box_id=box.pk) \
+                            .filter(vposition__iexact=pos[0]) \
+                            .filter(hposition=pos[1]) \
+                            .filter(occupied__iexact=1) \
+                            .first()
+                        if occuped_sample is not None:
+                            return Response({'detail': 'slot has been occupied, failed to put sample back!'},
+                                            status=status.HTTP_400_BAD_REQUEST)
+                        if sample is not None:
+                            if auth_user is not box_owner:
+                                # get sample1 owner
+                                sample_researcher = CSampleResearcher.objects.all() \
+                                    .filter(csample_id=sample.pk) \
+                                    .first()
+                                if sample_researcher is not None:
+                                    sample_owner = get_object_or_404(User, pk=sample_researcher.researcher_id)
+                                    if sample_owner is not None:
+                                        obj = {'user': sample_owner, 'container': container}
+                                        self.check_object_permissions(request, obj)  # check the permission
+                            sample.occupied = True
+                            sample.date_out = None
+                            sample.save()
+                            return Response({'detail': 'sample is put back!'},
+                                            status=status.HTTP_200_OK)
                 return Response({'detail': 'sample does not exist!'},
                                 status=status.HTTP_400_BAD_REQUEST)
             return Response({'detail': 'Permission denied!'},
@@ -3768,37 +3835,62 @@ class SampleColor(APIView):
             box_owner = User()
             box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
             if box_researcher is not None:
-                group_researcher = get_object_or_404(GroupResearcher, pk=box_researcher.researcher_id)
-                box_owner = get_object_or_404(User, pk=group_researcher.user_id)
+                box_owner = get_object_or_404(User, pk=box_researcher.researcher_id)
 
                 # find the sample
                 match = re.match(r"([a-z]+)([0-9]+)", sp_id, re.I)
                 if match:
                     pos = match.groups()
-                    sample = Sample.objects.all().filter(box_id=box.pk).filter(vposition__iexact=pos[0]).filter(
-                        hposition=pos[1]).first()
-                    if sample is not None:
-
-                        if auth_user is not box_owner:
-                            # get sample1 owner
-                            sample_researcher = SampleResearcher.objects.all().filter(sample_id=sample.pk).first()
-                            sample_owner = get_object_or_404(User, pk=sample_researcher.researcher_id)
-                            if sample_owner is not None:
-                                obj = {'user': sample_owner, 'container': container}
-                                self.check_object_permissions(request, obj)  # check the permission
-
-                        # validate serializer
-                        serializer = SampleColorSerializer(data=request.data)
-                        serializer.is_valid(raise_exception=True)
-                        data = serializer.data
-                        sample.color = data['color']
-                        sample.save()
-                        return Response({'detail': 'color is updated!'},
-                                        status=status.HTTP_200_OK)
+                    if not settings.USE_CSAMPLE:
+                        sample = Sample.objects.all() \
+                            .filter(box_id=box.pk).filter(vposition__iexact=pos[0]) \
+                            .filter(hposition=pos[1]) \
+                            .first()
+                        if sample is not None:
+                            if auth_user is not box_owner:
+                                # get sample1 owner
+                                sample_researcher = SampleResearcher.objects.all() \
+                                    .filter(sample_id=sample.pk).first()
+                                if sample_researcher is not None:
+                                    sample_owner = get_object_or_404(User, pk=sample_researcher.researcher_id)
+                                    if sample_owner is not None:
+                                        obj = {'user': sample_owner, 'container': container}
+                                        self.check_object_permissions(request, obj)  # check the permission
+                            # validate serializer
+                            serializer = SampleColorSerializer(data=request.data)
+                            serializer.is_valid(raise_exception=True)
+                            data = serializer.data
+                            sample.color = data['color']
+                            sample.save()
+                            return Response({'detail': 'color is updated!'},
+                                            status=status.HTTP_200_OK)
+                    else:
+                        sample = CSample.objects.all() \
+                            .filter(box_id=box.pk).filter(vposition__iexact=pos[0]) \
+                            .filter(hposition=pos[1]) \
+                            .first()
+                        if sample is not None:
+                            if auth_user is not box_owner:
+                                # get sample1 owner
+                                sample_researcher = CSampleResearcher.objects.all() \
+                                    .filter(csample_id=sample.pk).first()
+                                if sample_researcher is not None:
+                                    sample_owner = get_object_or_404(User, pk=sample_researcher.researcher_id)
+                                    if sample_owner is not None:
+                                        obj = {'user': sample_owner, 'container': container}
+                                        self.check_object_permissions(request, obj)  # check the permission
+                            # validate serializer
+                            serializer = SampleColorSerializer(data=request.data)
+                            serializer.is_valid(raise_exception=True)
+                            data = serializer.data
+                            sample.color = data['color']
+                            sample.save()
+                            return Response({'detail': 'color is updated!'},
+                                            status=status.HTTP_200_OK)
                 return Response({'detail': 'sample does not exist!'},
-                                status=status.HTTP_400_BAD_REQUEST)
+                                    status=status.HTTP_400_BAD_REQUEST)
             return Response({'detail': 'Permission denied!'},
-                            status=status.HTTP_400_BAD_REQUEST)
+                                status=status.HTTP_400_BAD_REQUEST)
         except:
             return Response({'detail': 'Something went wrong!'},
                             status=status.HTTP_400_BAD_REQUEST)
