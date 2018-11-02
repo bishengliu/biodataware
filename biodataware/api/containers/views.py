@@ -3949,30 +3949,60 @@ class DeleteAttachment(APIView):
     def put(self, request, sp_id, at_id):
         try:
             auth_user = request.user
-            sample = Sample.objects.all().filter(id=int(sp_id)).first()
-            if sample is None:
-                return Response({'detail': 'Sample not found!'},
-                                status=status.HTTP_400_BAD_REQUEST)
-
-            attachment = SampleAttachment.objects.all().filter(id=int(at_id)).first()
-            if attachment is None:
-                return Response({'detail': 'Attachment not found!'},
-                                status=status.HTTP_400_BAD_REQUEST)
-            if auth_user.is_superuser:
-                attachment.delete()
-                return Response({'detail': 'attachment deleted!'},
-                                status=status.HTTP_200_OK)
-            else:
-                # sample researchers
-                sample_researcher = SampleResearcher.objects.all().filter(sample_id=sample.pk).first()
-                if sample_researcher is not None:
-                    sample_user = get_object_or_404(User, pk=sample_researcher.researcher_id)
-                    self.check_object_permissions(request, {'user': sample_user})  # check the permission
+            if not settings.USE_CSAMPLE:
+                sample = Sample.objects.all()\
+                    .filter(id=int(sp_id)).first()
+                if sample is None:
+                    return Response({'detail': 'Sample not found!'},
+                                    status=status.HTTP_400_BAD_REQUEST)
+                attachment = SampleAttachment.objects.all()\
+                    .filter(id=int(at_id)).first()
+                if attachment is None:
+                    return Response({'detail': 'Attachment not found!'},
+                                    status=status.HTTP_400_BAD_REQUEST)
+                if auth_user.is_superuser:
                     attachment.delete()
                     return Response({'detail': 'attachment deleted!'},
                                     status=status.HTTP_200_OK)
-                return Response({'detail': 'Permission denied!'},
-                                status=status.HTTP_400_BAD_REQUEST)
+                else:
+                    # sample researchers
+                    sample_researcher = SampleResearcher.objects.all()\
+                        .filter(sample_id=sample.pk).first()
+                    if sample_researcher is not None:
+                        sample_user = get_object_or_404(User, pk=sample_researcher.researcher_id)
+                        self.check_object_permissions(request, {'user': sample_user})  # check the permission
+                        attachment.delete()
+                        return Response({'detail': 'attachment deleted!'},
+                                        status=status.HTTP_200_OK)
+                    return Response({'detail': 'Permission denied!'},
+                                    status=status.HTTP_400_BAD_REQUEST)
+            else:
+                sample = CSample.objects.all() \
+                    .filter(id=int(sp_id)).first()
+                if sample is None:
+                    return Response({'detail': 'Sample not found!'},
+                                    status=status.HTTP_400_BAD_REQUEST)
+                attachment = CSampleAttachment.objects.all() \
+                    .filter(id=int(at_id)).first()
+                if attachment is None:
+                    return Response({'detail': 'Attachment not found!'},
+                                    status=status.HTTP_400_BAD_REQUEST)
+                if auth_user.is_superuser:
+                    attachment.delete()
+                    return Response({'detail': 'attachment deleted!'},
+                                    status=status.HTTP_200_OK)
+                else:
+                    # sample researchers
+                    sample_researcher = CSampleResearcher.objects.all() \
+                        .filter(csample_id=sample.pk).first()
+                    if sample_researcher is not None:
+                        sample_user = get_object_or_404(User, pk=sample_researcher.researcher_id)
+                        self.check_object_permissions(request, {'user': sample_user})  # check the permission
+                        attachment.delete()
+                        return Response({'detail': 'attachment deleted!'},
+                                        status=status.HTTP_200_OK)
+                    return Response({'detail': 'Permission denied!'},
+                                    status=status.HTTP_400_BAD_REQUEST)
         except:
             return Response({'detail': 'Something went wrong!'},
                             status=status.HTTP_400_BAD_REQUEST)
@@ -3985,51 +4015,98 @@ class UploadAttachment(APIView):
 
     def post(self, request, sp_id):
         has_attachment = False
-        sample_attachment = SampleAttachment()
-        try:
-            auth_user = request.user
-            user = request.user
-            # parse data
-            form_data = dict(request.data)
-            # check upload photo
-            if 'file' in form_data.keys():
-                has_attachment = True
-            # form model data
-            model = form_data['obj'][0]
-            # load into dict
-            obj = json.loads(model)
-            serializer = UploadAttacgmentSerializer(data=obj)
-            serializer.is_valid(raise_exception=True)
-            data = serializer.data
-
-            sample_attachment.label = data.get("label", "")
-            sample_attachment.description = data.get("description", "")
-            sample = get_object_or_404(Sample, pk=sp_id)
-            if sample is not None:
-                sample_attachment.sample = sample
-                # save attachment
-                sample_attachment.attachment = form_data['file'][0]
-                # check permission
-                if user.is_superuser:
-                    sample_attachment.save()
-                else:
-                    # sample researchers
-                    sample_researcher = SampleResearcher.objects.all().filter(sample_id=sample.pk).first()
-                    if sample_researcher is not None:
-                        sample_user = get_object_or_404(User, pk=sample_researcher.researcher_id)
-                        self.check_object_permissions(request, {'user': sample_user})  # check the permission
-                    sample_attachment.save()
-                # return the new attachment
-                # SampleAttachmentSerializer
-                serializer = SampleAttachmentSerializer(sample_attachment)
-                return Response(serializer.data)
-            return Response({'detail': 'sample not found!'},
-                            status=status.HTTP_400_BAD_REQUEST)
-        except:
-            if has_attachment and sample_attachment.attachment is not None:
-                sample_attachment.attachment.delete()
-            return Response({'detail': 'Something went wrong, sample attachment not uploaded!'},
-                            status=status.HTTP_400_BAD_REQUEST)
+        if not settings.USE_CSAMPLE:
+            sample_attachment = SampleAttachment()
+            try:
+                auth_user = request.user
+                user = request.user
+                # parse data
+                form_data = dict(request.data)
+                # check upload photo
+                if 'file' in form_data.keys():
+                    has_attachment = True
+                # form model data
+                model = form_data['obj'][0]
+                # load into dict
+                obj = json.loads(model)
+                serializer = UploadAttachmentSerializer(data=obj)
+                serializer.is_valid(raise_exception=True)
+                data = serializer.data
+                sample_attachment.label = data.get("label", "")
+                sample_attachment.description = data.get("description", "")
+                sample = get_object_or_404(Sample, pk=sp_id)
+                if sample is not None:
+                    sample_attachment.sample = sample
+                    # save attachment
+                    sample_attachment.attachment = form_data['file'][0]
+                    # check permission
+                    if user.is_superuser:
+                        sample_attachment.save()
+                    else:
+                        # sample researchers
+                        sample_researcher = SampleResearcher.objects.all()\
+                            .filter(sample_id=sample.pk).first()
+                        if sample_researcher is not None:
+                            sample_user = get_object_or_404(User, pk=sample_researcher.researcher_id)
+                            self.check_object_permissions(request, {'user': sample_user})  # check the permission
+                        sample_attachment.save()
+                    # return the new attachment
+                    # SampleAttachmentSerializer
+                    serializer = SampleAttachmentSerializer(sample_attachment)
+                    return Response(serializer.data)
+                return Response({'detail': 'sample not found!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+            except:
+                if has_attachment and sample_attachment.attachment is not None:
+                    sample_attachment.attachment.delete()
+                return Response({'detail': 'Something went wrong, sample attachment not uploaded!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+        else:
+            sample_attachment = CSampleAttachment()
+            try:
+                auth_user = request.user
+                user = request.user
+                # parse data
+                form_data = dict(request.data)
+                # check upload photo
+                if 'file' in form_data.keys():
+                    has_attachment = True
+                # form model data
+                model = form_data['obj'][0]
+                # load into dict
+                obj = json.loads(model)
+                serializer = UploadAttachmentSerializer(data=obj)
+                serializer.is_valid(raise_exception=True)
+                data = serializer.data
+                sample_attachment.label = data.get("label", "")
+                sample_attachment.description = data.get("description", "")
+                sample = get_object_or_404(CSample, pk=sp_id)
+                if sample is not None:
+                    sample_attachment.csample = sample
+                    # save attachment
+                    sample_attachment.attachment = form_data['file'][0]
+                    # check permission
+                    if user.is_superuser:
+                        sample_attachment.save()
+                    else:
+                        # sample researchers
+                        sample_researcher = CSampleResearcher.objects.all() \
+                            .filter(csample_id=sample.pk).first()
+                        if sample_researcher is not None:
+                            sample_user = get_object_or_404(User, pk=sample_researcher.researcher_id)
+                            self.check_object_permissions(request, {'user': sample_user})  # check the permission
+                        sample_attachment.save()
+                    # return the new attachment
+                    # SampleAttachmentSerializer
+                    serializer = CSampleAttachmentSerializer(sample_attachment)
+                    return Response(serializer.data)
+                return Response({'detail': 'sample not found!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+            except:
+                if has_attachment and sample_attachment.attachment is not None:
+                    sample_attachment.attachment.delete()
+                return Response({'detail': 'Something went wrong, sample attachment not uploaded!'},
+                                status=status.HTTP_400_BAD_REQUEST)
 
 
 # search samples

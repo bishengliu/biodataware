@@ -34,7 +34,7 @@ class CSampleAttachmentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CSampleAttachment
-        fields = ('pk', 'label', 'attachment', 'description', 'sample_id')
+        fields = ('pk', 'label', 'attachment', 'description', 'csample_id')
 
 
 class CSampleSerializer(serializers.ModelSerializer):
