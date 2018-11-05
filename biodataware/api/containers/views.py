@@ -4384,7 +4384,8 @@ class PreSearchSamples(APIView):
                 container = data.get('container', -1)
                 stype = data.get('type', '')
                 occupied = data.get('occupied', 0)
-                excluded_keys = ['container', 'type', 'occupied', 'name', 'freezing_date_from', 'freezing_date_to', 'attachment']
+                excluded_keys = ['container', 'type', 'occupied', 'name', 'freezing_date_from', 'freezing_date_to',
+                                 'attachment']
                 kwargs = {}
                 if container != -1:
                     kwargs["csample__box__container_id__exact"] = container
@@ -4429,8 +4430,8 @@ class PreSearchSamples(APIView):
                     if key not in excluded_keys:
                         value = data.get(key, "")
                         if value is not None:
-                            kwargs["ctype_attr__attr_name_iexact"] = key
-                            kwargs["attr_value__icontains"] = value
+                            kwargs["ctype_attr__attr_name__icontains"] = key
+                            kwargs["ctype_attr_value_part1__icontains"] = value
                 # search csample data
                 csample_data = CSampleData.objects.filter(**kwargs)
                 count = 0

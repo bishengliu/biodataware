@@ -2,10 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="e07c48b7-1c00-4eca-bd6a-d182d44a745f" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/biodataware/config/db.sqlite3" afterPath="$PROJECT_DIR$/biodataware/config/db.sqlite3" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/biodataware/api/containers/views.py" afterPath="$PROJECT_DIR$/biodataware/api/containers/views.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/biodataware/csamples/models.py" afterPath="$PROJECT_DIR$/biodataware/csamples/models.py" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -61,8 +58,8 @@
       <file leaf-file-name="models.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/biodataware/csamples/models.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="370">
-              <caret line="39" column="8" lean-forward="false" selection-start-line="39" selection-start-column="4" selection-end-line="39" selection-end-column="8" />
+            <state relative-caret-position="683">
+              <caret line="130" column="26" lean-forward="false" selection-start-line="130" selection-start-column="4" selection-end-line="130" selection-end-column="26" />
               <folding>
                 <element signature="e#1995#2355#0" expanded="false" />
                 <element signature="e#6714#7321#0" expanded="false" />
@@ -75,8 +72,8 @@
       <file leaf-file-name="views.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/biodataware/api/containers/views.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="264">
-              <caret line="4383" column="0" lean-forward="false" selection-start-line="4383" selection-start-column="0" selection-end-line="4383" selection-end-column="0" />
+            <state relative-caret-position="631">
+              <caret line="4438" column="10" lean-forward="false" selection-start-line="4438" selection-start-column="10" selection-end-line="4438" selection-end-column="10" />
               <folding>
                 <element signature="e#658#704#0" expanded="false" />
                 <element signature="e#832#5245#0" expanded="false" />
@@ -842,16 +839,9 @@
                 <element signature="e#216622#216803#0" expanded="false" />
                 <element signature="e#216659#216730#0" expanded="false" />
                 <element signature="e#220494#220635#0" expanded="false" />
+                <element signature="e#220846#226186#0" expanded="false" />
                 <element signature="e#221622#222030#0" expanded="false" />
                 <element signature="e#222130#222205#0" expanded="false" />
-                <element signature="e#226897#227269#0" expanded="false" />
-                <element signature="e#227115#227269#0" expanded="false" />
-                <element signature="e#227329#227558#0" expanded="false" />
-                <element signature="e#227370#227461#0" expanded="false" />
-                <element signature="e#228585#228608#0" expanded="false" />
-                <element signature="e#228751#229033#0" expanded="false" />
-                <element signature="e#228804#229033#0" expanded="false" />
-                <element signature="e#228904#229016#0" expanded="false" />
               </folding>
             </state>
           </provider>
@@ -994,8 +984,8 @@
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="866" />
-    <option name="y" value="66" />
+    <option name="x" value="91" />
+    <option name="y" value="33" />
     <option name="width" value="2389" />
     <option name="height" value="1370" />
   </component>
@@ -1346,7 +1336,7 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="866" y="66" width="2389" height="1370" extended-state="0" />
+    <frame x="91" y="33" width="2389" height="1370" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.18185708" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
@@ -1356,8 +1346,8 @@
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32961783" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32961783" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.24989302" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.21422797" sideWeight="0.46975806" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.3528481" sideWeight="0.4798387" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.2136076" sideWeight="0.46975806" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32594937" sideWeight="0.4798387" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Data View" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
@@ -1399,7 +1389,7 @@
           </properties>
         </breakpoint>
       </default-breakpoints>
-      <option name="time" value="375" />
+      <option name="time" value="386" />
     </breakpoint-manager>
     <watches-manager>
       <configuration name="PythonConfigurationType">
@@ -1709,8 +1699,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/biodataware/csamples/models.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="370">
-          <caret line="39" column="8" lean-forward="false" selection-start-line="39" selection-start-column="4" selection-end-line="39" selection-end-column="8" />
+        <state relative-caret-position="683">
+          <caret line="130" column="26" lean-forward="false" selection-start-line="130" selection-start-column="4" selection-end-line="130" selection-end-column="26" />
           <folding>
             <element signature="e#1995#2355#0" expanded="false" />
             <element signature="e#6714#7321#0" expanded="false" />
@@ -1721,8 +1711,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/biodataware/api/containers/views.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="264">
-          <caret line="4383" column="0" lean-forward="false" selection-start-line="4383" selection-start-column="0" selection-end-line="4383" selection-end-column="0" />
+        <state relative-caret-position="631">
+          <caret line="4438" column="10" lean-forward="false" selection-start-line="4438" selection-start-column="10" selection-end-line="4438" selection-end-column="10" />
           <folding>
             <element signature="e#658#704#0" expanded="false" />
             <element signature="e#832#5245#0" expanded="false" />
@@ -2488,16 +2478,9 @@
             <element signature="e#216622#216803#0" expanded="false" />
             <element signature="e#216659#216730#0" expanded="false" />
             <element signature="e#220494#220635#0" expanded="false" />
+            <element signature="e#220846#226186#0" expanded="false" />
             <element signature="e#221622#222030#0" expanded="false" />
             <element signature="e#222130#222205#0" expanded="false" />
-            <element signature="e#226897#227269#0" expanded="false" />
-            <element signature="e#227115#227269#0" expanded="false" />
-            <element signature="e#227329#227558#0" expanded="false" />
-            <element signature="e#227370#227461#0" expanded="false" />
-            <element signature="e#228585#228608#0" expanded="false" />
-            <element signature="e#228751#229033#0" expanded="false" />
-            <element signature="e#228804#229033#0" expanded="false" />
-            <element signature="e#228904#229016#0" expanded="false" />
           </folding>
         </state>
       </provider>
