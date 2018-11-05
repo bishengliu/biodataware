@@ -4250,131 +4250,195 @@ class PreSearchSamples(APIView):
 
     def post(self, request):
         try:
-            user = request.user
-            serializer = SearchSampleSerializer(data=request.data, partial=True)
-            serializer.is_valid(raise_exception=True)
-            data = serializer.data
-            # generate kwargs
+            if not settings.USE_CSAMPLE:
+                user = request.user
+                serializer = SearchSampleSerializer(data=request.data, partial=True)
+                serializer.is_valid(raise_exception=True)
+                data = serializer.data
+                # generate kwargs
 
-            # container
-            container = data.get('container', -1)
-            stype = data.get('type', '')
-            occupied = data.get('occupied', 0)
+                # container
+                container = data.get('container', -1)
+                stype = data.get('type', '')
+                occupied = data.get('occupied', 0)
 
-            kwargs = {}
+                kwargs = {}
 
-            if container != -1:
-                kwargs["box__container_id__exact"] = container
-            else:
-                # if user is the admin
-                if user.is_superuser:
+                if container != -1:
                     kwargs["box__container_id__exact"] = container
                 else:
-                    # only search container in my group
-                    groupresearchers = GroupResearcher.objects.all().filter(user_id=user.pk)
-                    group_ids = [g.group_id for g in groupresearchers]
-                    # containers = Container.objects.all().filter(groupcontainer__group_id__in=group_ids)
-                    kwargs["box__container__groupcontainer__group_id__in"] = group_ids
-            if stype is not None:
-                if "|" in stype:
-                    types = stype.split("|")
-                    kwargs["type__in"] = types
+                    # if user is the admin
+                    if user.is_superuser:
+                        kwargs["box__container_id__exact"] = container
+                    else:
+                        # only search container in my group
+                        groupresearchers = GroupResearcher.objects.all().filter(user_id=user.pk)
+                        group_ids = [g.group_id for g in groupresearchers]
+                        # containers = Container.objects.all().filter(groupcontainer__group_id__in=group_ids)
+                        kwargs["box__container__groupcontainer__group_id__in"] = group_ids
+                if stype is not None:
+                    if "|" in stype:
+                        types = stype.split("|")
+                        kwargs["type__in"] = types
+                    else:
+                        kwargs["type__iexact"] = stype
+                if occupied == 0:
+                    kwargs["occupied__iexact"] = 1
+                if occupied == 1:
+                    kwargs["occupied__iexact"] = 0
+                name = data.get('name', "")
+                if name is not None:
+                    kwargs["name__icontains"] = name
+
+                label = data.get('label', '')
+                if label is not None:
+                    kwargs["label__icontains"] = label
+
+                tag = data.get('tag', '')
+                if tag is not None:
+                    kwargs["tag__icontains"] = tag
+
+                description = data.get('description', '')
+                if description is not None:
+                    kwargs["description__icontains"] = description
+
+                attachment = data.get('attachment', '')
+                if attachment is not None:
+                    kwargs["sampleattachment__attachment__icontains"] = attachment
+
+                freezing_date_from = data.get('freezing_date_from', "")
+                if freezing_date_from is not None:
+                    kwargs["freezing_date__gte"] = freezing_date_from
+
+                freezing_date_to = data.get('freezing_date_to', "")
+                if freezing_date_to is not None:
+                    kwargs["freezing_date__lte"] = freezing_date_to
+
+                registration_code = data.get('registration_code', "")
+                if registration_code is not None:
+                    kwargs["registration_code__icontains"] = registration_code
+
+                freezing_code = data.get('freezing_code', "")
+                if freezing_code is not None:
+                    kwargs["freezing_code__icontains"] = freezing_code
+
+                reference_code = data.get('reference_code', "")
+                if reference_code is not None:
+                    kwargs["reference_code__icontains"] = reference_code
+
+                # tissue
+                pathology_code = data.get('pathology_code', "")
+                if pathology_code is not None:
+                    kwargs["pathology_code__icontains"] = pathology_code
+
+                tissue = data.get('tissue', "")
+                if tissue is not None:
+                    kwargs["tissue__icontains"] = tissue
+
+                # (gRNA) Oligo only
+                oligo_name = data.get('oligo_name', "")
+                if oligo_name is not None:
+                    kwargs["oligo_name__icontains"] = oligo_name
+
+                oligo_length_from = data.get('oligo_length_from', "")
+                if oligo_length_from is not None:
+                    kwargs["oligo_length__gte"] = oligo_length_from
+
+                oligo_length_to = data.get('oligo_length_to', "")
+                if oligo_length_to is not None:
+                    kwargs["oligo_length__lte"] = oligo_length_to
+
+                # construct only
+                feature = data.get('feature', "")
+                if feature is not None:
+                    kwargs["feature__icontains"] = feature
+
+                backbone = data.get('backbone', "")
+                if backbone is not None:
+                    kwargs["backbone__icontains"] = backbone
+
+                insert = data.get('insert', "")
+                if insert is not None:
+                    kwargs["insert__icontains"] = insert
+
+                marker = data.get('marker', "")
+                if marker is not None:
+                    kwargs["marker__icontains"] = marker
+
+                # virus
+                plasmid = data.get('plasmid', "")
+                if plasmid is not None:
+                    kwargs["plasmid__icontains"] = plasmid
+
+                titration_code = data.get('titration_code', "")
+                if titration_code is not None:
+                    kwargs["titration_code__icontains"] = titration_code
+                count = Sample.objects.filter(**kwargs).count()
+
+                return Response({'count': count})
+            else:
+                user = request.user
+                data = request.data
+                # search csampledata
+                # container
+                container = data.get('container', -1)
+                stype = data.get('type', '')
+                occupied = data.get('occupied', 0)
+                excluded_keys = ['container', 'type', 'occupied', 'name', 'freezing_date_from', 'freezing_date_to', 'attachment']
+                kwargs = {}
+                if container != -1:
+                    kwargs["csample__box__container_id__exact"] = container
                 else:
-                    kwargs["type__iexact"] = stype
-            if occupied == 0:
-                kwargs["occupied__iexact"] = 1
-            if occupied == 1:
-                kwargs["occupied__iexact"] = 0
-            name = data.get('name', "")
-            if name is not None:
-                kwargs["name__icontains"] = name
+                    # if user is the admin
+                    if not user.is_superuser:
+                        # only search container in my group
+                        groupresearchers = GroupResearcher.objects.all().filter(user_id=user.pk)
+                        if groupresearchers is not None:
+                            group_ids = [g.group_id for g in groupresearchers]
+                            kwargs["csample__box__container__groupcontainer__group_id__in"] = group_ids
 
-            label = data.get('label', '')
-            if label is not None:
-                kwargs["label__icontains"] = label
+                if stype is not None:
+                    if "|" in stype:
+                        types = stype.split("|")
+                        kwargs["csample__ctype__type__in"] = types
+                    else:
+                        kwargs["csample__ctype__type__iexact"] = stype
 
-            tag = data.get('tag', '')
-            if tag is not None:
-                kwargs["tag__icontains"] = tag
-
-            description = data.get('description', '')
-            if description is not None:
-                kwargs["description__icontains"] = description
-
-            attachment = data.get('attachment', '')
-            if attachment is not None:
-                kwargs["sampleattachment__attachment__icontains"] = attachment
-
-            freezing_date_from = data.get('freezing_date_from', "")
-            if freezing_date_from is not None:
-                kwargs["freezing_date__gte"] = freezing_date_from
-
-            freezing_date_to = data.get('freezing_date_to', "")
-            if freezing_date_to is not None:
-                kwargs["freezing_date__lte"] = freezing_date_to
-
-            registration_code = data.get('registration_code', "")
-            if registration_code is not None:
-                kwargs["registration_code__icontains"] = registration_code
-
-            freezing_code = data.get('freezing_code', "")
-            if freezing_code is not None:
-                kwargs["freezing_code__icontains"] = freezing_code
-
-            reference_code = data.get('reference_code', "")
-            if reference_code is not None:
-                kwargs["reference_code__icontains"] = reference_code
-
-            # tissue
-            pathology_code = data.get('pathology_code', "")
-            if pathology_code is not None:
-                kwargs["pathology_code__icontains"] = pathology_code
-
-            tissue = data.get('tissue', "")
-            if tissue is not None:
-                kwargs["tissue__icontains"] = tissue
-
-            # (gRNA) Oligo only
-            oligo_name = data.get('oligo_name', "")
-            if oligo_name is not None:
-                kwargs["oligo_name__icontains"] = oligo_name
-
-            oligo_length_from = data.get('oligo_length_from', "")
-            if oligo_length_from is not None:
-                kwargs["oligo_length__gte"] = oligo_length_from
-
-            oligo_length_to = data.get('oligo_length_to', "")
-            if oligo_length_to is not None:
-                kwargs["oligo_length__lte"] = oligo_length_to
-
-            # construct only
-            feature = data.get('feature', "")
-            if feature is not None:
-                kwargs["feature__icontains"] = feature
-
-            backbone = data.get('backbone', "")
-            if backbone is not None:
-                kwargs["backbone__icontains"] = backbone
-
-            insert = data.get('insert', "")
-            if insert is not None:
-                kwargs["insert__icontains"] = insert
-
-            marker = data.get('marker', "")
-            if marker is not None:
-                kwargs["marker__icontains"] = marker
-
-            # virus
-            plasmid = data.get('plasmid', "")
-            if plasmid is not None:
-                kwargs["plasmid__icontains"] = plasmid
-
-            titration_code = data.get('titration_code', "")
-            if titration_code is not None:
-                kwargs["titration_code__icontains"] = titration_code
-            samples = Sample.objects.filter(**kwargs).count()
-
-            return Response({'count': samples})
+                if occupied == 0:
+                    kwargs["csample__occupied__iexact"] = 1
+                if occupied == 1:
+                    kwargs["csample__occupied__iexact"] = 0
+                name = data.get('name', "")
+                if name is not None:
+                    kwargs["csample__name__icontains"] = name
+                attachment = data.get('attachment', '')
+                if attachment is not None:
+                    kwargs["csample__csampleattachment__attachment__icontains"] = attachment
+                # need to make sure data type
+                freezing_date_from = data.get('freezing_date_from', "")
+                if freezing_date_from is not None:
+                    kwargs["csample__storage_date__gte"] = freezing_date_from
+                # need to make sure data type
+                freezing_date_to = data.get('freezing_date_to', "")
+                if freezing_date_to is not None:
+                    kwargs["csample__storage_date__lte"] = freezing_date_to
+                # get all the data keys
+                # all this keys are ctype extra attrs
+                keys = data.keys()
+                for key in keys:
+                    if key not in excluded_keys:
+                        value = data.get(key, "")
+                        if value is not None:
+                            kwargs["ctype_attr__attr_name_iexact"] = key
+                            kwargs["attr_value__icontains"] = value
+                # search csample data
+                csample_data = CSampleData.objects.filter(**kwargs)
+                count = 0
+                if csample_data is not None:
+                    sample_pks = list(set([d.csample_id for d in csample_data]))
+                    csample = CSample.objects.all().filter(id__in=sample_pks)
+                    count = csample.count()
+                return Response({'count': count})
         except:
             return Response({'detail': 'Something went wrong, presearch is not performed!'},
                             status=status.HTTP_400_BAD_REQUEST)

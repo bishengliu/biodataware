@@ -131,6 +131,9 @@ class CSampleData(models.Model):
     ctype_attr_value_part1 = models.TextField(null=True, blank=True)
     ctype_attr_value_part2 = models.TextField(null=True, blank=True)
 
+    def attr_value(self):
+        return self.ctype_attr_value_part1 + self.ctype_attr_value_part2;
+
     def __str__(self):
         return self.csample.name + ': ' + self.ctype_attr.attr_label + '/' \
                + self.ctype_attr_value_part1 + self.ctype_attr_value_part2
@@ -207,3 +210,7 @@ class CSampleResearcher(models.Model):
 
     def __str__(self):
         return self.researcher.username
+
+
+# csample data view
+
