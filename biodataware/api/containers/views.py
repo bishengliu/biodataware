@@ -1369,9 +1369,6 @@ class Box(APIView):
                 return Response({'slots': ','.join(saved_slots)},
                                 status=status.HTTP_200_OK)
             else:
-                if not sample_obj['storage_date']:
-                    sample_obj['storage_date'] = today
-                # loop slots
                 # for return the pk of stored ids
                 saved_slots = []
                 for slot in slots:
@@ -1387,31 +1384,59 @@ class Box(APIView):
                                 .filter(occupied=True)\
                                 .first()
                             if csample is None:
+                                # csample data
+                                csample_obj = sample_obj['csample']
                                 # get the ctype
-                                ctype_pk = sample_obj.get['ctype', -1]
+                                ctype_pk = csample_obj.get('ctype_pk', -1)
                                 ctype = get_object_or_404(CType, pk=int(ctype_pk))
                                 if ctype is not None:
-                                    pass
-                                    # csample = CSample.objects.create()
-                                    #
-                                    # # save the researcher
-                                    # SampleResearcher.objects.create(
-                                    #     sample_id=csample.pk,
-                                    #     researcher_id=user.pk
-                                    # )
-                                    #
-                                    # # save sample attachments
-                                    # if has_attachment:
-                                    #     csampleAttachment.sample_id = csample.pk
-                                    #     csampleAttachment.attachment = form_data['file'][0]
-                                    #     cattachment_name = attachment_data.get('attachment_name')
-                                    #     csampleAttachment.label = attachment_data.get('label', cattachment_name)
-                                    #     csampleAttachment.description = attachment_data.get('description', cattachment_name)
-                                    #     csampleAttachment.save()
-                                    # # append stored slots
-                                    # saved_slots.append(slot)
+                                    csample = CSample.objects.create(
+                                        box_id=box.pk,
+                                        hposition=pos[1],
+                                        vposition=pos[0],
+                                        color=csample_obj.get('color', '#EEEEEE'),
+                                        ctype_id=ctype_pk,
+                                        name=csample_obj.get('name'),
+                                        occupied=True,
+                                        date_in=datetime.datetime.now(),
+                                        storage_date=csample_obj.get('storage_date', today),
+                                    )
+                                    # csample data
+                                    data_obj = sample_obj['csampledata']
+                                    for data in data_obj:
+                                        CSampleData.objects.create(
+                                            csample_id=csample.pk,
+                                            ctype_attr_id=int(data['ctype_attr_id']),
+                                            ctype_attr_value_id=int(data['ctype_attr_value_id']),
+                                            ctype_attr_value_part1=data['ctype_attr_value_part1']
+                                        )
+                                    # csample_subdata
+                                    subdata_obj = sample_obj['csamplesubdata']
+                                    for subdata in subdata_obj:
+                                        CSampleSubData.objects.create(
+                                            csample_id=csample.pk,
+                                            ctype_sub_attr_id=int(subdata['ctype_sub_attr_id']),
+                                            ctype_sub_attr_value_id=int(subdata['ctype_sub_attr_value_id']),
+                                            ctype_sub_attr_value_part1=subdata['ctype_sub_attr_value_part1']
+                                        )
+                                    # save the researcher
+                                    CSampleResearcher.objects.create(
+                                        csample_id=csample.pk,
+                                        researcher_id=user.pk
+                                    )
+                                    # save sample attachments
+                                    if has_attachment:
+                                        csampleAttachment.csample_id = csample.pk
+                                        csampleAttachment.attachment = form_data['file'][0]
+                                        cattachment_name = attachment_data.get('attachment_name')
+                                        csampleAttachment.label = attachment_data.get('label', cattachment_name)
+                                        csampleAttachment.description = attachment_data.get('description', cattachment_name)
+                                        csampleAttachment.save()
+                                    # append stored slots
+                                    saved_slots.append(slot)
                     except:
-                        pass
+                        return Response({'detail': 'Something went wrong!'},
+                                        status=status.HTTP_400_BAD_REQUEST)
                 return Response({'slots': ','.join(saved_slots)},
                                 status=status.HTTP_200_OK)
         except:
