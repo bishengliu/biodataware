@@ -128,11 +128,12 @@ class CTypeSubAttr(models.Model):
 class CSampleData(models.Model):
     csample = models.ForeignKey(CSample, on_delete=models.CASCADE)
     ctype_attr = models.ForeignKey(CTypeAttr, on_delete=models.CASCADE)
+    ctype_attr_value_id = models.IntegerField(null=True, blank=True, default=0)
     ctype_attr_value_part1 = models.TextField(null=True, blank=True)
     ctype_attr_value_part2 = models.TextField(null=True, blank=True)
 
     def attr_value(self):
-        return self.ctype_attr_value_part1 + self.ctype_attr_value_part2;
+        return self.ctype_attr_value_part1 + self.ctype_attr_value_part2
 
     def __str__(self):
         return self.csample.name + ': ' + self.ctype_attr.attr_label + '/' \
@@ -143,6 +144,7 @@ class CSampleData(models.Model):
 class CSampleSubData(models.Model):
     csample = models.ForeignKey(CSample, on_delete=models.CASCADE)
     ctype_sub_attr = models.ForeignKey(CTypeSubAttr, on_delete=models.CASCADE)
+    ctype_sub_attr_value_id = models.IntegerField(null=True, blank=True, default=0)
     ctype_sub_attr_value_part1 = models.TextField(null=True, blank=True)
     ctype_sub_attr_value_part2 = models.TextField(null=True, blank=True)
 

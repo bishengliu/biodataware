@@ -18,7 +18,7 @@ class CSampleDataSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CSampleData
-        fields = ('pk', 'csample_id', 'ctype_attr_id', 'ctype_attr', 'ctype_attr_value_part1', 'ctype_attr_value_part2')
+        fields = ('pk', 'csample_id', 'ctype_attr_id', 'ctype_attr', 'ctype_attr_value_id', 'ctype_attr_value_part1', 'ctype_attr_value_part2')
 
 
 class CSampleSubDataSerializer(serializers.ModelSerializer):
@@ -26,7 +26,7 @@ class CSampleSubDataSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CSampleSubData
-        fields = ('pk', 'csample_id', 'ctype_sub_attr_id', 'ctype_sub_attr', 'ctype_sub_attr_value_part1', 'ctype_sub_attr_value_part2')
+        fields = ('pk', 'csample_id', 'ctype_sub_attr_id', 'ctype_sub_attr', 'ctype_sub_attr_value_id', 'ctype_sub_attr_value_part1', 'ctype_sub_attr_value_part2')
 
 
 class CSampleAttachmentSerializer(serializers.ModelSerializer):

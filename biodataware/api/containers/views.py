@@ -1199,7 +1199,10 @@ class Box(APIView):
                 if not authUser.is_superuser:
                     self.check_object_permissions(request, obj)  # check the permission
                 # check samples
-                if box.sample_set.count() > 0:
+                if not settings.USE_CSAMPLE and box.sample_set.count() > 0:
+                    return Response({'detail': 'Cannot delete this box, there are samples in the box!'},
+                                    status=status.HTTP_400_BAD_REQUEST)
+                if settings.USE_CSAMPLE and box.csample_set.count() > 0:
                     return Response({'detail': 'Cannot delete this box, there are samples in the box!'},
                                     status=status.HTTP_400_BAD_REQUEST)
                 box.delete()
@@ -1233,14 +1236,7 @@ class Box(APIView):
                 attachment_data = attachment_serializer.data
             # form model data and load into dict
             sample_obj = json.loads(form_data['obj'][0])
-            # today
-            today = datetime.date.today()
-            if not sample_obj['freezing_date']:
-                sample_obj['freezing_date'] = today
-            serializer = SampleCreateSerializer(data=sample_obj, partial=True)
-            serializer.is_valid(raise_exception=True)
-            data = serializer.data
-
+            # check box
             id_list = id.split("-")
             tw_id = int(id_list[0])
             sf_id = int(id_list[1])
@@ -1270,96 +1266,154 @@ class Box(APIView):
                 if box_researcher is not None:
                     box_user = get_object_or_404(User, pk=box_researcher.researcher_id)
                     self.check_object_permissions(request, {'user': box_user, 'container': container})
+            # today
+            today = datetime.date.today()
+            # not use USE_CSAMPLE
+            if not settings.USE_CSAMPLE:
+                if not sample_obj['freezing_date']:
+                    sample_obj['freezing_date'] = today
+                serializer = SampleCreateSerializer(data=sample_obj, partial=True)
+                serializer.is_valid(raise_exception=True)
+                data = serializer.data
+                # loop slots
+                # for return the pk of stored ids
+                saved_slots = []
+                for slot in slots:
+                    sampleAttachment = SampleAttachment()
+                    try:
+                        match = re.match(r"([a-z]+)([0-9]+)", slot, re.I)
+                        if match:
+                            pos = match.groups()
+                            sample = Sample.objects.all()\
+                                .filter(box_id=box.pk)\
+                                .filter(vposition__iexact=pos[0])\
+                                .filter(hposition=pos[1])\
+                                .filter(occupied=True)\
+                                .first()
+                            if sample is None:
+                                sample = Sample.objects.create(
+                                    box_id=box.pk,
+                                    hposition=pos[1],
+                                    vposition=pos[0],
+                                    color=data.get('color', '#EEEEEE'),
+                                    type=data.get('type', 'GENERAL'),
+                                    name=data.get('name'),
+                                    official_name=data.get('official_name', ''),
+                                    label=data.get('label', ''),
+                                    tag=data.get('tag', ''),
+                                    occupied=True,
+                                    date_in=datetime.datetime.now(),
+                                    freezing_date=data.get('freezing_date', datetime.datetime.now()),
+                                    registration_code=data.get('registration_code', ''),
+                                    freezing_code=data.get('freezing_code', ''),
+                                    quantity=data.get('quantity'),
+                                    quantity_unit=data.get('quantity_unit', ''),
+                                    reference_code=data.get('reference_code', ''),
+                                    description=data.get('description', ''),
+                                    # tissue
+                                    pathology_code=data.get('pathology_code', ''),
+                                    tissue=data.get('tissue', ""),
 
-            # loop slots
-            # for return the pk of stored ids
-            saved_slots = []
-            for slot in slots:
-                sampleAttachment = SampleAttachment()
-                try:
-                    match = re.match(r"([a-z]+)([0-9]+)", slot, re.I)
-                    if match:
-                        pos = match.groups()
-                        sample = Sample.objects.all().filter(box_id=box.pk).filter(vposition__iexact=pos[0]).filter(
-                            hposition=pos[1]).filter(occupied=True).first()
-                        if sample is None:
-                            sample = Sample.objects.create(
-                                box_id=box.pk,
-                                hposition=pos[1],
-                                vposition=pos[0],
-                                color=data.get('color', '#EEEEEE'),
-                                type=data.get('type', 'GENERAL'),
-                                name=data.get('name'),
-                                official_name=data.get('official_name', ''),
-                                label=data.get('label', ''),
-                                tag=data.get('tag', ''),
-                                occupied=True,
-                                date_in=datetime.datetime.now(),
-                                freezing_date=data.get('freezing_date', datetime.datetime.now()),
-                                registration_code=data.get('registration_code', ''),
-                                freezing_code=data.get('freezing_code', ''),
-                                quantity=data.get('quantity'),
-                                quantity_unit=data.get('quantity_unit', ''),
-                                reference_code=data.get('reference_code', ''),
-                                description=data.get('description', ''),
-                                # tissue
-                                pathology_code=data.get('pathology_code', ''),
-                                tissue=data.get('tissue', ""),
+                                    # (gRNA) Oligo only
+                                    oligo_name=data.get('oligo_name', ""),
+                                    s_or_as=data.get('s_or_as'),
+                                    oligo_sequence=data.get('oligo_sequence', ""),
+                                    oligo_length=data.get('oligo_length'),
+                                    oligo_GC=data.get('oligo_GC'),
+                                    target_sequence=data.get('target_sequence', ""),
 
-                                # (gRNA) Oligo only
-                                oligo_name=data.get('oligo_name', ""),
-                                s_or_as=data.get('s_or_as'),
-                                oligo_sequence=data.get('oligo_sequence', ""),
-                                oligo_length=data.get('oligo_length'),
-                                oligo_GC=data.get('oligo_GC'),
-                                target_sequence=data.get('target_sequence', ""),
+                                    # construct only
+                                    clone_number=data.get('clone_number', ""),
+                                    against_260_280=data.get('against_260_280'),
+                                    feature=data.get('feature', ""),
+                                    r_e_analysis=data.get('r_e_analysis', ""),
+                                    backbone=data.get('backbone', ""),
+                                    insert=data.get('insert', ""),
+                                    first_max=data.get('first_max', ""),
+                                    marker=data.get('marker', ""),
+                                    has_glycerol_stock=data.get('has_glycerol_stock'),
+                                    strain=data.get('strain', ""),
+                                    # cell line
+                                    passage_number=data.get('passage_number', ""),
+                                    cell_amount=data.get('cell_amount', ""),
+                                    project=data.get('project', ""),
+                                    creator=data.get('creator', ""),
 
-                                # construct only
-                                clone_number=data.get('clone_number', ""),
-                                against_260_280=data.get('against_260_280'),
-                                feature=data.get('feature', ""),
-                                r_e_analysis=data.get('r_e_analysis', ""),
-                                backbone=data.get('backbone', ""),
-                                insert=data.get('insert', ""),
-                                first_max=data.get('first_max', ""),
-                                marker=data.get('marker', ""),
-                                has_glycerol_stock=data.get('has_glycerol_stock'),
-                                strain=data.get('strain', ""),
-                                # cell line
-                                passage_number=data.get('passage_number', ""),
-                                cell_amount=data.get('cell_amount', ""),
-                                project=data.get('project', ""),
-                                creator=data.get('creator', ""),
+                                    # virus
+                                    plasmid=data.get('plasmid', ""),
+                                    titration_titer=data.get('titration_titer', ""),
+                                    titration_unit=data.get('titration_unit', ""),
+                                    titration_cell_type=data.get('titration_cell_type', ""),
+                                    titration_code=data.get('titration_code', "")
+                                )
 
-                                # virus
-                                plasmid=data.get('plasmid', ""),
-                                titration_titer=data.get('titration_titer', ""),
-                                titration_unit=data.get('titration_unit', ""),
-                                titration_cell_type=data.get('titration_cell_type', ""),
-                                titration_code=data.get('titration_code', "")
-                            )
+                                SampleResearcher.objects.create(
+                                    sample_id=sample.pk,
+                                    researcher_id=user.pk
+                                )
 
-                            SampleResearcher.objects.create(
-                                sample_id=sample.pk,
-                                researcher_id=user.pk
-                            )
+                                # save sample attachments
+                                if has_attachment:
+                                    sampleAttachment.sample_id = sample.pk
+                                    sampleAttachment.attachment = form_data['file'][0]
+                                    attachment_name = attachment_data.get('attachment_name')
+                                    sampleAttachment.label = attachment_data.get('label', attachment_name)
+                                    sampleAttachment.description = attachment_data.get('description', attachment_name)
+                                    sampleAttachment.save()
 
-                            # save sample attachments
-                            if has_attachment:
-                                sampleAttachment.sample_id = sample.pk
-                                sampleAttachment.attachment = form_data['file'][0]
-                                attachment_name = attachment_data.get('attachment_name')
-                                sampleAttachment.label = attachment_data.get('label', attachment_name)
-                                sampleAttachment.description = attachment_data.get('description', attachment_name)
-                                sampleAttachment.save()
-
-                            # append stored slots
-                            saved_slots.append(slot)
-                except:
-                    if has_attachment and sampleAttachment.attachment:
-                        sampleAttachment.attachment.delete()
-            return Response({'slots': ','.join(saved_slots)},
-                            status=status.HTTP_200_OK)
+                                # append stored slots
+                                saved_slots.append(slot)
+                    except:
+                        if has_attachment and sampleAttachment.attachment:
+                            sampleAttachment.attachment.delete()
+                return Response({'slots': ','.join(saved_slots)},
+                                status=status.HTTP_200_OK)
+            else:
+                if not sample_obj['storage_date']:
+                    sample_obj['storage_date'] = today
+                # loop slots
+                # for return the pk of stored ids
+                saved_slots = []
+                for slot in slots:
+                    csampleAttachment = CSampleAttachment()
+                    try:
+                        match = re.match(r"([a-z]+)([0-9]+)", slot, re.I)
+                        if match:
+                            pos = match.groups()
+                            csample = CSample.objects.all()\
+                                .filter(box_id=box.pk)\
+                                .filter(vposition__iexact=pos[0])\
+                                .filter(hposition=pos[1])\
+                                .filter(occupied=True)\
+                                .first()
+                            if csample is None:
+                                # get the ctype
+                                ctype_pk = sample_obj.get['ctype', -1]
+                                ctype = get_object_or_404(CType, pk=int(ctype_pk))
+                                if ctype is not None:
+                                    pass
+                                    # csample = CSample.objects.create()
+                                    #
+                                    # # save the researcher
+                                    # SampleResearcher.objects.create(
+                                    #     sample_id=csample.pk,
+                                    #     researcher_id=user.pk
+                                    # )
+                                    #
+                                    # # save sample attachments
+                                    # if has_attachment:
+                                    #     csampleAttachment.sample_id = csample.pk
+                                    #     csampleAttachment.attachment = form_data['file'][0]
+                                    #     cattachment_name = attachment_data.get('attachment_name')
+                                    #     csampleAttachment.label = attachment_data.get('label', cattachment_name)
+                                    #     csampleAttachment.description = attachment_data.get('description', cattachment_name)
+                                    #     csampleAttachment.save()
+                                    # # append stored slots
+                                    # saved_slots.append(slot)
+                    except:
+                        pass
+                return Response({'slots': ','.join(saved_slots)},
+                                status=status.HTTP_200_OK)
         except:
             return Response({'detail': 'Something went wrong!'},
                             status=status.HTTP_400_BAD_REQUEST)
