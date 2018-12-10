@@ -147,8 +147,19 @@ urlpatterns = [
     url(r'^(?P<ct_id>[0-9]+)/boxes/(?P<bx_id>[0-9]+\-[0-9]+\-[0-9]+)/(?P<sp_id>[a-zA-Z][0-9]+)/$',
         SampleDetail.as_view(),
         name='container-boxes-sample-detail'),
-
-
+    # csample only
+    # update csample parent level attr data
+    # update one by one
+    url(r'^(?P<ct_id>[0-9]+)/(?P<bx_id>[0-9]+\-[0-9]+\-[0-9]+)/(?P<sp_id>[a-zA-Z][0-9]+)/(?P<sp_pk>[0-9]+)/(?P<at_id>[0-9]+)/update/$',
+            UpdateCSampleData.as_view(),
+            name='update-csampledata'),
+    # update csamplesubdata one by one
+    url(r'^(?P<ct_id>[0-9]+)/(?P<bx_id>[0-9]+\-[0-9]+\-[0-9]+)/(?P<sp_id>[a-zA-Z][0-9]+)/(?P<sp_pk>[0-9]+)/subdata/$',
+            UpdateCSampleSubData.as_view(),
+            name='csamplesubdata'),
+    url(r'^(?P<ct_id>[0-9]+)/(?P<bx_id>[0-9]+\-[0-9]+\-[0-9]+)/(?P<sp_id>[a-zA-Z][0-9]+)/(?P<sp_pk>[0-9]+)/delete_subdata/$',
+            DeleteCSampleSubData.as_view(),
+            name='delete_csamplesubdata'),
     # =============================================sample attachments list==============================================
     # /12/3/4/A12/attachments/
     url(r'^(?P<ct_id>[0-9]+)/(?P<tw_id>[0-9]+)/(?P<sf_id>[0-9]+)/(?P<bx_id>[0-9]+)/(?P<sp_id>[a-zA-Z][0-9]+)/attachments/$',

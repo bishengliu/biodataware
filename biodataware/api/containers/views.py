@@ -2303,6 +2303,267 @@ class SampleDetailUpdate(APIView):
                             status=status.HTTP_400_BAD_REQUEST)
 
 
+# update csample parent attr data
+class UpdateCSampleData(APIView):
+    permission_classes = (permissions.IsAuthenticated, IsInGroupContanier,)
+
+    def put(self, request, ct_id, bx_id, sp_id, sp_pk, at_id):
+        try:
+            auth_user = request.user
+            container = get_object_or_404(Container, pk=int(ct_id))
+            id_list = bx_id.split("-")
+            tw_id = int(id_list[0])
+            sf_id = int(id_list[1])
+            bx_id = int(id_list[2])
+            if int(tw_id) > int(container.tower) or int(tw_id) < 0:
+                return Response({'detail': 'tower does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+
+            if int(sf_id) > int(container.shelf) or int(sf_id) < 0:
+                return Response({'detail': 'shelf does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+            if int(bx_id) > int(container.box) or int(bx_id) < 0:
+                return Response({'detail': 'Box does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+            # box
+            box = BoxContainer.objects.all() \
+                .filter(container_id=int(ct_id)) \
+                .filter(tower=int(tw_id)) \
+                .filter(shelf=int(sf_id)) \
+                .filter(box=int(bx_id)) \
+                .first()
+            if box is None:
+                return Response({'detail': 'box does not exist!'},
+                                    status=status.HTTP_400_BAD_REQUEST)
+            # get box researcher
+            box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
+            if box_researcher:
+                box_owner = get_object_or_404(User, pk=box_researcher.researcher_id)
+                # find the sample
+                match = re.match(r"([a-z]+)([0-9]+)", sp_id, re.I)
+                if match:
+                    pos = match.groups()
+                    sample = CSample.objects.all() \
+                        .filter(box_id=box.pk) \
+                        .filter(vposition__iexact=pos[0]) \
+                        .filter(hposition=pos[1]) \
+                        .filter(pk=int(sp_pk)) \
+                        .first()
+                    if sample is not None:
+                        if auth_user is not box_owner:
+                            # get sample owner
+                            sample_researcher = CSampleResearcher.objects.all() \
+                                .filter(csample_id=sample.pk).first()
+                            if sample_researcher is not None:
+                                sample_owner = get_object_or_404(User, pk=sample_researcher.researcher_id)
+                                if sample_owner is not None:
+                                    obj = {'user': sample_owner, 'container': container}
+                                    self.check_object_permissions(request, obj)  # check the permission
+                        # get csample data
+                        sample_data = CSampleData.objects.all() \
+                                .filter(csample_id=sample.pk) \
+                                .filter(ctype_attr_id=int(at_id)) \
+                                .filter(ctype_attr_value_id=0) \
+                                .first()
+                        data = request.data
+                        value = data.get('value', '')
+                        if sample_data is not None:
+                            sample_data.ctype_attr_value_part1 = value
+                            sample_data.save()
+                        else:
+                            # create the attr
+                            CSampleData.objects.create(
+                                csample_id=sample.pk,
+                                ctype_attr=int(at_id),
+                                ctype_sub_attr_value_id=0,
+                                ctype_attr_value_part1=value,
+                                ctype_attr_value_part2=None
+                            )
+                        return Response({'detail': 'sample data saved!'},
+                                            status=status.HTTP_200_OK)
+        except:
+            return Response({'detail': 'Something went wrong!'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+
+# update or add new csample sub data
+class UpdateCSampleSubData(APIView):
+    permission_classes = (permissions.IsAuthenticated, IsInGroupContanier,)
+
+    def put(self, request, ct_id, bx_id, sp_id, sp_pk):
+        try:
+            auth_user = request.user
+            container = get_object_or_404(Container, pk=int(ct_id))
+            id_list = bx_id.split("-")
+            tw_id = int(id_list[0])
+            sf_id = int(id_list[1])
+            bx_id = int(id_list[2])
+            if int(tw_id) > int(container.tower) or int(tw_id) < 0:
+                return Response({'detail': 'tower does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+
+            if int(sf_id) > int(container.shelf) or int(sf_id) < 0:
+                return Response({'detail': 'shelf does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+            if int(bx_id) > int(container.box) or int(bx_id) < 0:
+                return Response({'detail': 'Box does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+            # box
+            box = BoxContainer.objects.all() \
+                .filter(container_id=int(ct_id)) \
+                .filter(tower=int(tw_id)) \
+                .filter(shelf=int(sf_id)) \
+                .filter(box=int(bx_id)) \
+                .first()
+            if box is None:
+                return Response({'detail': 'box does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+            # get box researcher
+            box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
+            if box_researcher:
+                box_owner = get_object_or_404(User, pk=box_researcher.researcher_id)
+                # find the sample
+                match = re.match(r"([a-z]+)([0-9]+)", sp_id, re.I)
+                if match:
+                    pos = match.groups()
+                    sample = CSample.objects.all() \
+                        .filter(box_id=box.pk) \
+                        .filter(vposition__iexact=pos[0]) \
+                        .filter(hposition=pos[1]) \
+                        .filter(pk=int(sp_pk)) \
+                        .first()
+                    if sample is not None:
+                        if auth_user is not box_owner:
+                            # get sample owner
+                            sample_researcher = CSampleResearcher.objects.all() \
+                                .filter(csample_id=sample.pk).first()
+                            if sample_researcher is not None:
+                                sample_owner = get_object_or_404(User, pk=sample_researcher.researcher_id)
+                                if sample_owner is not None:
+                                    obj = {'user': sample_owner, 'container': container}
+                                    self.check_object_permissions(request, obj)  # check the permission
+            pass
+        except:
+            return Response({'detail': 'Something went wrong!'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+    def post(self, request, ct_id, bx_id, sp_id, sp_pk):
+        try:
+            auth_user = request.user
+            container = get_object_or_404(Container, pk=int(ct_id))
+            id_list = bx_id.split("-")
+            tw_id = int(id_list[0])
+            sf_id = int(id_list[1])
+            bx_id = int(id_list[2])
+            if int(tw_id) > int(container.tower) or int(tw_id) < 0:
+                return Response({'detail': 'tower does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+
+            if int(sf_id) > int(container.shelf) or int(sf_id) < 0:
+                return Response({'detail': 'shelf does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+            if int(bx_id) > int(container.box) or int(bx_id) < 0:
+                return Response({'detail': 'Box does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+            # box
+            box = BoxContainer.objects.all() \
+                .filter(container_id=int(ct_id)) \
+                .filter(tower=int(tw_id)) \
+                .filter(shelf=int(sf_id)) \
+                .filter(box=int(bx_id)) \
+                .first()
+            if box is None:
+                return Response({'detail': 'box does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+            # get box researcher
+            box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
+            if box_researcher:
+                box_owner = get_object_or_404(User, pk=box_researcher.researcher_id)
+                # find the sample
+                match = re.match(r"([a-z]+)([0-9]+)", sp_id, re.I)
+                if match:
+                    pos = match.groups()
+                    sample = CSample.objects.all() \
+                        .filter(box_id=box.pk) \
+                        .filter(vposition__iexact=pos[0]) \
+                        .filter(hposition=pos[1]) \
+                        .filter(pk=int(sp_pk)) \
+                        .first()
+                    if sample is not None:
+                        if auth_user is not box_owner:
+                            # get sample owner
+                            sample_researcher = CSampleResearcher.objects.all() \
+                                .filter(csample_id=sample.pk).first()
+                            if sample_researcher is not None:
+                                sample_owner = get_object_or_404(User, pk=sample_researcher.researcher_id)
+                                if sample_owner is not None:
+                                    obj = {'user': sample_owner, 'container': container}
+                                    self.check_object_permissions(request, obj)  # check the permission
+            pass
+        except:
+            return Response({'detail': 'Something went wrong!'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+
+# delete csample subdata
+class DeleteCSampleSubData(APIView):
+    def put(self, request, ct_id, bx_id, sp_id, sp_pk):
+        try:
+            auth_user = request.user
+            container = get_object_or_404(Container, pk=int(ct_id))
+            id_list = bx_id.split("-")
+            tw_id = int(id_list[0])
+            sf_id = int(id_list[1])
+            bx_id = int(id_list[2])
+            if int(tw_id) > int(container.tower) or int(tw_id) < 0:
+                return Response({'detail': 'tower does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+
+            if int(sf_id) > int(container.shelf) or int(sf_id) < 0:
+                return Response({'detail': 'shelf does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+            if int(bx_id) > int(container.box) or int(bx_id) < 0:
+                return Response({'detail': 'Box does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+            # box
+            box = BoxContainer.objects.all() \
+                .filter(container_id=int(ct_id)) \
+                .filter(tower=int(tw_id)) \
+                .filter(shelf=int(sf_id)) \
+                .filter(box=int(bx_id)) \
+                .first()
+            if box is None:
+                return Response({'detail': 'box does not exist!'},
+                                status=status.HTTP_400_BAD_REQUEST)
+            # get box researcher
+            box_researcher = BoxResearcher.objects.all().filter(box_id=box.pk).first()
+            if box_researcher:
+                box_owner = get_object_or_404(User, pk=box_researcher.researcher_id)
+                # find the sample
+                match = re.match(r"([a-z]+)([0-9]+)", sp_id, re.I)
+                if match:
+                    pos = match.groups()
+                    sample = CSample.objects.all() \
+                        .filter(box_id=box.pk) \
+                        .filter(vposition__iexact=pos[0]) \
+                        .filter(hposition=pos[1]) \
+                        .filter(pk=int(sp_pk)) \
+                        .first()
+                    if sample is not None:
+                        if auth_user is not box_owner:
+                            # get sample owner
+                            sample_researcher = CSampleResearcher.objects.all() \
+                                .filter(csample_id=sample.pk).first()
+                            if sample_researcher is not None:
+                                sample_owner = get_object_or_404(User, pk=sample_researcher.researcher_id)
+                                if sample_owner is not None:
+                                    obj = {'user': sample_owner, 'container': container}
+                                    self.check_object_permissions(request, obj)  # check the permission
+            pass
+        except:
+            return Response({'detail': 'Something went wrong!'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
 # update single sample position
 class UpdateSamplePosition(APIView):
     permission_classes = (permissions.IsAuthenticated, IsInGroupContanier, IsPIorAssistantorOwner,)
