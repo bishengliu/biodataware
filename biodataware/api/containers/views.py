@@ -2374,8 +2374,8 @@ class UpdateCSampleData(APIView):
                             # create the attr
                             CSampleData.objects.create(
                                 csample_id=sample.pk,
-                                ctype_attr=int(at_id),
-                                ctype_sub_attr_value_id=0,
+                                ctype_attr_id=int(at_id),
+                                ctype_attr_value_id=0,
                                 ctype_attr_value_part1=value,
                                 ctype_attr_value_part2=None
                             )
@@ -2447,6 +2447,7 @@ class UpdateCSampleSubData(APIView):
             return Response({'detail': 'Something went wrong!'},
                             status=status.HTTP_400_BAD_REQUEST)
 
+    @transaction.atomic
     def post(self, request, ct_id, bx_id, sp_id, sp_pk):
         try:
             auth_user = request.user
@@ -2499,7 +2500,21 @@ class UpdateCSampleSubData(APIView):
                                 if sample_owner is not None:
                                     obj = {'user': sample_owner, 'container': container}
                                     self.check_object_permissions(request, obj)  # check the permission
-            pass
+                        data = request.data
+                        ctype_sub_attr_value_id = int(data[0].get('ctype_sub_attr_value_id', 0))
+                        for item in data:
+                            CSampleSubData.objects.create(
+                                csample_id=sample.pk,
+                                ctype_sub_attr_id=int(item.get('subattr_pk', None)),
+                                ctype_sub_attr_value_id=int(item.get('ctype_sub_attr_value_id', 0)),
+                                ctype_sub_attr_value_part1=item.get('value', None),
+                                ctype_sub_attr_value_part2=None
+                            )
+                        new_subdata = CSampleSubData.objects.all() \
+                                        .filter(csample_id=sample.pk) \
+                                        .filter(ctype_sub_attr_value_id=ctype_sub_attr_value_id)
+                        serializer = CSampleSubDataSerializer(new_subdata, many=True)
+                        return Response(serializer.data)
         except:
             return Response({'detail': 'Something went wrong!'},
                             status=status.HTTP_400_BAD_REQUEST)
