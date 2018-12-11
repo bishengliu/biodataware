@@ -19,8 +19,9 @@ class CTypeSubAttrSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CTypeSubAttr
-        fields = ('pk', 'parent_attr_id', 'parent_attr', 'attr_name', 'attr_label', 'attr_value_type', 'attr_value_text_max_length',
-                  'attr_value_decimal_total_digit', 'attr_value_decimal_point', 'attr_required', 'attr_order')
+        fields = ('pk', 'parent_attr_id', 'parent_attr', 'attr_name', 'attr_label', 'attr_value_type'
+                  , 'attr_value_text_max_length', 'attr_value_decimal_total_digit',
+                  'attr_value_decimal_point', 'attr_required', 'attr_order', 'data_count')
 
 
 class CTypeAttrSerializer(serializers.ModelSerializer):
@@ -30,7 +31,7 @@ class CTypeAttrSerializer(serializers.ModelSerializer):
         model = CTypeAttr
         fields = ('pk', 'ctype_id', 'attr_name', 'attr_label', 'attr_value_type', 'attr_value_text_max_length',
                   'attr_value_decimal_total_digit', 'attr_value_decimal_point', 'attr_required', 'attr_order',
-                  'has_sub_attr', 'subattrs')
+                  'data_count', 'has_sub_attr', 'subattrs')
 
 
 class CTypeSerializer(serializers.ModelSerializer):

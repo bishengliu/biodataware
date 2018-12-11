@@ -103,6 +103,12 @@ class CTypeAttr(models.Model):
     def __str__(self):
         return self.attr_name
 
+    def data_count(self):
+        data_set = self.csampledata_set
+        if data_set:
+                return str(data_set.count())
+        return str(0)
+
 
 # sample sub attrs
 class CTypeSubAttr(models.Model):
@@ -122,6 +128,12 @@ class CTypeSubAttr(models.Model):
 
     def __str__(self):
         return self.attr_name
+
+    def data_count(self):
+        data_set = self.csamplesubdata_set
+        if data_set:
+                return str(data_set.count())
+        return str(0)
 
 
 # sample data match attrs

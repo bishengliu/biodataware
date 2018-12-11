@@ -2,11 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="e07c48b7-1c00-4eca-bd6a-d182d44a745f" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/biodataware.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/biodataware.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/biodataware/api/containers/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/biodataware/api/containers/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/biodataware/api/ctypes/serializers.py" beforeDir="false" afterPath="$PROJECT_DIR$/biodataware/api/ctypes/serializers.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/biodataware/config/db.sqlite3" beforeDir="false" afterPath="$PROJECT_DIR$/biodataware/config/db.sqlite3" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/biodataware/csamples/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/biodataware/csamples/models.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -18,11 +17,11 @@
     <session id="570579703">
       <usages-collector id="statistics.lifecycle.project">
         <counts>
-          <entry key="project.closed" value="19" />
+          <entry key="project.closed" value="20" />
           <entry key="project.open.time.10" value="5" />
           <entry key="project.open.time.11" value="3" />
           <entry key="project.open.time.12" value="1" />
-          <entry key="project.open.time.13" value="1" />
+          <entry key="project.open.time.13" value="2" />
           <entry key="project.open.time.14" value="1" />
           <entry key="project.open.time.15" value="1" />
           <entry key="project.open.time.21" value="1" />
@@ -32,27 +31,27 @@
           <entry key="project.open.time.7" value="2" />
           <entry key="project.open.time.8" value="3" />
           <entry key="project.open.time.9" value="1" />
-          <entry key="project.opened" value="23" />
+          <entry key="project.opened" value="24" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
         <counts>
-          <entry key="py" value="60" />
+          <entry key="py" value="66" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.open">
         <counts>
-          <entry key="Python" value="60" />
+          <entry key="Python" value="66" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
-          <entry key="py" value="5175" />
+          <entry key="py" value="5325" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
-          <entry key="Python" value="5175" />
+          <entry key="Python" value="5325" />
         </counts>
       </usages-collector>
     </session>
@@ -62,8 +61,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/biodataware/csamples/models.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1649">
-              <caret line="146" column="49" selection-start-line="146" selection-start-column="37" selection-end-line="146" selection-end-column="49" />
+            <state relative-caret-position="148">
+              <caret line="105" column="18" selection-start-line="105" selection-start-column="8" selection-end-line="105" selection-end-column="18" />
               <folding>
                 <element signature="e#778#813#0" />
                 <element signature="e#846#862#0" />
@@ -77,9 +76,7 @@
                 <element signature="e#2524#2604#0" />
                 <element signature="e#2607#2655#0" />
                 <element signature="e#4389#4429#0" />
-                <element signature="e#4462#4483#0" />
                 <element signature="e#5378#5424#0" />
-                <element signature="e#5457#5478#0" />
                 <element signature="e#6029#6172#0" />
                 <element signature="e#6877#7484#0" />
                 <element signature="e#6993#7439#0" />
@@ -94,375 +91,11 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/biodataware/api/containers/views.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="410">
-              <caret line="2603" column="71" selection-start-line="2603" selection-start-column="71" selection-end-line="2603" selection-end-column="71" />
-              <folding>
-                <element signature="e#658#704#0" />
-                <element signature="e#832#5245#0" />
-                <element signature="e#1032#2163#0" />
-                <element signature="e#1049#2018#0" />
-                <element signature="e#1236#1283#0" />
-                <element signature="e#1411#1568#0" />
-                <element signature="e#1603#2018#0" />
-                <element signature="e#2047#2163#0" />
-                <element signature="e#2239#5245#0" />
-                <element signature="e#2256#5079#0" />
-                <element signature="e#3024#3612#0" />
-                <element signature="e#3647#5079#0" />
-                <element signature="e#3883#4786#0" />
-                <element signature="e#4534#4691#0" />
-                <element signature="e#4831#5079#0" />
-                <element signature="e#5108#5245#0" />
-                <element signature="e#5386#5514#0" />
-                <element signature="e#5517#5540#0" />
-                <element signature="e#5859#6296#0" />
-                <element signature="e#6043#6235#0" />
-                <element signature="e#6710#7688#0" />
-                <element signature="e#6995#7083#0" />
-                <element signature="e#7110#7594#0" />
-                <element signature="e#7296#7594#0" />
-                <element signature="e#7428#7594#0" />
-                <element signature="e#7494#7594#0" />
-                <element signature="e#7743#10014#0" />
-                <element signature="e#7844#9891#0" />
-                <element signature="e#8971#9090#0" />
-                <element signature="e#9141#9234#0" />
-                <element signature="e#9269#9891#0" />
-                <element signature="e#9467#9780#0" />
-                <element signature="e#9679#9780#0" />
-                <element signature="e#10173#12434#0" />
-                <element signature="e#10390#11002#0" />
-                <element signature="e#10452#10640#0" />
-                <element signature="e#10717#10874#0" />
-                <element signature="e#11037#12434#0" />
-                <element signature="e#11235#12277#0" />
-                <element signature="e#11512#12277#0" />
-                <element signature="e#11624#11875#0" />
-                <element signature="e#11673#11806#0" />
-                <element signature="e#11684#11805#0" />
-                <element signature="e#11968#12133#0" />
-                <element signature="e#12831#19832#0" />
-                <element signature="e#13543#13660#0" />
-                <element signature="e#13939#14126#0" />
-                <element signature="e#14207#19708#0" />
-                <element signature="e#14245#19618#0" />
-                <element signature="e#15147#15785#0" />
-                <element signature="e#16107#19618#0" />
-                <element signature="e#19384#19399#0" />
-                <element signature="e#19861#19995#0" />
-                <element signature="e#20204#21042#0" />
-                <element signature="e#20392#20925#0" />
-                <element signature="e#20512#20801#0" />
-                <element signature="e#21289#21634#0" />
-                <element signature="e#21663#21816#0" />
-                <element signature="e#22041#22706#0" />
-                <element signature="e#22229#22589#0" />
-                <element signature="e#22376#22488#0" />
-                <element signature="e#22773#23723#0" />
-                <element signature="e#22961#23578#0" />
-                <element signature="e#23108#23504#0" />
-                <element signature="e#23607#23723#0" />
-                <element signature="e#23979#24928#0" />
-                <element signature="e#24126#24753#0" />
-                <element signature="e#24348#24591#0" />
-                <element signature="e#24364#24518#0" />
-                <element signature="e#24375#24517#0" />
-                <element signature="e#24957#25119#0" />
-                <element signature="e#25307#25786#0" />
-                <element signature="e#25461#25577#0" />
-                <element signature="e#25615#25744#0" />
-                <element signature="e#26021#27382#0" />
-                <element signature="e#26325#27234#0" />
-                <element signature="e#26397#26517#0" />
-                <element signature="e#26603#26723#0" />
-                <element signature="e#26998#27099#0" />
-                <element signature="e#27134#27234#0" />
-                <element signature="e#27265#27382#0" />
-                <element signature="e#27834#27950#0" />
-                <element signature="e#28028#28144#0" />
-                <element signature="e#28170#29932#0" />
-                <element signature="e#28463#28583#0" />
-                <element signature="e#28900#29018#0" />
-                <element signature="e#29699#29853#0" />
-                <element signature="e#29961#30070#0" />
-                <element signature="e#30289#31550#0" />
-                <element signature="e#30548#30567#0" />
-                <element signature="e#30772#30888#0" />
-                <element signature="e#30966#31082#0" />
-                <element signature="e#31330#31427#0" />
-                <element signature="e#31454#31550#0" />
-                <element signature="e#32120#32236#0" />
-                <element signature="e#32314#32430#0" />
-                <element signature="e#32474#34217#0" />
-                <element signature="e#32748#32868#0" />
-                <element signature="e#33185#33303#0" />
-                <element signature="e#33984#34138#0" />
-                <element signature="e#34246#34359#0" />
-                <element signature="e#35124#35229#0" />
-                <element signature="e#35272#35376#0" />
-                <element signature="e#35411#36986#0" />
-                <element signature="e#36167#36285#0" />
-                <element signature="e#36561#36672#0" />
-                <element signature="e#36734#36839#0" />
-                <element signature="e#36882#36986#0" />
-                <element signature="e#37015#37131#0" />
-                <element signature="e#37849#37969#0" />
-                <element signature="e#38055#38175#0" />
-                <element signature="e#38270#38390#0" />
-                <element signature="e#38707#38825#0" />
-                <element signature="e#39801#39910#0" />
-                <element signature="e#40246#42554#0" />
-                <element signature="e#40312#40933#0" />
-                <element signature="e#40508#40619#0" />
-                <element signature="e#40681#40786#0" />
-                <element signature="e#40829#40933#0" />
-                <element signature="e#40968#42554#0" />
-                <element signature="e#41463#41669#0" />
-                <element signature="e#42129#42240#0" />
-                <element signature="e#42302#42407#0" />
-                <element signature="e#42450#42554#0" />
-                <element signature="e#42583#42699#0" />
-                <element signature="e#42960#43804#0" />
-                <element signature="e#43407#43514#0" />
-                <element signature="e#43568#43669#0" />
-                <element signature="e#43704#43804#0" />
-                <element signature="e#43833#43949#0" />
-                <element signature="e#43951#44015#0" />
-                <element signature="e#44388#46123#0" />
-                <element signature="e#44560#44680#0" />
-                <element signature="e#44766#44886#0" />
-                <element signature="e#44969#45087#0" />
-                <element signature="e#45399#45517#0" />
-                <element signature="e#45685#45997#0" />
-                <element signature="e#46152#46260#0" />
-                <element signature="e#46376#48407#0" />
-                <element signature="e#46548#46668#0" />
-                <element signature="e#46754#46874#0" />
-                <element signature="e#46957#47097#0" />
-                <element signature="e#47395#47513#0" />
-                <element signature="e#47681#48281#0" />
-                <element signature="e#47977#48133#0" />
-                <element signature="e#48436#48544#0" />
-                <element signature="e#48682#54341#0" />
-                <element signature="e#48854#48974#0" />
-                <element signature="e#49060#49180#0" />
-                <element signature="e#49263#49381#0" />
-                <element signature="e#49693#49811#0" />
-                <element signature="e#49979#54215#0" />
-                <element signature="e#50632#50774#0" />
-                <element signature="e#51700#51725#0" />
-                <element signature="e#51936#52693#0" />
-                <element signature="e#52156#52693#0" />
-                <element signature="e#52223#52693#0" />
-                <element signature="e#52744#53116#0" />
-                <element signature="e#53232#54095#0" />
-                <element signature="e#53294#53759#0" />
-                <element signature="e#53438#53759#0" />
-                <element signature="e#53566#53759#0" />
-                <element signature="e#53810#54095#0" />
-                <element signature="e#53902#54095#0" />
-                <element signature="e#54370#54478#0" />
-                <element signature="e#54742#56765#0" />
-                <element signature="e#55062#55182#0" />
-                <element signature="e#55268#55388#0" />
-                <element signature="e#55471#55589#0" />
-                <element signature="e#55901#56019#0" />
-                <element signature="e#56234#56501#0" />
-                <element signature="e#56285#56501#0" />
-                <element signature="e#56555#56643#0" />
-                <element signature="e#56678#56765#0" />
-                <element signature="e#56794#56902#0" />
-                <element signature="e#57001#59542#0" />
-                <element signature="e#57321#57441#0" />
-                <element signature="e#57527#57647#0" />
-                <element signature="e#57730#57848#0" />
-                <element signature="e#58164#58282#0" />
-                <element signature="e#58475#59416#0" />
-                <element signature="e#58862#59018#0" />
-                <element signature="e#59112#59268#0" />
-                <element signature="e#59571#59679#0" />
-                <element signature="e#59900#59927#0" />
-                <element signature="e#60318#60654#0" />
-                <element signature="e#61218#61338#0" />
-                <element signature="e#61421#61539#0" />
-                <element signature="e#62531#68509#0" />
-                <element signature="e#67600#68104#0" />
-                <element signature="e#73448#75956#0" />
-                <element signature="e#73769#73889#0" />
-                <element signature="e#73975#74095#0" />
-                <element signature="e#74178#74296#0" />
-                <element signature="e#74612#74730#0" />
-                <element signature="e#74973#75102#0" />
-                <element signature="e#75278#75411#0" />
-                <element signature="e#75471#75829#0" />
-                <element signature="e#75985#76123#0" />
-                <element signature="e#76325#78359#0" />
-                <element signature="e#76646#76766#0" />
-                <element signature="e#76852#76972#0" />
-                <element signature="e#77055#77173#0" />
-                <element signature="e#77489#77607#0" />
-                <element signature="e#78008#78216#0" />
-                <element signature="e#78388#78527#0" />
-                <element signature="e#78741#80832#0" />
-                <element signature="e#79062#79182#0" />
-                <element signature="e#79268#79388#0" />
-                <element signature="e#79471#79589#0" />
-                <element signature="e#79905#80023#0" />
-                <element signature="e#80412#80679#0" />
-                <element signature="e#80463#80679#0" />
-                <element signature="e#80861#81006#0" />
-                <element signature="e#81208#83270#0" />
-                <element signature="e#81681#81801#0" />
-                <element signature="e#81887#82007#0" />
-                <element signature="e#82090#82208#0" />
-                <element signature="e#82524#82642#0" />
-                <element signature="e#82860#83127#0" />
-                <element signature="e#82911#83127#0" />
-                <element signature="e#83299#83438#0" />
-                <element signature="e#83641#86208#0" />
-                <element signature="e#84118#84238#0" />
-                <element signature="e#84324#84444#0" />
-                <element signature="e#84527#84645#0" />
-                <element signature="e#84961#85079#0" />
-                <element signature="e#85200#85218#0" />
-                <element signature="e#85794#86061#0" />
-                <element signature="e#85845#86061#0" />
-                <element signature="e#86237#86380#0" />
-                <element signature="e#86574#89280#0" />
-                <element signature="e#87047#87167#0" />
-                <element signature="e#87253#87373#0" />
-                <element signature="e#87456#87574#0" />
-                <element signature="e#87890#88008#0" />
-                <element signature="e#88470#88754#0" />
-                <element signature="e#88789#89280#0" />
-                <element signature="e#88840#89056#0" />
-                <element signature="e#89309#89448#0" />
-                <element signature="e#89665#95917#0" />
-                <element signature="e#90340#95769#0" />
-                <element signature="e#91276#91308#0" />
-                <element signature="e#92064#95769#0" />
-                <element signature="e#92334#92595#0" />
-                <element signature="e#93053#94724#0" />
-                <element signature="e#93348#93624#0" />
-                <element signature="e#93844#94558#0" />
-                <element signature="e#94775#95769#0" />
-                <element signature="e#94775#94809#0" />
-                <element signature="e#95091#95419#0" />
-                <element signature="e#95264#95419#0" />
-                <element signature="e#95946#96077#0" />
-                <element signature="e#96300#98613#0" />
-                <element signature="e#96936#98613#0" />
-                <element signature="e#97548#98453#0" />
-                <element signature="e#98216#98364#0" />
-                <element signature="e#98642#98781#0" />
-                <element signature="e#99025#102029#0" />
-                <element signature="e#99251#99371#0" />
-                <element signature="e#99457#99577#0" />
-                <element signature="e#99660#99800#0" />
-                <element signature="e#100098#100216#0" />
-                <element signature="e#100396#101758#0" />
-                <element signature="e#100711#101620#0" />
-                <element signature="e#100963#101620#0" />
-                <element signature="e#101022#101500#0" />
-                <element signature="e#101348#101500#0" />
-                <element signature="e#101913#102029#0" />
-                <element signature="e#102146#105050#0" />
-                <element signature="e#102355#102475#0" />
-                <element signature="e#102561#102681#0" />
-                <element signature="e#102764#102904#0" />
-                <element signature="e#103202#103320#0" />
-                <element signature="e#103500#104924#0" />
-                <element signature="e#103815#104786#0" />
-                <element signature="e#104067#104786#0" />
-                <element signature="e#104126#104604#0" />
-                <element signature="e#104452#104604#0" />
-                <element signature="e#105079#105195#0" />
-                <element signature="e#105431#108619#0" />
-                <element signature="e#105755#105875#0" />
-                <element signature="e#105961#106081#0" />
-                <element signature="e#106164#106282#0" />
-                <element signature="e#106598#106716#0" />
-                <element signature="e#107084#107149#0" />
-                <element signature="e#107757#108235#0" />
-                <element signature="e#108083#108235#0" />
-                <element signature="e#108648#108764#0" />
-                <element signature="e#109191#109311#0" />
-                <element signature="e#109397#109517#0" />
-                <element signature="e#109600#109718#0" />
-                <element signature="e#110034#110152#0" />
-                <element signature="e#110332#111888#0" />
-                <element signature="e#110417#110482#0" />
-                <element signature="e#110779#111750#0" />
-                <element signature="e#111031#111750#0" />
-                <element signature="e#111090#111568#0" />
-                <element signature="e#111416#111568#0" />
-                <element signature="e#112043#112159#0" />
-                <element signature="e#112722#112842#0" />
-                <element signature="e#112928#113048#0" />
-                <element signature="e#113131#113249#0" />
-                <element signature="e#114165#115833#0" />
-                <element signature="e#114478#115833#0" />
-                <element signature="e#114541#115160#0" />
-                <element signature="e#114820#115160#0" />
-                <element signature="e#115000#115160#0" />
-                <element signature="e#115407#115644#0" />
-                <element signature="e#125324#129232#0" />
-                <element signature="e#235450#244118#0" />
-                <element signature="e#235495#240783#0" />
-                <element signature="e#240818#244118#0" />
-                <element signature="e#240890#240910#0" />
-                <element signature="e#241121#241251#0" />
-                <element signature="e#241434#241899#0" />
-                <element signature="e#241527#241899#0" />
-                <element signature="e#241745#241899#0" />
-                <element signature="e#241959#242188#0" />
-                <element signature="e#242000#242091#0" />
-                <element signature="e#243215#243238#0" />
-                <element signature="e#243534#243662#0" />
-                <element signature="e#244147#244288#0" />
-                <element signature="e#244347#253323#0" />
-                <element signature="e#244437#253323#0" />
-                <element signature="e#244454#253150#0" />
-                <element signature="e#244499#249839#0" />
-                <element signature="e#244717#244734#0" />
-                <element signature="e#245089#245683#0" />
-                <element signature="e#245275#245683#0" />
-                <element signature="e#245742#245939#0" />
-                <element signature="e#245783#245858#0" />
-                <element signature="e#249874#253150#0" />
-                <element signature="e#249946#249966#0" />
-                <element signature="e#250177#250307#0" />
-                <element signature="e#250490#250955#0" />
-                <element signature="e#250583#250955#0" />
-                <element signature="e#250801#250955#0" />
-                <element signature="e#251015#251244#0" />
-                <element signature="e#251056#251147#0" />
-                <element signature="e#252271#252294#0" />
-                <element signature="e#252590#252718#0" />
-                <element signature="e#252916#253100#0" />
-                <element signature="e#253179#253323#0" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/biodataware/api/containers/urls.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2754">
-              <caret line="163" column="30" selection-start-line="163" selection-start-column="30" selection-end-line="163" selection-end-column="30" />
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/biodataware/api/containers/_csample_serializers.py">
+        <entry file="file://$PROJECT_DIR$/biodataware/api/ctypes/serializers.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="272">
-              <caret line="28" column="56" selection-start-line="28" selection-start-column="39" selection-end-line="28" selection-end-column="56" />
+            <state relative-caret-position="493">
+              <caret line="33" column="29" selection-start-line="33" selection-start-column="19" selection-end-line="33" selection-end-column="29" />
             </state>
           </provider>
         </entry>
@@ -479,9 +112,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>CONTAINER</find>
-      <find>ContainerSerializer</find>
-      <find>Box</find>
       <find>BoxSampleFullnessSerializer</find>
       <find>BoxSamplesSerializer</find>
       <find>ContainerDetail</find>
@@ -509,6 +139,9 @@
       <find>slots</find>
       <find>update</find>
       <find>CSampleSubData</find>
+      <find>BoxCon</find>
+      <find>sample_count</find>
+      <find>CTypeAttrDetail</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -563,21 +196,21 @@
         <option value="$PROJECT_DIR$/biodataware/api/ctypes/urls.py" />
         <option value="$PROJECT_DIR$/biodataware/api/ctypes/views.py" />
         <option value="$PROJECT_DIR$/biodataware/containers/models.py" />
-        <option value="$PROJECT_DIR$/biodataware/api/ctypes/serializers.py" />
         <option value="$PROJECT_DIR$/biodataware/config/settings/common.py" />
         <option value="$PROJECT_DIR$/biodataware/api/containers/serializers.py" />
-        <option value="$PROJECT_DIR$/biodataware/csamples/models.py" />
         <option value="$PROJECT_DIR$/biodataware/api/containers/_csample_serializers.py" />
         <option value="$PROJECT_DIR$/biodataware/api/containers/urls.py" />
         <option value="$PROJECT_DIR$/biodataware/api/containers/views.py" />
+        <option value="$PROJECT_DIR$/biodataware/csamples/models.py" />
+        <option value="$PROJECT_DIR$/biodataware/api/ctypes/serializers.py" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds" extendedState="7">
-    <option name="x" value="825" />
+    <option name="x" value="1637" />
     <option name="y" value="-8" />
-    <option name="width" value="1908" />
-    <option name="height" value="1073" />
+    <option name="width" value="1936" />
+    <option name="height" value="1096" />
   </component>
   <component name="ProjectInspectionProfilesVisibleTreeState">
     <entry key="Project Default">
@@ -606,8 +239,55 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="ProjectPane" />
       <pane id="Scope" />
+      <pane id="ProjectPane">
+        <subPane>
+          <expand>
+            <path>
+              <item name="biodataware" type="b2602c69:ProjectViewProjectNode" />
+              <item name="biodataware" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="biodataware" type="b2602c69:ProjectViewProjectNode" />
+              <item name="biodataware" type="462c0819:PsiDirectoryNode" />
+              <item name="biodataware" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="biodataware" type="b2602c69:ProjectViewProjectNode" />
+              <item name="biodataware" type="462c0819:PsiDirectoryNode" />
+              <item name="biodataware" type="462c0819:PsiDirectoryNode" />
+              <item name="api" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="biodataware" type="b2602c69:ProjectViewProjectNode" />
+              <item name="biodataware" type="462c0819:PsiDirectoryNode" />
+              <item name="biodataware" type="462c0819:PsiDirectoryNode" />
+              <item name="api" type="462c0819:PsiDirectoryNode" />
+              <item name="containers" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="biodataware" type="b2602c69:ProjectViewProjectNode" />
+              <item name="biodataware" type="462c0819:PsiDirectoryNode" />
+              <item name="biodataware" type="462c0819:PsiDirectoryNode" />
+              <item name="api" type="462c0819:PsiDirectoryNode" />
+              <item name="ctypes" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="biodataware" type="b2602c69:ProjectViewProjectNode" />
+              <item name="biodataware" type="462c0819:PsiDirectoryNode" />
+              <item name="biodataware" type="462c0819:PsiDirectoryNode" />
+              <item name="containers" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="biodataware" type="b2602c69:ProjectViewProjectNode" />
+              <item name="biodataware" type="462c0819:PsiDirectoryNode" />
+              <item name="biodataware" type="462c0819:PsiDirectoryNode" />
+              <item name="csamples" type="462c0819:PsiDirectoryNode" />
+            </path>
+          </expand>
+          <select />
+        </subPane>
+      </pane>
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -789,21 +469,21 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="1912" y="-8" width="1936" height="1216" extended-state="6" />
+    <frame x="1912" y="-8" width="1936" height="1216" extended-state="7" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.07586934" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.18018967" />
       <window_info id="Structure" order="1" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
       <window_info anchor="bottom" id="Run" order="2" weight="0.15723874" />
-      <window_info active="true" anchor="bottom" id="Debug" order="3" visible="true" weight="0.13296399" />
+      <window_info active="true" anchor="bottom" id="Debug" order="3" visible="true" weight="0.14312096" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" />
       <window_info anchor="bottom" id="Version Control" order="7" />
-      <window_info anchor="bottom" id="Terminal" order="8" />
+      <window_info anchor="bottom" id="Terminal" order="8" weight="0.32981783" />
       <window_info anchor="bottom" id="Event Log" order="9" side_tool="true" />
       <window_info anchor="bottom" id="Python Console" order="10" />
       <window_info anchor="right" id="Commander" order="0" weight="0.4" />
@@ -835,12 +515,6 @@
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/biodataware/api/containers/views.py</url>
-          <line>2310</line>
-        </line-breakpoint>
-      </breakpoints>
       <default-breakpoints>
         <breakpoint type="python-exception">
           <properties notifyOnTerminate="true" exception="BaseException">
@@ -1047,13 +721,6 @@
       </provider>
     </entry>
     <entry file="file://D:/biodatawareenv/lib/python3.4/site-packages/rest_framework/views.py" />
-    <entry file="file://$PROJECT_DIR$/biodataware/api/ctypes/serializers.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="266">
-          <caret line="18" selection-start-line="18" selection-end-line="18" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/biodataware/config/settings/common.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="773">
@@ -1068,13 +735,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/biodataware/containers/models.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="856">
-          <caret line="123" column="34" selection-start-line="123" selection-start-column="34" selection-end-line="123" selection-end-column="34" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/biodataware/api/urls.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="285">
@@ -1082,71 +742,17 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/biodataware/api/containers/serializers.py">
+    <entry file="file://$PROJECT_DIR$/biodataware/api/containers/_csample_serializers.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="321">
-          <caret line="358" column="8" lean-forward="true" selection-start-line="358" selection-start-column="8" selection-end-line="358" selection-end-column="8" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/biodataware/api/ctypes/urls.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="238">
-          <caret line="15" column="31" selection-start-line="15" selection-start-column="26" selection-end-line="15" selection-end-column="31" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/biodataware/api/ctypes/views.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="306">
-          <caret line="273" column="31" selection-start-line="273" selection-start-column="31" selection-end-line="273" selection-end-column="31" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/biodataware/csamples/models.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1649">
-          <caret line="146" column="49" selection-start-line="146" selection-start-column="37" selection-end-line="146" selection-end-column="49" />
-          <folding>
-            <element signature="e#778#813#0" />
-            <element signature="e#846#862#0" />
-            <element signature="e#1722#1760#0" />
-            <element signature="e#1793#1954#0" />
-            <element signature="e#1995#2355#0" />
-            <element signature="e#2062#2335#0" />
-            <element signature="e#2216#2335#0" />
-            <element signature="e#2393#2421#0" />
-            <element signature="e#2456#2486#0" />
-            <element signature="e#2524#2604#0" />
-            <element signature="e#2607#2655#0" />
-            <element signature="e#4389#4429#0" />
-            <element signature="e#4462#4483#0" />
-            <element signature="e#5378#5424#0" />
-            <element signature="e#5457#5478#0" />
-            <element signature="e#6029#6172#0" />
-            <element signature="e#6877#7484#0" />
-            <element signature="e#6993#7439#0" />
-            <element signature="e#7105#7439#0" />
-            <element signature="e#7246#7439#0" />
-            <element signature="e#7873#7917#0" />
-            <element signature="e#7951#7990#0" />
-            <element signature="e#8226#8246#0" />
-            <element signature="e#9176#9207#0" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/biodataware/api/containers/urls.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2754">
-          <caret line="163" column="30" selection-start-line="163" selection-start-column="30" selection-end-line="163" selection-end-column="30" />
+        <state relative-caret-position="272">
+          <caret line="28" column="56" selection-start-line="28" selection-start-column="39" selection-end-line="28" selection-end-column="56" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/biodataware/api/containers/views.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="410">
-          <caret line="2603" column="71" selection-start-line="2603" selection-start-column="71" selection-end-line="2603" selection-end-column="71" />
+        <state relative-caret-position="170">
+          <caret line="2310" selection-start-line="2310" selection-end-line="2310" />
           <folding>
             <element signature="e#658#704#0" />
             <element signature="e#832#5245#0" />
@@ -1457,49 +1063,80 @@
             <element signature="e#114820#115160#0" />
             <element signature="e#115000#115160#0" />
             <element signature="e#115407#115644#0" />
-            <element signature="e#125324#129232#0" />
-            <element signature="e#235450#244118#0" />
-            <element signature="e#235495#240783#0" />
-            <element signature="e#240818#244118#0" />
-            <element signature="e#240890#240910#0" />
-            <element signature="e#241121#241251#0" />
-            <element signature="e#241434#241899#0" />
-            <element signature="e#241527#241899#0" />
-            <element signature="e#241745#241899#0" />
-            <element signature="e#241959#242188#0" />
-            <element signature="e#242000#242091#0" />
-            <element signature="e#243215#243238#0" />
-            <element signature="e#243534#243662#0" />
-            <element signature="e#244147#244288#0" />
-            <element signature="e#244347#253323#0" />
-            <element signature="e#244437#253323#0" />
-            <element signature="e#244454#253150#0" />
-            <element signature="e#244499#249839#0" />
-            <element signature="e#244717#244734#0" />
-            <element signature="e#245089#245683#0" />
-            <element signature="e#245275#245683#0" />
-            <element signature="e#245742#245939#0" />
-            <element signature="e#245783#245858#0" />
-            <element signature="e#249874#253150#0" />
-            <element signature="e#249946#249966#0" />
-            <element signature="e#250177#250307#0" />
-            <element signature="e#250490#250955#0" />
-            <element signature="e#250583#250955#0" />
-            <element signature="e#250801#250955#0" />
-            <element signature="e#251015#251244#0" />
-            <element signature="e#251056#251147#0" />
-            <element signature="e#252271#252294#0" />
-            <element signature="e#252590#252718#0" />
-            <element signature="e#252916#253100#0" />
-            <element signature="e#253179#253323#0" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/biodataware/api/containers/_csample_serializers.py">
+    <entry file="file://$PROJECT_DIR$/biodataware/api/containers/urls.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="272">
-          <caret line="28" column="56" selection-start-line="28" selection-start-column="39" selection-end-line="28" selection-end-column="56" />
+        <state relative-caret-position="806">
+          <caret line="163" column="30" selection-start-line="163" selection-start-column="30" selection-end-line="163" selection-end-column="30" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/biodataware/api/containers/serializers.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="490">
+          <caret line="209" column="70" lean-forward="true" selection-start-line="209" selection-start-column="70" selection-end-line="209" selection-end-column="84" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/biodataware/containers/models.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="636">
+          <caret line="121" column="20" selection-start-line="121" selection-start-column="8" selection-end-line="121" selection-end-column="20" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/biodataware/api/ctypes/urls.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="204">
+          <caret line="13" column="71" selection-start-line="13" selection-start-column="56" selection-end-line="13" selection-end-column="71" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/biodataware/api/ctypes/views.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="215">
+          <caret line="281" column="52" selection-start-line="281" selection-start-column="43" selection-end-line="281" selection-end-column="52" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/biodataware/csamples/models.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="148">
+          <caret line="105" column="18" selection-start-line="105" selection-start-column="8" selection-end-line="105" selection-end-column="18" />
+          <folding>
+            <element signature="e#778#813#0" />
+            <element signature="e#846#862#0" />
+            <element signature="e#1722#1760#0" />
+            <element signature="e#1793#1954#0" />
+            <element signature="e#1995#2355#0" />
+            <element signature="e#2062#2335#0" />
+            <element signature="e#2216#2335#0" />
+            <element signature="e#2393#2421#0" />
+            <element signature="e#2456#2486#0" />
+            <element signature="e#2524#2604#0" />
+            <element signature="e#2607#2655#0" />
+            <element signature="e#4389#4429#0" />
+            <element signature="e#5378#5424#0" />
+            <element signature="e#6029#6172#0" />
+            <element signature="e#6877#7484#0" />
+            <element signature="e#6993#7439#0" />
+            <element signature="e#7105#7439#0" />
+            <element signature="e#7246#7439#0" />
+            <element signature="e#7873#7917#0" />
+            <element signature="e#7951#7990#0" />
+            <element signature="e#8226#8246#0" />
+            <element signature="e#9176#9207#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/biodataware/api/ctypes/serializers.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="493">
+          <caret line="33" column="29" selection-start-line="33" selection-start-column="19" selection-end-line="33" selection-end-column="29" />
         </state>
       </provider>
     </entry>
