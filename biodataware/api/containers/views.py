@@ -2390,6 +2390,7 @@ class UpdateCSampleData(APIView):
 class UpdateCSampleSubData(APIView):
     permission_classes = (permissions.IsAuthenticated, IsInGroupContanier,)
 
+    @transaction.atomic
     def put(self, request, ct_id, bx_id, sp_id, sp_pk):
         try:
             auth_user = request.user
@@ -2442,7 +2443,24 @@ class UpdateCSampleSubData(APIView):
                                 if sample_owner is not None:
                                     obj = {'user': sample_owner, 'container': container}
                                     self.check_object_permissions(request, obj)  # check the permission
-            pass
+                        data = request.data
+                        ctype_sub_attr_value_id = int(data[0].get('ctype_sub_attr_value_id', 0))
+                        for item in data:
+                            data_pk = item.get('pk', None)
+                            if data_pk is not None:
+                                sub_data = get_object_or_404(CSampleSubData, pk=int(data_pk))
+                                sub_data.ctype_sub_attr_value_part1 = item.get('value', None)
+                                sub_data.save()
+                            else:
+                                CSampleSubData.objects.create(
+                                    csample_id=sample.pk,
+                                    ctype_sub_attr_id=int(item.get('subattr_pk', None)),
+                                    ctype_sub_attr_value_id=ctype_sub_attr_value_id,
+                                    ctype_sub_attr_value_part1=item.get('value', None),
+                                    ctype_sub_attr_value_part2=None
+                                )
+                        return Response({'detail': 'sample data saved!'},
+                                        status=status.HTTP_200_OK)
         except:
             return Response({'detail': 'Something went wrong!'},
                             status=status.HTTP_400_BAD_REQUEST)
@@ -2502,11 +2520,16 @@ class UpdateCSampleSubData(APIView):
                                     self.check_object_permissions(request, obj)  # check the permission
                         data = request.data
                         ctype_sub_attr_value_id = int(data[0].get('ctype_sub_attr_value_id', 0))
+                        max_value_id_data = CSampleSubData.objects.all() \
+                            .filter(csample_id=sample.pk) \
+                            .last()
+                        if max_value_id_data.ctype_sub_attr_value_id + 1 >= ctype_sub_attr_value_id:
+                            ctype_sub_attr_value_id = max_value_id_data.ctype_sub_attr_value_id + 1
                         for item in data:
                             CSampleSubData.objects.create(
                                 csample_id=sample.pk,
                                 ctype_sub_attr_id=int(item.get('subattr_pk', None)),
-                                ctype_sub_attr_value_id=int(item.get('ctype_sub_attr_value_id', 0)),
+                                ctype_sub_attr_value_id=ctype_sub_attr_value_id,
                                 ctype_sub_attr_value_part1=item.get('value', None),
                                 ctype_sub_attr_value_part2=None
                             )
@@ -2522,6 +2545,9 @@ class UpdateCSampleSubData(APIView):
 
 # delete csample subdata
 class DeleteCSampleSubData(APIView):
+    permission_classes = (permissions.IsAuthenticated, IsInGroupContanier,)
+
+    @transaction.atomic
     def put(self, request, ct_id, bx_id, sp_id, sp_pk):
         try:
             auth_user = request.user
@@ -2574,10 +2600,17 @@ class DeleteCSampleSubData(APIView):
                                 if sample_owner is not None:
                                     obj = {'user': sample_owner, 'container': container}
                                     self.check_object_permissions(request, obj)  # check the permission
-            pass
+                        data = request.data
+                        for item in data:
+                            if item is not None:
+                                data_pk = int(item)
+                                sub_data = get_object_or_404(CSampleSubData, pk=int(data_pk))
+                                sub_data.delete()
+                        return Response({'detail': 'sample data removed!'}, status=status.HTTP_200_OK)
         except:
             return Response({'detail': 'Something went wrong!'},
                             status=status.HTTP_400_BAD_REQUEST)
+
 
 # update single sample position
 class UpdateSamplePosition(APIView):
