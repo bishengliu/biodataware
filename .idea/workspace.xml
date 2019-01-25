@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="e07c48b7-1c00-4eca-bd6a-d182d44a745f" name="Default" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/biodataware/config/db.sqlite3" beforeDir="false" afterPath="$PROJECT_DIR$/biodataware/config/db.sqlite3" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -14,7 +15,7 @@
     <session id="570579703">
       <usages-collector id="statistics.lifecycle.project">
         <counts>
-          <entry key="project.closed" value="31" />
+          <entry key="project.closed" value="32" />
           <entry key="project.open.time.10" value="8" />
           <entry key="project.open.time.11" value="4" />
           <entry key="project.open.time.12" value="3" />
@@ -245,10 +246,10 @@
     </option>
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="-8" />
+    <option name="x" value="140" />
     <option name="y" value="-8" />
     <option name="width" value="1936" />
-    <option name="height" value="1176" />
+    <option name="height" value="1096" />
   </component>
   <component name="ProjectInspectionProfilesVisibleTreeState">
     <entry key="Project Default">
@@ -495,7 +496,6 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1176" extended-state="6" />
-    <editor active="true" />
     <layout>
       <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.18018967" />
       <window_info id="Structure" order="1" weight="0.25" />
@@ -503,7 +503,7 @@
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
       <window_info anchor="bottom" id="Run" order="2" weight="0.1514312" />
-      <window_info active="true" anchor="bottom" id="Debug" order="3" visible="true" weight="0.33461168" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.36240914" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" />
