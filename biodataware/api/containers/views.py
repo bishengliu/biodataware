@@ -268,140 +268,220 @@ class ContainerSampleUpload(APIView):
     def post(self, request, pk, format=None):
         try:
             data = request.data
-            serializer = UploadSample2ContainerSerializer(data=data, many=True, partial=True)
-            serializer.is_valid(raise_exception=True)
-            data = serializer.data
             user = request.user
             container = get_object_or_404(Container, pk=pk)
             obj = {'user': user, 'container': container}
             if not user.is_superuser:
                 self.check_object_permissions(request, obj)  # check the permission
-
             # get current group
+            group_pk = -1
             pi_group = Group.objects.all().filter(email=user.email).first()
-            # group_researcher
-            group_researcher = GroupResearcher()
             if pi_group is None:
-                return Response({'detail': 'permission denied!'},
+                # check whether user is one of the assistants
+                assistant = Assistant.objects.all().filter(user_id=user.pk).first()
+                if assistant is None:
+                    return Response({'detail': 'permission denied!'}, status=status.HTTP_400_BAD_REQUEST)
+                else:
+                    # get the group pk
+                    group_pk = assistant.group_id
+            else:
+                group_pk = pi_group.pk
+            # group_researcher
+            group_researcher = GroupResearcher.objects.all() \
+                .filter(group_id=group_pk) \
+                .filter(user_id=user.pk) \
+                .first()
+            if group_researcher is None:
+                # create
+                GroupResearcher.objects.create(
+                    group_id=group_pk,
+                    user_id=user.pk)
+
+            if not settings.USE_CSAMPLE:
+                # old sample type
+                serializer = UploadSample2ContainerSerializer(data=data, many=True, partial=True)
+                serializer.is_valid(raise_exception=True)
+                data = serializer.data
+                # posted data loop
+                if data is not None:
+                    for item in data:
+                        # create box
+                        box = BoxContainer()
+                        tower = int(item.get('tower'))
+                        shelf = int(item.get('shelf'))
+                        box_id = int(item.get('box'))
+                        if int(tower) > int(container.tower) or int(tower) < 0:
+                            continue
+                        if int(shelf) > int(container.shelf) or int(shelf) < 0:
+                            continue
+                        if int(box_id) > int(container.box) or int(box_id) < 0:
+                            continue
+                        box = BoxContainer.objects.all() \
+                            .filter(container_id=int(container.pk)) \
+                            .filter(tower=int(tower)) \
+                            .filter(shelf=int(shelf)) \
+                            .filter(box=int(box_id)) \
+                            .first()
+                        if box is None:
+                            box = BoxContainer.objects.create(
+                                container=container,
+                                tower=tower,
+                                shelf=shelf,
+                                box=box_id,
+                                box_horizontal=item.get('box_horizontal'),
+                                box_vertical=item.get('box_vertical')
+                            )
+                            # box.save()
+
+                            box_researcher = BoxResearcher.objects.create(
+                                box=box,
+                                researcher_id=user.pk
+                            )
+                            # box_researcher.save()
+
+                        sample_found = Sample.objects.all()\
+                            .filter(box_id=box.pk)\
+                            .filter(vposition__iexact=item.get('vposition'))\
+                            .filter(hposition=int(item.get('hposition')))\
+                            .filter(occupied=True)\
+                            .first()
+                        if sample_found is None:
+                            sample = Sample.objects.create(
+                                box=box,
+                                hposition=int(item.get('hposition')),
+                                vposition=item.get('vposition'),
+                                color=item.get('color', '#616161'),
+                                type=item.get('type', 'GENERAL'),
+                                name=item.get('name'),
+                                official_name=item.get('official_name', ''),
+                                label=item.get('label', ''),
+                                tag=item.get('tag', ''),
+                                occupied=True,
+                                date_in=datetime.datetime.now(),
+                                freezing_date=item.get('freezing_date', datetime.datetime.now()),
+                                registration_code=item.get('registration_code', ''),
+                                freezing_code=item.get('freezing_code', ''),
+                                quantity=item.get('quantity'),
+                                quantity_unit=item.get('quantity_unit', ''),
+                                reference_code=item.get('reference_code', ''),
+                                description=item.get('description', ''),
+                                # tissue
+                                pathology_code=item.get('pathology_code', ''),
+                                tissue=item.get('tissue', ""),
+
+                                # (gRNA) Oligo only
+                                oligo_name=item.get('oligo_name', ""),
+                                s_or_as=item.get('s_or_as'),
+                                oligo_sequence=item.get('oligo_sequence', ""),
+                                oligo_length=item.get('oligo_length'),
+                                oligo_GC=item.get('oligo_GC'),
+                                target_sequence=item.get('target_sequence', ""),
+
+                                # construct only
+                                clone_number=item.get('clone_number', ""),
+                                against_260_280=item.get('against_260_280'),
+                                feature=item.get('feature', ""),
+                                r_e_analysis=item.get('r_e_analysis', ""),
+                                backbone=item.get('backbone', ""),
+                                insert=item.get('insert', ""),
+                                first_max=item.get('first_max', ""),
+                                marker=item.get('marker', ""),
+                                has_glycerol_stock=item.get('has_glycerol_stock'),
+                                strain=item.get('strain', ""),
+                                # cell line
+                                passage_number=item.get('passage_number', ""),
+                                cell_amount=item.get('cell_amount', ""),
+                                project=item.get('project', ""),
+                                creator=item.get('creator', ""),
+
+                                # virus
+                                plasmid=item.get('plasmid', ""),
+                                titration_titer=item.get('titration_titer', ""),
+                                titration_unit=item.get('titration_unit', ""),
+                                titration_cell_type=item.get('titration_cell_type', ""),
+                                titration_code=item.get('titration_code', "")
+                            )
+                            # sample.save()
+
+                            # add sample researcher
+                            SampleResearcher.objects.create(
+                                sample=sample,
+                                researcher=user
+                            )
+                    return Response({'detail': 'samples saved!'}, status=status.HTTP_200_OK)
+                return Response({'detail': 'empty data sent!'},
                                 status=status.HTTP_400_BAD_REQUEST)
             else:
-                group_researcher = GroupResearcher.objects.all() \
-                    .filter(group_id=pi_group.pk) \
-                    .filter(user_id=user.pk) \
-                    .first()
-                if group_researcher is None:
-                    # create
-                    group_researcher = GroupResearcher.objects.create(
-                        group_id=pi_group.pk,
-                        user_id=user.pk
-                    )
-            # posted data loop
-            if data is not None:
-                for item in data:
-                    # create box
-                    box = BoxContainer()
-                    tower = int(item.get('tower'))
-                    shelf = int(item.get('shelf'))
-                    box_id = int(item.get('box'))
-                    if int(tower) > int(container.tower) or int(tower) < 0:
-                        continue
-                    if int(shelf) > int(container.shelf) or int(shelf) < 0:
-                        continue
-                    if int(box_id) > int(container.box) or int(box_id) < 0:
-                        continue
-                    box = BoxContainer.objects.all() \
-                        .filter(container_id=int(container.pk)) \
-                        .filter(tower=int(tower)) \
-                        .filter(shelf=int(shelf)) \
-                        .filter(box=int(box_id)) \
-                        .first()
-                    if box is None:
-                        box = BoxContainer.objects.create(
-                            container=container,
-                            tower=tower,
-                            shelf=shelf,
-                            box=box_id,
-                            box_horizontal=item.get('box_horizontal'),
-                            box_vertical=item.get('box_vertical')
-                        )
-                        # box.save()
-
-                        box_researcher = BoxResearcher.objects.create(
-                            box=box,
-                            researcher_id=user.pk
-                        )
-                        # box_researcher.save()
-
-                    sample_found = Sample.objects.all().filter(box_id=box.pk).filter(
-                        vposition__iexact=item.get('vposition')).filter(
-                        hposition=int(item.get('hposition'))).filter(occupied=True).first()
-                    if sample_found is None:
-                        sample = Sample.objects.create(
-                            box=box,
-                            hposition=int(item.get('hposition')),
-                            vposition=item.get('vposition'),
-                            color=item.get('color', '#616161'),
-                            type=item.get('type', 'GENERAL'),
-                            name=item.get('name'),
-                            official_name=item.get('official_name', ''),
-                            label=item.get('label', ''),
-                            tag=item.get('tag', ''),
-                            occupied=True,
-                            date_in=datetime.datetime.now(),
-                            freezing_date=item.get('freezing_date', datetime.datetime.now()),
-                            registration_code=item.get('registration_code', ''),
-                            freezing_code=item.get('freezing_code', ''),
-                            quantity=item.get('quantity'),
-                            quantity_unit=item.get('quantity_unit', ''),
-                            reference_code=item.get('reference_code', ''),
-                            description=item.get('description', ''),
-                            # tissue
-                            pathology_code=item.get('pathology_code', ''),
-                            tissue=item.get('tissue', ""),
-
-                            # (gRNA) Oligo only
-                            oligo_name=item.get('oligo_name', ""),
-                            s_or_as=item.get('s_or_as'),
-                            oligo_sequence=item.get('oligo_sequence', ""),
-                            oligo_length=item.get('oligo_length'),
-                            oligo_GC=item.get('oligo_GC'),
-                            target_sequence=item.get('target_sequence', ""),
-
-                            # construct only
-                            clone_number=item.get('clone_number', ""),
-                            against_260_280=item.get('against_260_280'),
-                            feature=item.get('feature', ""),
-                            r_e_analysis=item.get('r_e_analysis', ""),
-                            backbone=item.get('backbone', ""),
-                            insert=item.get('insert', ""),
-                            first_max=item.get('first_max', ""),
-                            marker=item.get('marker', ""),
-                            has_glycerol_stock=item.get('has_glycerol_stock'),
-                            strain=item.get('strain', ""),
-                            # cell line
-                            passage_number=item.get('passage_number', ""),
-                            cell_amount=item.get('cell_amount', ""),
-                            project=item.get('project', ""),
-                            creator=item.get('creator', ""),
-
-                            # virus
-                            plasmid=item.get('plasmid', ""),
-                            titration_titer=item.get('titration_titer', ""),
-                            titration_unit=item.get('titration_unit', ""),
-                            titration_cell_type=item.get('titration_cell_type', ""),
-                            titration_code=item.get('titration_code', "")
-                        )
-                        # sample.save()
-
-                        # add sample researcher
-                        SampleResearcher.objects.create(
-                            sample=sample,
-                            researcher=user
-                        )
-
-                return Response({'detail': 'samples saved!'}, status=status.HTTP_200_OK)
-            return Response({'detail': 'empty data sent!'},
-                            status=status.HTTP_400_BAD_REQUEST)
+                if data is not None:
+                    for item in data:
+                        # create box
+                        tower = int(item.get('tower'))
+                        shelf = int(item.get('shelf'))
+                        box_id = int(item.get('box'))
+                        if int(tower) > int(container.tower) or int(tower) < 0:
+                            continue
+                        if int(shelf) > int(container.shelf) or int(shelf) < 0:
+                            continue
+                        if int(box_id) > int(container.box) or int(box_id) < 0:
+                            continue
+                        box = BoxContainer.objects.all() \
+                            .filter(container_id=int(container.pk)) \
+                            .filter(tower=int(tower)) \
+                            .filter(shelf=int(shelf)) \
+                            .filter(box=int(box_id)) \
+                            .first()
+                        if box is None:
+                            box = BoxContainer.objects.create(
+                                container=container,
+                                tower=tower,
+                                shelf=shelf,
+                                box=box_id,
+                                box_horizontal=item.get('box_horizontal'),
+                                box_vertical=item.get('box_vertical')
+                            )
+                            BoxResearcher.objects.create(
+                                box=box,
+                                researcher_id=user.pk
+                            )
+                        sample_found = CSample.objects.all()\
+                            .filter(box_id=box.pk)\
+                            .filter(vposition__iexact=item.get('vposition'))\
+                            .filter(hposition=int(item.get('hposition')))\
+                            .filter(occupied=True)\
+                            .first()
+                        if sample_found is None:
+                            # save sample
+                            sample = CSample.objects.create(
+                                ctype_id=item.get('ctype_pk', -1),
+                                box=box,
+                                hposition=int(item.get('hposition')),
+                                vposition=item.get('vposition'),
+                                color=item.get('color', '#616161'),
+                                name=item.get('name'),
+                                occupied=True,
+                                date_in=datetime.datetime.now(),
+                                storage_date=item.get('storage_date', datetime.datetime.now()),
+                                date_out=item.get('date_out', None)
+                            )
+                            # add sample researcher
+                            CSampleResearcher.objects.create(
+                                csample=sample,
+                                researcher=user
+                            )
+                            # csample data
+                            subdata = item.get('subdata', None)
+                            if subdata is not None:
+                                for ditem in subdata:
+                                    CSampleData.objects.create(
+                                        csample=sample,
+                                        ctype_attr_id=ditem.get('ctype_sub_attr_pk', None),
+                                        ctype_attr_value_id=0,
+                                        ctype_attr_value_part1=ditem.get('ctype_sub_attr_value_part1', None)
+                                    )
+                    return Response({'detail': 'samples saved!'}, status=status.HTTP_200_OK)
+                else:
+                    return Response({'detail': 'empty data sent!'},
+                                    status=status.HTTP_400_BAD_REQUEST)
         except:
             return Response({'detail': 'Something went wrong, sample not saved!'},
                             status=status.HTTP_400_BAD_REQUEST)
