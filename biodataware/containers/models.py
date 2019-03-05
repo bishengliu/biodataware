@@ -137,7 +137,13 @@ class BoxResearcher(models.Model):
     researcher = models.ForeignKey(GroupResearcher, on_delete=models.CASCADE)
 
     def user(self):
-        return self.researcher.user
+        try:
+            return self.researcher.user
+        except:
+            return 'unknown'
 
     def __str__(self):
-        return self.box.container.name + ' (' + str(self.box.tower) + '-' + str(self.box.shelf) + '-' + str(self.box.box) + ') of researcher: ' + self.researcher.user.username
+        try:
+            return self.box.container.name + ' (' + str(self.box.tower) + '-' + str(self.box.shelf) + '-' + str(self.box.box) + ') of researcher: ' + self.researcher.user.username
+        except:
+            return self.box.container.name + ' (' + str(self.box.tower) + '-' + str(self.box.shelf) + '-' + str(self.box.box) + ')'

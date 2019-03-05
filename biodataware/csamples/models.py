@@ -149,7 +149,7 @@ class CSampleData(models.Model):
 
     def __str__(self):
         return self.csample.name + ': ' + self.ctype_attr.attr_label + '/' \
-               + self.ctype_attr_value_part1 + self.ctype_attr_value_part2
+               + str(self.ctype_attr_value_part1) + str(self.ctype_attr_value_part2)
 
 
 # sample subdata match sub attrs
@@ -162,7 +162,7 @@ class CSampleSubData(models.Model):
 
     def __str__(self):
         return self.csample.name + ': ' + self.ctype_sub_attr.attr_label + '/' \
-               + self.ctype_sub_attr_value_part1 + self.ctype_sub_attr_value_part2
+               + str(self.ctype_sub_attr_value_part1) + str(self.ctype_sub_attr_value_part2)
 
 
 # upload handler
