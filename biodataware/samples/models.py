@@ -64,7 +64,7 @@ class Sample(models.Model):
 
     # (gRNA) Oligo only
     oligo_name = models.CharField(max_length=100, null=True, blank=True)
-    s_or_as = models.NullBooleanField()  # sense or antisense
+    s_or_as = models.BooleanField(null=True)  # sense or antisense
     oligo_sequence = models.CharField(max_length=200, null=True, blank=True)
     oligo_length = models.IntegerField(validators=[MinValueValidator(100)], null=True, blank=True)  # sample quantity
     oligo_GC = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)

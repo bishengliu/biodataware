@@ -14,3 +14,5 @@ urlpatterns =[
         name='password'
     )
 ]
+
+app_name = 'users'

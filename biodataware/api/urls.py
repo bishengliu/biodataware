@@ -16,3 +16,5 @@ urlpatterns = [
     # docs ui
     url(r'^docs/', get_swagger_view(title='API Docs')),
 ]
+
+app_name = 'api'

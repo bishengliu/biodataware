@@ -236,3 +236,6 @@ urlpatterns = [
         SampleColor.as_view(),
         name='container-boxes-sample-color'),
 ]
+
+
+app_name = 'api_containers'

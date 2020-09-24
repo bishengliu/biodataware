@@ -8,3 +8,5 @@ urlpatterns = [
         name='index'
     )
 ]
+
+app_name = 'home'

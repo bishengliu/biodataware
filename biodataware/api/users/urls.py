@@ -47,3 +47,5 @@ urlpatterns = [
         name='api_reset_password_confirm'
         ),
 ]
+
+app_name = 'api_users'

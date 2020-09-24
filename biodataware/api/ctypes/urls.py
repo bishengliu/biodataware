@@ -17,3 +17,6 @@ urlpatterns = [
     url(r'^(?P<pk>[0-9]+)/attrs/(?P<attr_pk>[0-9]+)/subattrs/$', CTypeSubAttrList.as_view(), name='ctype-attr-subattrs'),
     url(r'^(?P<pk>[0-9]+)/attrs/(?P<attr_pk>[0-9]+)/subattrs/(?P<subattr_pk>[0-9]+)/$', CTypeSubAttrDetail.as_view(), name='ctype-attr-subattr-detail'),
 ]
+
+
+app_name = 'api_ctypes'

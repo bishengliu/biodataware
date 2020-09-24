@@ -13,7 +13,7 @@ class RegistrationForm(forms.Form):
         regex=r'^\w+$',
         widget=forms.TextInput(attrs=dict(required=True, max_length=30),),
         label=_("Username"),
-        error_message={'invalid': _("Username contains only letters, numbers and underscores.")})
+        error_messages={'invalid': _("Username contains only letters, numbers and underscores.")})
     email = forms.EmailField(
         widget=forms.TextInput(attrs=dict(required=True, max_length=30),),
         label=_("Email"))
@@ -28,13 +28,13 @@ class RegistrationForm(forms.Form):
         widget=forms.TextInput(attrs=dict(required=False, max_length=30), ),
         required=False,
         label=_("First Name"),
-        error_message={'invalid': _("First Name contains only letters, numbers and underscores.")})
+        error_messages={'invalid': _("First Name contains only letters, numbers and underscores.")})
     last_name = forms.RegexField(
         regex=r'^\w+$',
         widget=forms.TextInput(attrs=dict(required=False, max_length=30), ),
         required=False,
         label=_("Last Name"),
-        error_message={'invalid': _("Last Name contains only letters, numbers and underscores.")})
+        error_messages={'invalid': _("Last Name contains only letters, numbers and underscores.")})
     birth_date = forms.DateField(
         required=False,
         input_formats=settings.DATE_INPUT_FORMATS,

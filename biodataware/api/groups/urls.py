@@ -38,5 +38,6 @@ urlpatterns = [
     # researcher detail in one group
     url(r'^(?P<g_id>[0-9]+)/assistants/(?P<u_id>[0-9]+)/$', OneGroupAssistantDetail.as_view(), name='one-group-assistant-detail'),
 
-
 ]
+
+app_name = 'api_groups'

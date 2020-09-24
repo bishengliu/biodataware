@@ -13,3 +13,5 @@ urlpatterns = [
     # pi manager detail, post and delete
     url(r'^users/(?P<pk>[0-9]+)/$', PIDetail.as_view(), name='pi-detail')
 ]
+
+app_name = 'api_roles'
